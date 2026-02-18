@@ -18,7 +18,6 @@ void CADC::conv_tnf(std::initializer_list<char> list) {
     if (index_wr < N_ch) {
       if (SSP->SR & SPI_Config::SR_TNF) {
         SSP->DR = cN_CH[*(list.begin() + index_wr)];
-        adstr.setTimings(timing_index, LPC_TIM3->TC);
         index_wr++;
         timing_index++;
       }
@@ -27,7 +26,6 @@ void CADC::conv_tnf(std::initializer_list<char> list) {
       if (ending_index < 2) {
         ending_index++;
         SSP->DR = cN_CH[CADC_STORAGE::ch_HRf];
-        adstr.setTimings(timing_index, LPC_TIM3->TC);
         timing_index++;
       }
     }

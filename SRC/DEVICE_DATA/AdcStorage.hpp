@@ -6,28 +6,10 @@ class CADC_STORAGE {
  public:
   // Список имён каналов внешнего АЦП
   enum EADC_NameCh {
-    Name_ch00,
-    Name_ch01,
-    Name_ch02,
-    Name_ch03,
-    Name_ch04,
-    Name_ch05,
-    Name_ch06,
-    Name_ch07,
-    Name_ch08,
-    Name_ch09,
-    Name_ch10,
-    Name_ch11,
-    Name_ch12,
-    Name_ch13,
-    Name_ch14,
+    Ud = 0,
+    ILeak1 = 1,
+    ILeak2 = 2,
     ch_HRf = 15  // Промежуточный канал (0.5 Ref)
-  };
-
-  // Список имён каналов (используемых) внутреннего АЦП
-  enum EIADC_NameCh {
-    SUPPLY_P5 = 0,
-    SUPPLY_N5 = 1,
   };
 
   // --- Обработка и запись данных внешнего АЦП ---
@@ -35,18 +17,10 @@ class CADC_STORAGE {
     external_data[channel] = (raw_adc_data - rSettings.getSettings().shift_adc[channel]) *
                              (1.0f + rSettings.getSettings().incline_adc[channel]);
   }
-  // --- Запись таймингов внешнего АЦП ---
-  inline void setTimings(unsigned char channel, unsigned int timings) { this->timings[channel] = timings; }
-  // --- Запись данных внутреннего АЦП ---
-  inline void setInternal(unsigned char channel, float value) { internal_data[channel] = value; }
+
   // --- Чтение данных внешнего АЦП ---
   inline signed short getExternal(unsigned char channel) { return external_data[channel]; }
-  // --- Чтение таймингов внешнего АЦП ---
-  inline unsigned int getTimings(unsigned char channel) { return timings[channel]; }
-  // --- Чтени данных внутреннего АЦП ---
-  inline float getInternal(unsigned char channel) { return internal_data[channel]; }
-  // --- Чтение internal_data[] указателей ---
-  inline float* getIPointer(unsigned char channel) { return &internal_data[channel]; }
+
   // --- Чтение external_data[] указателей ---
   inline signed short* getEPointer(unsigned char channel) { return &external_data[channel]; }
 
@@ -61,8 +35,6 @@ class CADC_STORAGE {
 
  private:
   signed short external_data[G_CONST::NUMBER_CHANNELS] = {};  // Обработанные данные полученные от внешнего АЦП
-  unsigned int timings[G_CONST::NUMBER_CHANNELS + 2] = {};    // Тайминги внешнего АЦП
-  float internal_data[G_CONST::NUMBER_I_CHANNELS] = {};       // Обработанные данные полученные от внутреннего АЦП
 
   CEEPSettings& rSettings;
 

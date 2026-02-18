@@ -3,7 +3,7 @@
 //#define CM3 
 
 #include "system_LPC177x.h"
-#include "dIOStorage.hpp"
+#include "d_cpu.hpp"
 
 class CSET_EMC {
   
@@ -102,9 +102,9 @@ public:
           
           Counter_Err_RAM = (Counter_Err_RAM + 1) & 0x1FFFF;
           if (Counter_Err_RAM < 0x10000) {
-            CDIN_STORAGE::UserLedOn();
+            CD_cpu::UserLedOn();
           } else {
-            CDIN_STORAGE::UserLedOff();
+            CD_cpu::UserLedOff();
           }
         }
       }

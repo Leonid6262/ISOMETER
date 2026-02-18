@@ -349,7 +349,7 @@
                     <state>$PROJ_DIR$\SRC\PULSES\</state>
                     <state>$PROJ_DIR$\SRC\PULSES\REGULATORS\</state>
                     <state>$PROJ_DIR$\SRC\SERIAL\</state>
-                    <state>$PROJ_DIR$\SRC\SYSTEM\</state>
+                    <state>$PROJ_DIR$\SRC\PROCESS\</state>
                     <state>$PROJ_DIR$\SRC\DEVICE_DATA\</state>
                     <state>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_DATA\</state>
                     <state>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_CODE\</state>
@@ -2138,12 +2138,6 @@
             <file>
                 <name>$PROJ_DIR$\SRC\ANALOG\adc.cpp</name>
             </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\ANALOG\dac.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\ANALOG\i_adc.cpp</name>
-            </file>
         </group>
         <group>
             <name>DEVICE_DATA</name>
@@ -2153,21 +2147,9 @@
             <file>
                 <name>$PROJ_DIR$\SRC\DEVICE_DATA\AdcStorage.hpp</name>
             </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\DEVICE_DATA\dIOStorage.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\DEVICE_DATA\dIOStorage.hpp</name>
-            </file>
         </group>
         <group>
             <name>INIT</name>
-            <file>
-                <name>$PROJ_DIR$\SRC\INIT\emac.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\INIT\emac.hpp</name>
-            </file>
             <file>
                 <name>$PROJ_DIR$\SRC\INIT\emc.hpp</name>
             </file>
@@ -2179,18 +2161,18 @@
             </file>
         </group>
         <group>
-            <name>SERIAL</name>
+            <name>PROCESS</name>
             <file>
-                <name>$PROJ_DIR$\SRC\SERIAL\can.cpp</name>
+                <name>$PROJ_DIR$\SRC\PROCESS\process.cpp</name>
             </file>
+        </group>
+        <group>
+            <name>SERIAL</name>
             <file>
                 <name>$PROJ_DIR$\SRC\SERIAL\set_spi.cpp</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\SRC\SERIAL\set_uart.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\SERIAL\spi_ports.cpp</name>
             </file>
         </group>
         <group>
@@ -2215,7 +2197,7 @@
             <name>$PROJ_DIR$\SRC\crc16.hpp</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\SRC\din_cpu.cpp</name>
+            <name>$PROJ_DIR$\SRC\d_cpu.hpp</name>
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\IntPriority.hpp</name>

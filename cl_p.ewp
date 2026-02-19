@@ -2209,9 +2209,6 @@
             <name>$PROJ_DIR$\SRC\crc16.hpp</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\SRC\d_cpu.hpp</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\SRC\IntPriority.hpp</name>
         </file>
         <file>

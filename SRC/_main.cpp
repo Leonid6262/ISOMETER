@@ -3,7 +3,7 @@
 void main(void) {
   
   CSET_PORTS::initDOutputs();     // Инициализация дискретных выходов микроконтроллера (pins)
-  CD_cpu::UserLedOn();            // Визуальный контроль начала инициализации 
+  CPROCESS::UserLedOn();          // Визуальный контроль начала инициализации 
   Priorities::initPriorities();   // Распределение векторов по группам. см. в файле IntPriority.h
   CSET_TIMER::initTimers();       // Инициализация таймеров.
   
@@ -17,7 +17,7 @@ void main(void) {
   static auto process = CFactory::create_Process();             // Основной объект измерений
   static auto& term_manager = CFactory::createTM(process);      // Управление объектами ПТ
   
-  CD_cpu::UserLedOff();  // Визуальный контроль окончания инициализации
+  CPROCESS::UserLedOff();  // Визуальный контроль окончания инициализации
  
   while (true) {   
     

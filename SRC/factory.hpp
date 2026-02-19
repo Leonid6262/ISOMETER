@@ -5,7 +5,6 @@
 #include "set_uart.hpp"
 #include "set_spi.hpp"
 #include "adc.hpp"
-#include "d_cpu.hpp"
 
 #include "controllerDMA.hpp"
 #include "bool_name.hpp"

@@ -28,14 +28,8 @@ class CEEPSettings {
     unsigned short Language;                            // 4 Номер языка
     signed short shift_adc[G_CONST::NUMBER_CHANNELS];   // 5 Смещения АЦП
     float incline_adc[G_CONST::NUMBER_CHANNELS];        // 6 Наклон
-    signed short shift_dac0;                            // 7 Смещение DAC0
-    signed short shift_dac1_pwm;                        // 8 Смещение DAC1_pwm
-    signed short shift_dac2_pwm;                        // 9 Смещение DAC2_pwm
-    unsigned char din_Pi_invert[G_CONST::BYTES_RW_MAX + 1];     // 10 Признак инвертирования дискретных входов (+1 - порт Pi0)        
-    unsigned char dout_spi_invert[G_CONST::BYTES_RW_MAX];       // 11 Признак инвертирования SPI выходов    
-
-    unsigned char ssid[G_CONST::SSID_PS_L];                // 18 Имя сети
-    unsigned char password[G_CONST::SSID_PS_L];            // 19 Пароль
+    unsigned short Rmin1;                               // 7 Rmin1
+    unsigned short Rmin2;                               // 8 Rmin2
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -47,14 +41,8 @@ class CEEPSettings {
     .Language = 1,
     .shift_adc =   {   0, 2047, 2047, 2047, 2047, 2047,    0, 2047, 2047, 2047, 2047, 2047, 2047, 2047, 2047, 2047},
     .incline_adc = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-    .shift_dac0 = 0,
-    .shift_dac1_pwm = 0,
-    .shift_dac2_pwm = 0,
-    .din_Pi_invert = {0, 0, 0, 0},
-    .dout_spi_invert = {0, 0, 0},
-
-    .ssid = "NetName",
-    .password = "Password"
+    .Rmin1 = 10,
+    .Rmin2 = 40
   };
     
   // Текущий набор уставок, хранящийся в RAM ---

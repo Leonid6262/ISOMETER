@@ -25,7 +25,7 @@ void CADC::conv_tnf(std::initializer_list<char> list) {
       // Выталкиваем два последних байта из FIFO
       if (ending_index < 2) {
         ending_index++;
-        SSP->DR = cN_CH[CADC_STORAGE::ch_HRf];
+        SSP->DR = cN_CH[static_cast<unsigned char>(EADC_NameCh::ch_HRf)];
         timing_index++;
       }
     }
@@ -36,7 +36,7 @@ void CADC::conv_tnf(std::initializer_list<char> list) {
         raw_adc_data = SSP->DR;
         Nch = (raw_adc_data & 0xF000) >> 12;
         if (Nch < G_CONST::NUMBER_CHANNELS) {
-          adstr.setExternal(Nch, (raw_adc_data & 0x0FFF));
+          setData(Nch, (raw_adc_data & 0x0FFF));
         }
         index_rd++;
       }
@@ -52,7 +52,7 @@ void CADC::conv_tnf(std::initializer_list<char> list) {
   }
 }
 
-CADC::CADC(LPC_SSP_TypeDef* SSP, CADC_STORAGE& adstr) : SSP(SSP), adstr(adstr) {
+CADC::CADC(LPC_SSP_TypeDef* SSP, CEEPSettings& rSet) : SSP(SSP), rSet(rSet) {
   unsigned short tmp_dat;
   SSP->DR = (1UL << 12) | (1UL << 11);  // 0x1800 - manual mode and prog b0...b6
   while (SSP->SR & SPI_Config::SR_RNE) {

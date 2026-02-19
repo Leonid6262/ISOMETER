@@ -3,8 +3,6 @@
 #include "LPC407x_8x_177x_8x.h"
 #include "system_LPC177x.h"
 
-extern "C" void UART0_IRQHandler(void) { CTerminalUartDriver::getInstance().irq_handler(); }  // Вызов обработчика UART-0
-
 CTerminalUartDriver::CTerminalUartDriver() {};
 
 void CTerminalUartDriver::init(LPC_UART_TypeDef* UART, IRQn_Type UART_IRQ) {

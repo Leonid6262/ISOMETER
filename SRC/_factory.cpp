@@ -1,0 +1,39 @@
+#include "factory.hpp"
+
+#pragma data_section=".dma_buffers"
+__root signed short CMBSLAVE::tx_dma_buffer[CMBSLAVE::TRANSACTION_LENGTH];
+__root signed short CMBSLAVE::rx_dma_buffer[CMBSLAVE::TRANSACTION_LENGTH];
+#pragma data_section
+
+using ESET = CEEPSettings;
+using EUART = CSET_UART::EUartInstance;
+using ESPI = CSET_SPI::ESPIInstance;
+ 
+StatusRet CFactory::load_settings()   { return ESET::getInstance().loadSettings(); }        // Загрузка уставок
+
+// ModBus slave
+CMBSLAVE CFactory::create_MBslave() {
+  static CDMAcontroller cont_dma;     // Управление каналами DMA
+  return CMBSLAVE(cont_dma, CSET_UART::configure(EUART::UART_1));
+}
+// Основной класс
+CPROCESS CFactory::create_Process() {
+  static CADC adc(CSET_SPI::config(ESPI::SPI_1), ESET::getInstance()); 
+  return CPROCESS(adc);
+}
+
+// Инициализация драйвера ПТ, создание объектов ПТ и его окружения
+CTerminalManager& CFactory::createTM(CPROCESS& rProcess) {    
+
+  auto& udrv = CTerminalUartDriver::getInstance();                                      // Конфигурация и инициализация UART-0 - пультовый терминал 
+  udrv.init(CSET_UART::configure(EUART::UART_0), UART0_IRQn);                       
+                                                                 
+  static CMenuNavigation menu_navigation(udrv, ESET::getInstance(), rProcess);     // Пультовый терминал (навигация по меню).
+  static CMessageDisplay mes_display(udrv);                                             // Пультовый терминал (индикация сообщений).
+  static CTerminalManager terminal_manager(menu_navigation, mes_display);               // Управление режимами пультового терминал
+  menu_navigation.set_pTerminal(&terminal_manager);                                     // Создание циклической зависимости menu  
+  mes_display.set_pTerminal(&terminal_manager);                                         // Создание циклической зависимости mes
+  
+  return terminal_manager;                                                              // Возврат ссылки на менеджер терминпла
+}
+extern "C" void UART0_IRQHandler(void) { CTerminalUartDriver::getInstance().irq_handler(); }  // Вызов обработчика UART-0

@@ -1,6 +1,5 @@
 #pragma once 
 #include "bool_name.hpp"
-#include "AdcStorage.hpp"
 #include "settings_eep.hpp"
 #include "controllerDMA.hpp"
 

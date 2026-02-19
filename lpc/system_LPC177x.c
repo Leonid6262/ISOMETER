@@ -168,6 +168,6 @@ void  SystemInit(void)
 
   SCB->VTOR  = 0x00000000 & 0x3FFFFF80;
   
-  UserStartInit();
+  //UserStartInit();
   
 }

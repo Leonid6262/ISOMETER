@@ -1,7 +1,6 @@
 #pragma once
 
 #include "settings_eep.hpp"
-#include "AdcStorage.hpp"
 #include "spi_init.hpp"
 #include <array>
 #include <initializer_list>
@@ -11,7 +10,7 @@ class CADC{
 private:
   
   LPC_SSP_TypeDef* SSP;
-  CADC_STORAGE& adstr;
+  CEEPSettings& rSet;
   /* 
   cN_CH - данные для запуска конвертации (формат - см. док.) 
   000m.0ccc.c000.0000 m - Manual mode, cccc - N channel (0...15)
@@ -21,12 +20,26 @@ private:
     0x1000, 0x1080, 0x1100, 0x1180, 0x1200, 0x1280, 0x1300, 0x1380, 
     0x1400, 0x1480, 0x1500, 0x1580, 0x1600, 0x1680, 0x1700, 0x1780
   };
-
-public:
+  signed short data[G_CONST::NUMBER_CHANNELS] = {};  // Обработанные данные полученные АЦП
+  // --- Обработка и запись данных внешнего АЦП ---
+  inline void setData(unsigned char channel, signed short raw_adc_data) {
+    data[channel] = (raw_adc_data - rSet.getSettings().shift_adc[channel]) *
+                    (1.0f + rSet.getSettings().incline_adc[channel]);
+  }
   
-  CADC(LPC_SSP_TypeDef*, CADC_STORAGE&);
+public:
+  enum class EADC_NameCh {
+    Ud = 0,
+    ILeak1 = 1,
+    ILeak2 = 2,
+    ch_HRf = 15  // Промежуточный канал (0.5 Ref)
+  };
+  
+  CADC(LPC_SSP_TypeDef*, CEEPSettings&);
   
   // Метод конвертации
   void conv_tnf(std::initializer_list<char>);
+   // --- Чтение external_data[] указателей ---
+  inline signed short* getEPointer(unsigned char channel) { return &data[channel]; }
   
 };

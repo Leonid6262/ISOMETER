@@ -100,6 +100,7 @@ void CPROCESS::calc_avr(EPhases ph) {
   case EPhases::PhaseN:
     break;
   }
+  R = (20000.0f/(0.7f * (ILeak2P_avr - ILeak2N_avr) / 2.0f)) - 23.3f;
 }
 
 void CPROCESS::conv_adc() {

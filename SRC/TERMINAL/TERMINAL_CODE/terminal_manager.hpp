@@ -32,5 +32,7 @@ enum class EKey_code {
   FnENTER = 0x78,
   FnUP = 0x3D,     
   FnDOWN = 0x5F,
-  FnEsc = 0x79
+  FnEsc = 0x79,
+  START = 0x70,
+  STOP  = 0x2A
 };

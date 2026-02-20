@@ -14,15 +14,12 @@
 
 #include "terminalUartDriver.hpp"
 #include "menu_navigation.hpp"
-#include "message_display_wdt.hpp"
-#include "terminal_manager.hpp"
 
 class CFactory {
 public:    
   static StatusRet load_settings();                 
   static CMBSLAVE create_MBslave(); 
   static CPROCESS create_Process();
-  static CTerminalManager& createTM(CPROCESS&);
-  
+  static CMenuNavigation& create_MN(CPROCESS&);  
 };
 

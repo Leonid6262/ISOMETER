@@ -22,18 +22,12 @@ CPROCESS CFactory::create_Process() {
   return CPROCESS(adc);
 }
 
-// Инициализация драйвера ПТ, создание объектов ПТ и его окружения
-CTerminalManager& CFactory::createTM(CPROCESS& rProcess) {    
-
-  auto& udrv = CTerminalUartDriver::getInstance();                                      // Конфигурация и инициализация UART-0 - пультовый терминал 
-  udrv.init(CSET_UART::configure(EUART::UART_0), UART0_IRQn);                       
-                                                                 
+// Пультовый терминал
+CMenuNavigation& CFactory::create_MN(CPROCESS& rProcess) {
+  auto& udrv = CTerminalUartDriver::getInstance();                                 // Конфигурация и инициализация UART-0 - пультовый терминал 
+  udrv.init(CSET_UART::configure(EUART::UART_0), UART0_IRQn); 
   static CMenuNavigation menu_navigation(udrv, ESET::getInstance(), rProcess);     // Пультовый терминал (навигация по меню).
-  static CMessageDisplay mes_display(udrv);                                             // Пультовый терминал (индикация сообщений).
-  static CTerminalManager terminal_manager(menu_navigation, mes_display);               // Управление режимами пультового терминал
-  menu_navigation.set_pTerminal(&terminal_manager);                                     // Создание циклической зависимости menu  
-  mes_display.set_pTerminal(&terminal_manager);                                         // Создание циклической зависимости mes
-  
-  return terminal_manager;                                                              // Возврат ссылки на менеджер терминпла
+  return menu_navigation;
 }
+
 extern "C" void UART0_IRQHandler(void) { CTerminalUartDriver::getInstance().irq_handler(); }  // Вызов обработчика UART-0

@@ -8,22 +8,18 @@ void main(void) {
   CSET_TIMER::initTimers();       // Инициализация таймеров.
   
   if (CFactory::load_settings() == StatusRet::ERROR) {  // Загрузка уставок (RAM <- EEPROM)    
-    SWarning::setMessage(EWarningId::DEFAULT_SET);      // При ошибке - собщение: "Загружены дефолтные уставки",    
-                                                        // и соответствующая светодиодная индикация 
+         // При ошибке - соответствующая светодиодная индикация                                                           
   } 
-  SWork::setMessage(EWorkId::MEASUREMENTS);
   
   static auto mb_slave = CFactory::create_MBslave();            // ModBus slave
   static auto process = CFactory::create_Process();             // Основной объект измерений
-  static auto& term_manager = CFactory::createTM(process);      // Управление объектами ПТ
-  
+  static auto& menu_navigation = CFactory::create_MN(process);  // Навигация по меню ПТ
+    
   CPROCESS::UserLedOff();  // Визуальный контроль окончания инициализации
  
-  while (true) {   
-    
+  while (true) {       
     process.step();             // Процесс измерений
     mb_slave.monitor();         // Мониторинг запросов по ModBus
-    term_manager.dispatch();    // Управление объектами (режимами) пультового терминал 
-
+    menu_navigation.get_key();  // Опрос клавиатуры ПТ
   }
 }

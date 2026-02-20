@@ -6,7 +6,7 @@
 #include "settings_eep.hpp"
 
 CMenuNavigation::CMenuNavigation(CTerminalUartDriver& uartDrv, CEEPSettings& rSet, CPROCESS& rProcess ) :  
-  uartDrv(uartDrv) {
+  uartDrv(uartDrv), rProcess(rProcess) { 
   // очистка экрана
   unsigned char clr_data[] = {"                \r\n"};
   uartDrv.sendBuffer(clr_data, sizeof(clr_data));
@@ -27,10 +27,12 @@ CMenuNavigation::CMenuNavigation(CTerminalUartDriver& uartDrv, CEEPSettings& rSe
   d.delta_timer_ms = 0;
   
   // Создание дерева узлов меню
-  MENU = MENU_Factory(rProcess, CEEPSettings::getInstance()); 
+  MENU = MENU_Factory(rProcess, CEEPSettings::getInstance());  
   currentList = &MENU;
-  //render_menu(); // первая отрисовка, если в менеджере задано старт терминала с режима меню
-    
+  render_menu();
+
+  handleEnter(); // Переход в Индикацию
+
 }
 
 // Конструктор узла
@@ -82,9 +84,6 @@ CMenuNavigation::MenuNode::Dual(const char* title1,
                     m);
 }
 
-void CMenuNavigation::set_pTerminal(CTerminalManager* pTerminal_manager){
-  this->pTerminal_manager = pTerminal_manager;
-}
 
 // "Опрос" клавиатуры
 void CMenuNavigation::get_key() {
@@ -306,7 +305,14 @@ void CMenuNavigation::Key_Handler(EKey_code key) {
     break;
   case EKey_code::FnEsc:
     edit_delta(0);
-    break;   
+    break;
+    
+  case EKey_code::START:
+    rProcess.clr_test_mode();
+    break;
+  case EKey_code::STOP:
+    rProcess.set_test_mode();
+    break;
     
   case EKey_code::NONE:
   default: {
@@ -513,7 +519,7 @@ void CMenuNavigation::handleEscape() {
 
     render_menu();
   } else {
-    pTerminal_manager->switchToMessages(); // переключаемся в меню
+    //pTerminal_manager->switchToMessages(); // переключаемся в меню
   }
 }
 

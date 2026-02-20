@@ -38,5 +38,6 @@ public:
   void conv_tnf(std::initializer_list<char>);
    // --- Чтение external_data[] указателей ---
   inline signed short* getEPointer(unsigned char channel) { return &data[channel]; }
+  inline signed short  getData(unsigned char channel)     { return data[channel]; }
   
 };

@@ -4,6 +4,8 @@ CPROCESS::CPROCESS(CADC& rAdc) : rAdc(rAdc) {
   prev_TC0_Phase = LPC_TIM0->TC; 
   phases = EPhases::PhaseN;
   mode = EMode::Work;
+  pause_counter = 0;
+  PN_On();
 }
 
 void CPROCESS::step() {
@@ -14,21 +16,13 @@ void CPROCESS::step() {
   
   switch (phases) {
   case EPhases::PhaseP:
-    if(dTrsPhase > WAIT_PERIOD) { 
-      prev_TC0_Phase = LPC_TIM0->TC;
-      phases = EPhases::MeasP;
-      ind_avr = 0;
-    }
+    if(dTrsPhase > MEAS_PAUSED) { wait(phases); } 
     break;   
   case EPhases::MeasP:   
     if(dTrsPhase > MEAS_PAUSED) { conv(phases); }    
     break; 
   case EPhases::PhaseN:         
-    if(dTrsPhase > WAIT_PERIOD) {
-      prev_TC0_Phase = LPC_TIM0->TC;
-      phases = EPhases::MeasN;
-      ind_avr = 0;
-    }    
+    if(dTrsPhase > MEAS_PAUSED) { wait(phases); } 
     break;   
   case EPhases::MeasN:  
     if(dTrsPhase > MEAS_PAUSED) { conv(phases); }    
@@ -37,16 +31,43 @@ void CPROCESS::step() {
   
 }
 
+void CPROCESS::wait(EPhases ph) {
+  switch (ph) {
+  case EPhases::PhaseP:   
+    conv_adc();
+    prev_TC0_Phase = LPC_TIM0->TC;
+    pause_counter++;
+    if(pause_counter > WAIT_NUMBER) {
+      pause_counter = 0;      
+      phases = EPhases::MeasP;
+    }
+    break; 
+  case EPhases::PhaseN:  
+    conv_adc();
+    prev_TC0_Phase = LPC_TIM0->TC;
+    pause_counter++;
+    if(pause_counter > WAIT_NUMBER) {
+      pause_counter = 0;
+      phases = EPhases::MeasN;
+    }
+    break; 
+  case EPhases::MeasP:
+  case EPhases::MeasN:
+    break;
+  }
+}
+
 void CPROCESS::conv(EPhases ph) {
   switch (ph) {
   case EPhases::MeasP:   
     conv_adc();
-    Ud_P[ind_avr]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
-    ILeak1_P[ind_avr] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)); 
-    ILeak2_P[ind_avr] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
+    Ud_P[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
+    ILeak1_P[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)); 
+    ILeak2_P[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
     prev_TC0_Phase = LPC_TIM0->TC;
-    ind_avr++;
-    if(ind_avr > AVR_NUMBER - 1) {
+    pause_counter++;
+    if(pause_counter > AVR_NUMBER - 1) {
+      pause_counter = 0;
       PN_On();
       calc_avr(ph);
       phases = EPhases::PhaseN;
@@ -54,12 +75,13 @@ void CPROCESS::conv(EPhases ph) {
     break; 
   case EPhases::MeasN:  
     conv_adc();
-    Ud_N[ind_avr]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
-    ILeak1_N[ind_avr] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)); 
-    ILeak2_N[ind_avr] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
+    Ud_N[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
+    ILeak1_N[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)); 
+    ILeak2_N[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
     prev_TC0_Phase = LPC_TIM0->TC;
-    ind_avr++;
-    if(ind_avr > AVR_NUMBER - 1) {
+    pause_counter++;
+    if(pause_counter > AVR_NUMBER - 1) {
+      pause_counter = 0;
       PN_Off();
       calc_avr(ph);
       phases = EPhases::PhaseP;

@@ -28,9 +28,9 @@ private:
   unsigned int prev_TC0_Phase;
   unsigned int dTrsPhase;
   
-  static constexpr unsigned int WAIT_PERIOD = 50000000;   // 5s
-  static constexpr unsigned int MEAS_PAUSED = 7000;       // 700us
-  static constexpr unsigned int AVR_NUMBER  = 0x200;
+  static constexpr unsigned int MEAS_PAUSED  = 7000;    // 700us
+  static constexpr unsigned int WAIT_NUMBER  = 7000;    // 0.7ms * 7000 = 4.9s
+  static constexpr unsigned int AVR_NUMBER   = 0x200;   // 0.7ms * 512 = 358ms
   
   static constexpr unsigned short B_ULED = 9;        
   static constexpr unsigned short B_PN = 13;        
@@ -45,7 +45,7 @@ private:
   signed short ILeak1_N[AVR_NUMBER]; 
   signed short ILeak2_N[AVR_NUMBER];
   
-  unsigned short ind_avr;
+  unsigned short pause_counter;
   
   enum class EPhases {
     PhaseP,
@@ -63,6 +63,7 @@ private:
   EMode mode;
   
   void conv_adc();
+  void wait(EPhases);
   void conv(EPhases);
   void calc_avr(EPhases);
   

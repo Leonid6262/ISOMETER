@@ -11,18 +11,18 @@ namespace G_CONST {
   constexpr unsigned short Nlang = 3;              // Количество языков
 }
 
-
 class CEEPSettings {
   
  private:
   // --- Структура уставок ---
   struct WorkSettings {
     unsigned short checkSum;                            // 0 Контрольная сумма
-    unsigned short Language;                            // 4 Номер языка
-    signed short shift_adc[G_CONST::NUMBER_CHANNELS];   // 5 Смещения АЦП
-    float incline_adc[G_CONST::NUMBER_CHANNELS];        // 6 Наклон
-    unsigned short Rmin1;                               // 7 Rmin1
-    unsigned short Rmin2;                               // 8 Rmin2
+    unsigned short Language;                            // 1 Номер языка
+    signed short shift_adc[G_CONST::NUMBER_CHANNELS];   // 2 Смещения АЦП
+    float incline_adc[G_CONST::NUMBER_CHANNELS];        // 3 Наклон
+    unsigned short Rmin1;                               // 4 Rmin1
+    unsigned short Rmin2;                               // 5 Rmin2
+    unsigned short Radd;                                // 6 Radd
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -32,7 +32,8 @@ class CEEPSettings {
     .shift_adc =   {   0, 2047, 2047,    0},
     .incline_adc = {0.0f, 0.0f, 0.0f, 0.0f},
     .Rmin1 = 10,
-    .Rmin2 = 40
+    .Rmin2 = 40,
+    .Radd = 0
   };
     
   // Текущий набор уставок, хранящийся в RAM ---

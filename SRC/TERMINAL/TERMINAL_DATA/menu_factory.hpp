@@ -12,7 +12,7 @@ namespace menu_alias {
 // таблица переводов (масштабируемая)
 static const struct {
     const char* INDICATION[G_CONST::Nlang]     = {"ИНДИКАЦИЯ",       "INDICATION",       "IНДИКАЦIЯ"};
-    const char* LIMITS[G_CONST::Nlang]         = {"ПРЕДЕЛЫ",         "LIMITS",           "МЕЖІ"};
+    const char* PARAMS[G_CONST::Nlang]         = {"ПАРАМЕТРЫ",       "PARAMETERS",       "ПАРАМЕТРИ"};
     const char* SETTINGS[G_CONST::Nlang]       = {"УСТАВКИ",         "SETTINGS",         "УСТАНОВКИ"};
     const char* ADC_SHIFT[G_CONST::Nlang]      = {"СМЕЩЕНИЯ АЦП",    "ADC SHIFT",        "ЗСУВ АЦП"};
     const char* LANGUAGE[G_CONST::Nlang]       = {"ЯЗЫК",            "LANGUAGE",         "МОВА"};
@@ -44,9 +44,10 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
   o(Mn.INDICATION[l],{
       o("Rinsul", {}, rProcess.getPointerR(), "kOhm", 1, p0, vt::vfloat, nm::In1V),}),  
   o(Mn.SETTINGS[l],{
-      o(Mn.LIMITS[l],{
+      o(Mn.PARAMS[l],{
           o("Rmin1",   {}, &set.Rmin1, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500),
-          o("Rmin2",   {}, &set.Rmin2, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500),}),
+          o("Rmin2",   {}, &set.Rmin2, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500),
+          o("Radd",    {}, &set.Radd,  "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 1000),}),
       o(Mn.ADC_SHIFT[l],{
           o::Dual("Ud",    rProcess.rAdc.getEPointer(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)),    "d",1,p0,vt::sshort,
                   "shift", &set.shift_adc[static_cast<unsigned char>(CADC::EADC_NameCh::Ud)],               "d",1,p0,vt::sshort,nm::IE2V,-23,2070),

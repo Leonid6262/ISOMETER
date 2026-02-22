@@ -15,9 +15,9 @@ private:
   cN_CH - данные для запуска конвертации (формат - см. док.) 
   000m.0ccc.c000.0000 m - Manual mode, cccc - N channel (0...15)
   */
-  static constexpr unsigned short cN_CH[G_CONST::NUMBER_CHANNELS] = { 0x1000, 0x1080, 0x1100, 0x1180 };
+  static constexpr unsigned short cN_CH[G_CONST::N_CHANNELS] = { 0x1000, 0x1080, 0x1100, 0x1180 };
   
-  signed short data[G_CONST::NUMBER_CHANNELS] = {};  // Обработанные данные полученные АЦП
+  signed short data[G_CONST::N_CHANNELS] = {};  // Обработанные данные полученные АЦП
   // --- Обработка и запись данных внешнего АЦП ---
   inline void setData(unsigned char channel, signed short raw_adc_data) {
     data[channel] = (raw_adc_data - rSet.getSettings().shift_adc[channel]);

@@ -19,7 +19,7 @@ CMBSLAVE CFactory::create_MBslave() {
 // Основной класс
 CPROCESS CFactory::create_Process() {
   static CADC adc(CSET_SPI::config(ESPI::SPI_1), ESET::getInstance()); 
-  return CPROCESS(adc);
+  return CPROCESS(adc, ESET::getInstance());
 }
 
 // Пультовый терминал

@@ -8,8 +8,9 @@ class CPROCESS {
   
   
 public:  
-  CPROCESS(CADC&);
+  CPROCESS(CADC&, CEEPSettings&);
   CADC& rAdc;
+  CEEPSettings& rSet;
   
   inline float* getPointerR() { return &R;  }
   
@@ -28,9 +29,16 @@ private:
   unsigned int prev_TC0_Phase;
   unsigned int dTrsPhase;
   
-  static constexpr unsigned int MEAS_PAUSED  = 7000;    // 700us
-  static constexpr unsigned int WAIT_NUMBER  = 7000;    // 0.7ms * 7000 = 4.9s
-  static constexpr unsigned int AVR_NUMBER   = 0x200;   // 0.7ms * 512 = 358ms
+  static constexpr unsigned short MEAS_PAUSED  = 7000;    // 700us - пауза между выборками
+  static constexpr unsigned short WAIT_NUMBER  = 7000;    // Время заряда - 0.7ms * 7000 = 4.9s
+  static constexpr unsigned short AVR_NUMBER   = 0x200;   // Количество выборок. (tmeas+0.7ms) * 512 примерно 400ms
+  static constexpr unsigned short N_AVR        = 500;     // Кадр усреднения
+  static constexpr unsigned short sh_avr       = 5;       // Сдвиг кадра
+  
+  static constexpr float Umeas  = 20000.0f;             // U измерений [mV]
+  static constexpr float RT  = 39.0f + 3.9f + 3.9f;     // RT [kOhm]
+  static constexpr float Rs1 = 0.1f;                    // R шунта 1 [kOhm]
+  static constexpr float Rs2 = 0.1f;                    // R шунта 2 [kOhm]
   
   static constexpr unsigned short B_ULED = 9;        
   static constexpr unsigned short B_PN = 13;        

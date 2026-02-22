@@ -51,7 +51,8 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
       o(Mn.PARAMS[l],{
           o("Rmin1",   {}, &set.Rmin1, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500),
           o("Rmin2",   {}, &set.Rmin2, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500),
-          o("Radd",    {}, &set.Radd,  "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 1000),}),
+          o("RLadd",   {}, &set.RTadd, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 1000),
+          o("RUadd",   {}, &set.RUadd, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 1000),}),
       o(Mn.ADC_SHIFT[l],{
           o::Dual("Ud",    rProcess.rAdc.getEPointer(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)),    "d",1,p0,vt::sshort,
                   "shift", &set.shift_adc[static_cast<unsigned char>(CADC::EADC_NameCh::Ud)],               "d",1,p0,vt::sshort,nm::IE2V,-23,2070),

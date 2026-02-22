@@ -35,7 +35,7 @@ void CADC::conv_tnf(std::initializer_list<char> list) {
       if (SSP->SR & SPI_Config::SR_RNE) {
         raw_adc_data = SSP->DR;
         Nch = (raw_adc_data & 0xF000) >> 12;
-        if (Nch < G_CONST::NUMBER_CHANNELS) {
+        if (Nch < G_CONST::N_CHANNELS) {
           setData(Nch, (raw_adc_data & 0x0FFF));
         }
         index_rd++;

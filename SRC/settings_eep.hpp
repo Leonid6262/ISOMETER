@@ -7,8 +7,8 @@
 
 // Пространство имён глобальных констант
 namespace G_CONST {
-  constexpr unsigned short NUMBER_CHANNELS = 4;    // Количество каналов внешнего АЦП
-  constexpr unsigned short Nlang = 3;              // Количество языков
+  constexpr unsigned short N_CHANNELS = 4;    // Количество каналов внешнего АЦП
+  constexpr unsigned short Nlang = 3;         // Количество языков
 }
 
 class CEEPSettings {
@@ -18,24 +18,28 @@ class CEEPSettings {
   struct WorkSettings {
     unsigned short checkSum;                            // 0 Контрольная сумма
     unsigned short Language;                            // 1 Номер языка
-    signed short shift_adc[G_CONST::NUMBER_CHANNELS];   // 2 Смещения АЦП
+    signed short shift_adc[G_CONST::N_CHANNELS];        // 2 Смещения АЦП
     unsigned short Rmin1;                               // 3 Rmin1
     unsigned short Rmin2;                               // 4 Rmin2
-    unsigned short Radd;                                // 5 Radd
-    float k1;                                           // 6 k1
-    float k2;                                           // 7 k2    
+    unsigned short RTadd;                               // 5 RLadd
+    unsigned short RUadd;                               // 6 RUadd
+    float k1Ls;                                         // 7 k1Ls
+    float k2Ls;                                         // 8 k2Ls  
+    float kUds;                                         // 9 kUds
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
   static const inline WorkSettings defaultSettings {
     .checkSum = 0x0000,
     .Language = 1,
-    .shift_adc =   {   0, 2047, 2047,    0},
+    .shift_adc =   { 0, 2047, 2047, 0 },
     .Rmin1 = 10,
     .Rmin2 = 40,
-    .Radd = 0,
-    .k1 = 1.0f,
-    .k2 = 1.0f
+    .RTadd = 0,
+    .RUadd = 0,
+    .k1Ls = 1.0f,
+    .k2Ls = 1.429f,
+    .kUds = 1.0f  
   };
     
   // Текущий набор уставок, хранящийся в RAM ---

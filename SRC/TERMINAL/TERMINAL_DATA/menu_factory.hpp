@@ -12,10 +12,14 @@ namespace menu_alias {
 // таблица переводов (масштабируемая)
 static const struct {
     const char* INDICATION[G_CONST::Nlang]     = {"ИНДИКАЦИЯ",       "INDICATION",       "IНДИКАЦIЯ"};
-    const char* PARAMS[G_CONST::Nlang]         = {"ПАРАМЕТРЫ",       "PARAMETERS",       "ПАРАМЕТРИ"};
     const char* SETTINGS[G_CONST::Nlang]       = {"УСТАВКИ",         "SETTINGS",         "УСТАНОВКИ"};
+    const char* LANGUAGE[G_CONST::Nlang]       = {"ЯЗЫК",            "LANGUAGE",         "МОВА"};   
+    const char* PARAMS[G_CONST::Nlang]         = {"ПАРАМЕТРЫ",       "PARAMETERS",       "ПАРАМЕТРИ"};
     const char* ADC_SHIFT[G_CONST::Nlang]      = {"СМЕЩЕНИЯ АЦП",    "ADC SHIFT",        "ЗСУВ АЦП"};
-    const char* LANGUAGE[G_CONST::Nlang]       = {"ЯЗЫК",            "LANGUAGE",         "МОВА"};
+    const char* K_SENS[G_CONST::Nlang]         = {"k ДАТЧИКОВ",      "k SENSORS",        "k ДАВАЧИВ"};    
+    const char* K_1[G_CONST::Nlang]            = {"K1",              "K1",               "K1"};
+    const char* K_2[G_CONST::Nlang]            = {"K2",              "K2",               "K2"};    
+
 } Mn;
 
 

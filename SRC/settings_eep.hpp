@@ -19,10 +19,11 @@ class CEEPSettings {
     unsigned short checkSum;                            // 0 Контрольная сумма
     unsigned short Language;                            // 1 Номер языка
     signed short shift_adc[G_CONST::NUMBER_CHANNELS];   // 2 Смещения АЦП
-    float incline_adc[G_CONST::NUMBER_CHANNELS];        // 3 Наклон
-    unsigned short Rmin1;                               // 4 Rmin1
-    unsigned short Rmin2;                               // 5 Rmin2
-    unsigned short Radd;                                // 6 Radd
+    unsigned short Rmin1;                               // 3 Rmin1
+    unsigned short Rmin2;                               // 4 Rmin2
+    unsigned short Radd;                                // 5 Radd
+    float k1;                                           // 6 k1
+    float k2;                                           // 7 k2    
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -30,10 +31,11 @@ class CEEPSettings {
     .checkSum = 0x0000,
     .Language = 1,
     .shift_adc =   {   0, 2047, 2047,    0},
-    .incline_adc = {0.0f, 0.0f, 0.0f, 0.0f},
     .Rmin1 = 10,
     .Rmin2 = 40,
-    .Radd = 0
+    .Radd = 0,
+    .k1 = 1.0f,
+    .k2 = 1.0f
   };
     
   // Текущий набор уставок, хранящийся в RAM ---

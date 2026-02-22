@@ -20,8 +20,7 @@ private:
   signed short data[G_CONST::NUMBER_CHANNELS] = {};  // Обработанные данные полученные АЦП
   // --- Обработка и запись данных внешнего АЦП ---
   inline void setData(unsigned char channel, signed short raw_adc_data) {
-    data[channel] = (raw_adc_data - rSet.getSettings().shift_adc[channel]) *
-                    (1.0f + rSet.getSettings().incline_adc[channel]);
+    data[channel] = (raw_adc_data - rSet.getSettings().shift_adc[channel]);
   }
   
 public:

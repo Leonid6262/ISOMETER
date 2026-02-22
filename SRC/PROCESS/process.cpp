@@ -122,6 +122,7 @@ void CPROCESS::calc_avr(EPhases ph) {
   case EPhases::PhaseN:
     break;
   }
+  Ud = rSet.getSettings().kUds * (UdP_avr + UdN_avr) / 2.0f;
   R = ((rSet.getSettings().k2Ls * 2.0f * Umeas) / (ILeak2P_avr - ILeak2N_avr)) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs2; 
   //R = ((rSet.getSettings().k1Ls * 2.0f * Umeas) / (ILeak1P_avr - ILeak1N_avr)) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs1;  
   //R = (20000.0f/(0.7f * (ILeak2P_avr - ILeak2N_avr) / 2.0f)) - 23.3f;

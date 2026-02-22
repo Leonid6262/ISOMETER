@@ -12,7 +12,8 @@ public:
   CADC& rAdc;
   CEEPSettings& rSet;
   
-  inline float* getPointerR() { return &R;  }
+  inline float* getPointerR()  { return &R;  }
+  inline float* getPointerUd() { return &Ud;  }  
   
   static inline void UserLedOn() { LPC_GPIO0->CLR  = (1UL << B_ULED); } 
   static inline void UserLedOff() { LPC_GPIO0->SET = (1UL << B_ULED); }
@@ -77,6 +78,7 @@ private:
   
   float UdP_avr;
   float UdN_avr;
+  float Ud;
   float ILeak1P_avr;
   float ILeak1N_avr;
   float ILeak2P_avr;

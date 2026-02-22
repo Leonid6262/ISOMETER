@@ -15,11 +15,7 @@ static const struct {
     const char* SETTINGS[G_CONST::Nlang]       = {"УСТАВКИ",         "SETTINGS",         "УСТАНОВКИ"};
     const char* LANGUAGE[G_CONST::Nlang]       = {"ЯЗЫК",            "LANGUAGE",         "МОВА"};   
     const char* PARAMS[G_CONST::Nlang]         = {"ПАРАМЕТРЫ",       "PARAMETERS",       "ПАРАМЕТРИ"};
-    const char* ADC_SHIFT[G_CONST::Nlang]      = {"СМЕЩЕНИЯ АЦП",    "ADC SHIFT",        "ЗСУВ АЦП"};
-    const char* K_SENS[G_CONST::Nlang]         = {"k ДАТЧИКОВ",      "k SENSORS",        "k ДАВАЧИВ"};    
-    const char* K_1[G_CONST::Nlang]            = {"K1",              "K1",               "K1"};
-    const char* K_2[G_CONST::Nlang]            = {"K2",              "K2",               "K2"};    
-
+    const char* SETTING_UP[G_CONST::Nlang]     = {"НАСТРОЙКА",       "SETTING UP",       "НАЛАШТУВАННЯ"};
 } Mn;
 
 
@@ -53,15 +49,21 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
           o("Rmin2",   {}, &set.Rmin2, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500),
           o("RLadd",   {}, &set.RTadd, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 1000),
           o("RUadd",   {}, &set.RUadd, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 1000),}),
-      o(Mn.ADC_SHIFT[l],{
+      o(Mn.SETTING_UP[l],{
           o::Dual("Ud",    rProcess.rAdc.getEPointer(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)),    "d",1,p0,vt::sshort,
                   "shift", &set.shift_adc[static_cast<unsigned char>(CADC::EADC_NameCh::Ud)],               "d",1,p0,vt::sshort,nm::IE2V,-23,2070),
           o::Dual("ILeak1",rProcess.rAdc.getEPointer(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)),"d",1,p0,vt::sshort,
                   "shift", &set.shift_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)],           "d",1,p0,vt::sshort,nm::IE2V,-23,2070),
           o::Dual("ILeak2",rProcess.rAdc.getEPointer(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)),"d",1,p0,vt::sshort,
-                  "shift", &set.shift_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)],           "d",1,p0,vt::sshort,nm::IE2V,-23,2070),}),      
+                  "shift", &set.shift_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)],           "d",1,p0,vt::sshort,nm::IE2V,-23,2070),
+          o::Dual("Rk1",  rProcess.getPointerR(),  "kOhm",1,p1,vt::vfloat,
+                  "k1Ls", &set.k1Ls,               "",    1,p3,vt::vfloat,nm::IE2V, 0.1f, 100),
+          o::Dual("Rk2",  rProcess.getPointerR(),  "kOhm",1,p1,vt::vfloat,
+                  "k2Ls", &set.k2Ls,               "",    1,p3,vt::vfloat,nm::IE2V, 0.1f, 100), 
+          o::Dual("Ud",   rProcess.getPointerUd(), "V",   1,p1,vt::vfloat,
+                  "kUds", &set.kUds,               "",    1,p3,vt::vfloat,nm::IE2V, 0.1f, 100),}),      
       o(Mn.LANGUAGE[l],{
-        o("Language:", {}, &set.Language,"", 1, p0, vt::ushort, nm::Ed1V, 1, G_CONST::Nlang),}),})};
+          o("Language:", {}, &set.Language,"", 1, p0, vt::ushort, nm::Ed1V, 1, G_CONST::Nlang),}),})};
   
   return MENU;
 }

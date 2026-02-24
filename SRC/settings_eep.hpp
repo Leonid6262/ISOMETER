@@ -22,10 +22,8 @@ class CEEPSettings {
     unsigned short Rmin1;                               // 3 Rmin1
     unsigned short Rmin2;                               // 4 Rmin2
     unsigned short RTadd;                               // 5 RLadd
-    unsigned short RUadd;                               // 6 RUadd
-    float k1Ls;                                         // 7 k1Ls
-    float k2Ls;                                         // 8 k2Ls  
-    float kUds;                                         // 9 kUds
+    float k1Ls;                                         // 6 k1Ls
+    float k2Ls;                                         // 7 k2Ls  
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -36,10 +34,8 @@ class CEEPSettings {
     .Rmin1 = 10,
     .Rmin2 = 40,
     .RTadd = 0,
-    .RUadd = 0,
     .k1Ls = 1.0f,
-    .k2Ls = 1.429f,
-    .kUds = 1.0f  
+    .k2Ls = 1.429f, 
   };
     
   // Текущий набор уставок, хранящийся в RAM ---

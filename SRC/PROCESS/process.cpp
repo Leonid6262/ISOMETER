@@ -2,7 +2,7 @@
 
 CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet) : rAdc(rAdc), rSet(rSet) { 
   prev_TC0_Phase = LPC_TIM0->TC; 
-  phases = EPhases::PhaseN;
+  phases = EPhases::PhaseP;
   mode = EMode::Work;
   pause_counter = 0;
   PN_On();
@@ -10,7 +10,10 @@ CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet) : rAdc(rAdc), rSet(rSet) {
 
 void CPROCESS::step() {
   
-  if(mode == EMode::Test) { conv_adc(); return; }
+  if(mode == EMode::Test) { 
+    conv_adc(); 
+    return; 
+  }
   
   dTrsPhase = LPC_TIM0->TC - prev_TC0_Phase;
   
@@ -68,7 +71,7 @@ void CPROCESS::conv(EPhases ph) {
     pause_counter++;
     if(pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
-      PN_On();
+      PN_Off();
       calc_avr(ph);
       phases = EPhases::PhaseN;
     }
@@ -82,7 +85,7 @@ void CPROCESS::conv(EPhases ph) {
     pause_counter++;
     if(pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
-      PN_Off();
+      PN_On();
       calc_avr(ph);
       phases = EPhases::PhaseP;
     }
@@ -122,10 +125,19 @@ void CPROCESS::calc_avr(EPhases ph) {
   case EPhases::PhaseN:
     break;
   }
-  Ud = rSet.getSettings().kUds * (UdP_avr + UdN_avr) / 2.0f;
-  R = ((rSet.getSettings().k2Ls * 2.0f * Umeas) / (ILeak2P_avr - ILeak2N_avr)) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs2; 
-  //R = ((rSet.getSettings().k1Ls * 2.0f * Umeas) / (ILeak1P_avr - ILeak1N_avr)) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs1;  
-  //R = (20000.0f/(0.7f * (ILeak2P_avr - ILeak2N_avr) / 2.0f)) - 23.3f;
+  
+  float dIL = ILeak2N_avr - ILeak2P_avr;
+  float pIL = ILeak2N_avr + ILeak2P_avr;
+  float dUd = UdN_avr - UdP_avr;
+  float pUd = UdN_avr + UdP_avr;
+  
+  float Ucor = (pIL * dUd) / (pIL * dUd - dIL * pUd);
+//  Ucor = 0;
+  
+  float r = ((rSet.getSettings().k2Ls * (2.0f * Umeas * (1 - Ucor))) / dIL) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs2;
+  if(r > 999) R = 999;
+  else R = r;
+  
 }
 
 void CPROCESS::conv_adc() {
@@ -143,6 +155,7 @@ void CPROCESS::set_test_mode() {
 
 void CPROCESS::clr_test_mode() { 
   prev_TC0_Phase = LPC_TIM0->TC; 
-  phases = EPhases::PhaseN; 
+  phases = EPhases::PhaseP;
+  PN_On();
   mode = EMode::Work; 
 }

@@ -136,11 +136,12 @@ void CPROCESS::calc_avr(EPhases ph) {
   float pUd = UdN_avr + UdP_avr;
   
   float Ucor = (pIL * dUd) / (pIL * dUd - dIL * pUd);
-//  Ucor = 0;
-  
+
   float r = ((rSet.getSettings().k2Ls * (2.0f * Umeas * (1 - Ucor))) / dIL) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs2;
   if(r > 999) R = 999;
   else R = r;
+  unsigned short gis = gis_const;
+  if(R > range) gis = static_cast<unsigned short>(((gis_percent * R) / 100.0f) + 0.5f);
   
 }
 

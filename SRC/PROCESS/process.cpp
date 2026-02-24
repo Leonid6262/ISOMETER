@@ -69,11 +69,13 @@ void CPROCESS::conv(EPhases ph) {
     ILeak2_P[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
     prev_TC0_Phase = LPC_TIM0->TC;
     pause_counter++;
+    MeasOn();
     if(pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
       PN_Off();
       calc_avr(ph);
       phases = EPhases::PhaseN;
+      MeasOff();
     }
     break; 
   case EPhases::MeasN:  
@@ -83,11 +85,13 @@ void CPROCESS::conv(EPhases ph) {
     ILeak2_N[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
     prev_TC0_Phase = LPC_TIM0->TC;
     pause_counter++;
+    MeasOn();
     if(pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
       PN_On();
       calc_avr(ph);
       phases = EPhases::PhaseP;
+      MeasOff();
     }
     break; 
   case EPhases::PhaseP:

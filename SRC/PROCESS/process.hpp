@@ -14,12 +14,15 @@ public:
   
   inline float* getPointerR()  { return &R;  }
   
-  static inline void UserLedOn() { LPC_GPIO0->CLR  = (1UL << B_ULED); } 
-  static inline void UserLedOff() { LPC_GPIO0->SET = (1UL << B_ULED); }
-  static inline void UserLedToggle() {
-    if (LPC_GPIO0->PIN & (1UL << B_ULED)) { LPC_GPIO0->CLR = (1UL << B_ULED); } 
-    else { LPC_GPIO0->SET = (1UL << B_ULED); }
-  } 
+  static inline void MeasOn()     { LPC_GPIO2->SET  = (1UL << 27); }
+  static inline void MeasOff()    { LPC_GPIO2->CLR  = (1UL << 27); }
+  static inline void Alarm1On()   { LPC_GPIO2->SET  = (1UL << 29); }
+  static inline void Alarm1Off()  { LPC_GPIO2->CLR  = (1UL << 29); }
+  static inline void Alarm2On()   { LPC_GPIO2->SET  = (1UL << 31); }
+  static inline void Alarm2Off()  { LPC_GPIO2->CLR  = (1UL << 31); }
+  
+  static inline void UserLedOn()  { LPC_GPIO0->CLR  = (1UL << 9);  } 
+  static inline void UserLedOff() { LPC_GPIO0->SET  = (1UL << 9);  }
   
   void set_test_mode();
   void clr_test_mode();
@@ -39,8 +42,7 @@ private:
   static constexpr float RT  = 39.0f + 3.9f + 3.9f;     // RT [kOhm]
   static constexpr float Rs1 = 0.1f;                    // R шунта 1 [kOhm]
   static constexpr float Rs2 = 0.1f;                    // R шунта 2 [kOhm]
-  
-  static constexpr unsigned short B_ULED = 9;        
+         
   static constexpr unsigned short B_PN = 13;        
   
   static inline void PN_On()  { LPC_GPIO1->CLR = (1UL << B_PN); }     

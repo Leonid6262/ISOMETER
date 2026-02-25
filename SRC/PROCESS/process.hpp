@@ -3,6 +3,7 @@
 #include "settings_eep.hpp"
 #include "controllerDMA.hpp"
 #include "adc.hpp"
+#include "mb_slave.hpp" 
 
 class CPROCESS {
   
@@ -21,6 +22,28 @@ public:
    
   static inline void UserLedOn()  { LPC_GPIO0->CLR  = (1UL << 9); } 
   static inline void UserLedOff() { LPC_GPIO0->SET  = (1UL << 9); }
+  
+  // --- Статус ---
+  union {
+    unsigned short all;
+    struct {
+      unsigned char sWork      : 1; // Работа
+      unsigned char sTest      : 1; // Настройка
+      unsigned char sLessMin   : 1; // R менише Rmin
+      unsigned char sMoreMax   : 1; // R больше Rmax
+      unsigned char sAlarm1    : 1; // Alarm1
+      unsigned char sAlarm2    : 1; // Alarm2
+    };
+  } UStatus;
+  
+  // Установка/сброс битов статуса
+  void bsWork(State state)    { UStatus.sWork    = static_cast<unsigned char>(state); }
+  void bsTest(State state)    { UStatus.sTest    = static_cast<unsigned char>(state); }
+  void bsLessMin(State state) { UStatus.sLessMin = static_cast<unsigned char>(state); }
+  void bsMoreMax(State state) { UStatus.sMoreMax = static_cast<unsigned char>(state); }
+  void bsAlarm1(State state)  { UStatus.sAlarm1  = static_cast<unsigned char>(state); }
+  void bsAlarm2(State state)  { UStatus.sAlarm2  = static_cast<unsigned char>(state); }
+  void clr_bs()               { UStatus.all  = 0; }
   
   void set_test_mode();
   void clr_test_mode();
@@ -57,7 +80,6 @@ private:
   static constexpr unsigned short gis_const    = 2;       // 2kOhm - гитерезис 1-го диапазона 
   static constexpr unsigned short range        = 50;      // 50kOhm - 1-й диапазон от 0 до range
   static constexpr unsigned short gis_percent  = 15;      // 15% - гитерезис 2-го диапазона (от range_1 и выше) 
-  static constexpr unsigned short Rmax         = 1000;    // Максимально измеряемое сопротивление [kOhm] 
   
   static constexpr float Umeas  = 20000.0f;               // U измерений [mV]
   static constexpr float RT     = 39.0f + 3.9f + 3.9f;    // RT [kOhm]
@@ -87,13 +109,8 @@ private:
     MeasN
   };
   
-  enum class EMode {
-    Work,
-    Test
-  };
-  
   EPhases phases;
-  EMode mode;
+
   
   void conv_adc();
   void wait(EPhases);

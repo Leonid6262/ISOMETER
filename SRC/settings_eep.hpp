@@ -19,11 +19,13 @@ class CEEPSettings {
     unsigned short checkSum;                            // 0 Контрольная сумма
     unsigned short Language;                            // 1 Номер языка
     signed short shift_adc[G_CONST::N_CHANNELS];        // 2 Смещения АЦП
-    unsigned short Rmin1;                               // 3 Rmin1
-    unsigned short Rmin2;                               // 4 Rmin2
+    unsigned short RAlarm1;                             // 3 RAlarm1
+    unsigned short RAlarm2;                             // 4 RAlarm2
     unsigned short RTadd;                               // 5 RLadd
     float k1Ls;                                         // 6 k1Ls
-    float k2Ls;                                         // 7 k2Ls  
+    float k2Ls;                                         // 7 k2Ls
+    unsigned short Rmax;                                // 8 Максимально измеряемое сопротивление [kOhm]
+    unsigned short Rmin;                                // 9 Минимально измеряемое сопротивление [kOhm]    
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -31,11 +33,13 @@ class CEEPSettings {
     .checkSum = 0x0000,
     .Language = 1,
     .shift_adc =   { 0, 2047, 2047, 0 },
-    .Rmin1 = 40,
-    .Rmin2 = 10,
+    .RAlarm1 = 40,
+    .RAlarm2 = 20,
     .RTadd = 0,
     .k1Ls = 1.0f,
-    .k2Ls = 1.429f, 
+    .k2Ls = 1.429f,
+    .Rmax = 1000,
+    .Rmin = 10,
   };
     
   // Текущий набор уставок, хранящийся в RAM ---

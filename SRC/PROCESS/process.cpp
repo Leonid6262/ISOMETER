@@ -3,11 +3,12 @@
 CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet) : rAdc(rAdc), rSet(rSet) { 
   prev_TC0_Phase = LPC_TIM0->TC; 
   phases = EPhases::PhaseP;
-  mode = EMode::Work;
   wait_number = WAIT_NUMBER;
   pause_counter = 0;
   RelReadyOn();
   PN_On();
+  clr_bs();
+  bsWork(State::ON);
 }
 
 void CPROCESS::step() {
@@ -29,6 +30,13 @@ void CPROCESS::step() {
     break;
   }
   
+  CMBSLAVE::tx_dma_buffer[0] = UStatus.all;
+  CMBSLAVE::tx_dma_buffer[1] = static_cast<unsigned short>(R + 0.5f);
+  CMBSLAVE::tx_dma_buffer[2] = rSet.getSettings().RAlarm1;
+  CMBSLAVE::tx_dma_buffer[3] = rSet.getSettings().RAlarm2;
+  CMBSLAVE::tx_dma_buffer[4] = rSet.getSettings().Rmin;
+  CMBSLAVE::tx_dma_buffer[5] = rSet.getSettings().Rmax;
+  
 }
 
 void CPROCESS::wait(EPhases ph) {
@@ -37,7 +45,7 @@ void CPROCESS::wait(EPhases ph) {
     conv_adc();
     prev_TC0_Phase = LPC_TIM0->TC;
     pause_counter++;
-    if(R == Rmax) {
+    if(R == rSet.getSettings().Rmax) {
       if(pause_counter > wait_number / 2) {
         LampMeasOff();
       } else {
@@ -53,7 +61,7 @@ void CPROCESS::wait(EPhases ph) {
     conv_adc();
     prev_TC0_Phase = LPC_TIM0->TC;
     pause_counter++;
-    if(R == Rmax) {
+    if(R == rSet.getSettings().Rmax) {
       if(pause_counter > wait_number / 2) {
         LampMeasOff();
       } else {
@@ -81,14 +89,14 @@ void CPROCESS::conv(EPhases ph) {
     prev_TC0_Phase = LPC_TIM0->TC;
     pause_counter++;
     LampMeasOn();
-    if(mode == EMode::Test) { LampAlarm1On(); LampAlarm2On(); }
+    if(UStatus.sTest) { LampAlarm1On(); LampAlarm2On(); }
     if(pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
       PN_Off();
       calc_avr(ph);
       phases = EPhases::PhaseN;
       LampMeasOff();
-      if(mode == EMode::Test) { LampAlarm1Off(); LampAlarm2Off(); }
+      if(UStatus.sTest) { LampAlarm1Off(); LampAlarm2Off(); }
     }
     break; 
   case EPhases::MeasN:  
@@ -99,14 +107,14 @@ void CPROCESS::conv(EPhases ph) {
     prev_TC0_Phase = LPC_TIM0->TC;
     pause_counter++;
     LampMeasOn();
-    if(mode == EMode::Test) { LampAlarm1On(); LampAlarm2On(); }
+    if(UStatus.sTest) { LampAlarm1On(); LampAlarm2On(); }
     if(pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
-      if(mode == EMode::Work) { PN_On(); }      
+      if(UStatus.sWork) { PN_On(); }      
       calc_avr(ph);
       phases = EPhases::PhaseP;
       LampMeasOff();
-      if(mode == EMode::Test) { LampAlarm1Off(); LampAlarm2Off(); }
+      if(UStatus.sTest) { LampAlarm1Off(); LampAlarm2Off(); }
     }
     break; 
   case EPhases::PhaseP:
@@ -129,7 +137,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     UdP_avr = ud / N_AVR;
     ILeak1P_avr = ileak1 / N_AVR;
     ILeak2P_avr = ileak2 / N_AVR;
-    if(mode == EMode::Test) { 
+    if(UStatus.sTest) { 
       test_Ud_avr = UdP_avr;
       test_ILeak1_avr = ILeak1P_avr;
       test_ILeak2_avr = ILeak2P_avr;
@@ -149,7 +157,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     UdN_avr = ud / N_AVR;
     ILeak1N_avr = ileak1 / N_AVR;
     ILeak2N_avr = ileak2 / N_AVR;
-    if(mode == EMode::Test) { 
+    if(UStatus.sTest) { 
       test_Ud_avr = UdN_avr;
       test_ILeak1_avr = ILeak1N_avr;
       test_ILeak2_avr = ILeak2N_avr;
@@ -172,29 +180,44 @@ void CPROCESS::calc_avr(EPhases ph) {
   
   float Ucor = (pIL * dUd) / (pIL * dUd - dIL * pUd);
 
-  if(mode == EMode::Work) {
+  if(UStatus.sWork) {
     float r = ((rSet.getSettings().k2Ls * (2.0f * Umeas * (1 - Ucor))) / dIL) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs2;
-    if(r > Rmax) { R = Rmax; } else { R = r; }
+    
+    if(r > rSet.getSettings().Rmax) { 
+      R = rSet.getSettings().Rmax;
+      bsMoreMax(State::ON);
+    } else if(r < rSet.getSettings().Rmin) { 
+      R = rSet.getSettings().Rmin;
+      bsLessMin(State::ON);
+    } else { 
+      R = r; 
+      bsMoreMax(State::OFF);
+      bsLessMin(State::OFF);
+    }
     
     unsigned short gis = gis_const;
     if(R > range) gis = static_cast<unsigned short>(((gis_percent * R) / 100.0f) + 0.5f);
     
-    if( R < rSet.getSettings().Rmin1) {
+    if( R < rSet.getSettings().RAlarm1) {
       LampAlarm1On();
       RelAlarm1On();
-    } else if(R > (rSet.getSettings().Rmin1 + gis)) {
+      bsAlarm1(State::ON);      
+    } else if(R > (rSet.getSettings().RAlarm1 + gis)) {
       LampAlarm1Off();
       RelAlarm1Off();
+      bsAlarm1(State::OFF);
     }
-    if( R < rSet.getSettings().Rmin2) {
+    if( R < rSet.getSettings().RAlarm2) {
       LampAlarm2On();
       RelAlarm2On();
-    } else if(R > (rSet.getSettings().Rmin2 + gis)) {
+      bsAlarm2(State::ON);
+    } else if(R > (rSet.getSettings().RAlarm2 + gis)) {
       LampAlarm2Off();
       RelAlarm2Off();
+      bsAlarm2(State::OFF);
     }
     
-  } else if(mode == EMode::Test) { 
+  } else if(UStatus.sTest) { 
     R = 0;
     if(testRelAlarm1 == State::ON) {
       RelAlarm1On();
@@ -226,7 +249,8 @@ void CPROCESS::set_test_mode() {
   RelAlarm2Off();
   RelReadyOff();
   wait_number = TEST_NUMBER;
-  mode = EMode::Test; 
+  clr_bs();
+  bsTest(State::ON); 
 }
 
 void CPROCESS::clr_test_mode() { 
@@ -234,7 +258,8 @@ void CPROCESS::clr_test_mode() {
   phases = EPhases::PhaseP;
   PN_On();
   wait_number = WAIT_NUMBER;
-  mode = EMode::Work; 
+  clr_bs();
+  bsWork(State::ON);
   LampAlarm1Off(); 
   LampAlarm2Off();
   testRelAlarm1 = State::OFF;

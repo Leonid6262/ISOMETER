@@ -1,8 +1,8 @@
 #include "factory.hpp"
 
 #pragma data_section=".dma_buffers"
-__root signed short CMBSLAVE::tx_dma_buffer[CMBSLAVE::TRANSACTION_LENGTH];
-__root signed short CMBSLAVE::rx_dma_buffer[CMBSLAVE::TRANSACTION_LENGTH];
+__root unsigned short CMBSLAVE::tx_dma_buffer[CMBSLAVE::TRANSACTION_LENGTH];
+__root unsigned short CMBSLAVE::rx_dma_buffer[CMBSLAVE::TRANSACTION_LENGTH];
 #pragma data_section
 
 using ESET = CEEPSettings;

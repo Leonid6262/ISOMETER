@@ -8,15 +8,15 @@ class CMBSLAVE {
 private:
  LPC_UART_TypeDef* UART;
  
- static constexpr unsigned short TRANSACTION_LENGTH = 0x100;  
+ static constexpr unsigned short TRANSACTION_LENGTH = 0x1F;  
 
 public:
   
  CMBSLAVE(CDMAcontroller&, LPC_UART_TypeDef*);
  CDMAcontroller& rDMAc;
  
- static signed short tx_dma_buffer[TRANSACTION_LENGTH];
- static signed short rx_dma_buffer[TRANSACTION_LENGTH];
+ static unsigned short tx_dma_buffer[];
+ static unsigned short rx_dma_buffer[];
  
  void monitor();
   

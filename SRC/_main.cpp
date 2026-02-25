@@ -16,7 +16,7 @@ void main(void) {
   static auto& menu_navigation = CFactory::create_MN(process);  // Навигация по меню ПТ
     
   CPROCESS::UserLedOff();  // Визуальный контроль окончания инициализации
- 
+
   while (true) {       
     process.step();             // Процесс измерений
     mb_slave.monitor();         // Мониторинг запросов по ModBus

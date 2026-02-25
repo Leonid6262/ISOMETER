@@ -1,9 +1,10 @@
 #include "factory.hpp"
 
-#pragma data_section=".dma_buffers"
-__root unsigned short CMBSLAVE::tx_dma_buffer[CMBSLAVE::TRANSACTION_LENGTH];
-__root unsigned short CMBSLAVE::rx_dma_buffer[CMBSLAVE::TRANSACTION_LENGTH];
-#pragma data_section
+#pragma location = ".dma_buffers" 
+__root unsigned short CMBSLAVE::tx_mbs_buffer[CMBSLAVE::TRANSACTION_LENGTH];
+
+#pragma location = ".dma_buffers"
+__root unsigned short CMBSLAVE::rx_mbs_buffer[CMBSLAVE::TRANSACTION_LENGTH];
 
 using ESET = CEEPSettings;
 using EUART = CSET_UART::EUartInstance;

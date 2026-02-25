@@ -13,8 +13,8 @@ define symbol __ICFEDIT_region_RAM_end__      = 0x1000FFFF;
 
 /*-Sizes-*/
 define symbol __ICFEDIT_size_cstack__ = 0x2000;
-define symbol __ICFEDIT_size_dma__    = 0x1000;
 define symbol __ICFEDIT_size_heap__   = 0x2000;
+define symbol __ICFEDIT_size_dma__    = 0x1000;
 /**** End of ICF editor section. ###ICF###*/
 
 define memory mem with size = 4G;
@@ -25,6 +25,10 @@ define symbol _AHB_RAM_start__  = 0x20080000;
 define symbol _AHB_RAM_end__    = 0x200BFFFF;
 define region AHB_RAM_region = mem:[from _AHB_RAM_start__ to _AHB_RAM_end__];
 
+define symbol _PERIPH_RAM_start__  = 0x20000000;
+define symbol _PERIPH_RAM_end__    = 0x20007FFF;
+define region PERIPH_RAM_region = mem:[from _PERIPH_RAM_start__ to _PERIPH_RAM_end__];
+
 define block CSTACK      with alignment = 8, size = __ICFEDIT_size_cstack__     { };
 define block HEAP        with alignment = 8, size = __ICFEDIT_size_heap__       { };
 define block DMA_BUFFERS with alignment = 8, size = __ICFEDIT_size_dma__        { section .dma_buffers };
@@ -34,5 +38,6 @@ initialize by copy with packing = zeros { section .data };
 place at address mem:__ICFEDIT_intvec_start__ { section .intvec };
 place at address mem:0x2FC      { section CRPKEY };
 place in ROM_region             { readonly };
-place in RAM_region             { block CSTACK, block DMA_BUFFERS, readwrite, block HEAP }; 
+place in RAM_region             { block CSTACK, readwrite, block HEAP }; 
+place in PERIPH_RAM_region      { block DMA_BUFFERS };
 

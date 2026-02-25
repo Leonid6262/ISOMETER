@@ -15,8 +15,8 @@ public:
  CMBSLAVE(CDMAcontroller&, LPC_UART_TypeDef*);
  CDMAcontroller& rDMAc;
  
- static unsigned short tx_dma_buffer[];
- static unsigned short rx_dma_buffer[];
+ static unsigned short tx_mbs_buffer[];
+ static unsigned short rx_mbs_buffer[];
  
  void monitor();
   

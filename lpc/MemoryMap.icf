@@ -21,10 +21,6 @@ define memory mem with size = 4G;
 define region ROM_region     = mem:[from __ICFEDIT_region_ROM_start__      to __ICFEDIT_region_ROM_end__];
 define region RAM_region     = mem:[from __ICFEDIT_region_RAM_start__      to __ICFEDIT_region_RAM_end__];
 
-define symbol _AHB_RAM_start__  = 0x20080000;
-define symbol _AHB_RAM_end__    = 0x200BFFFF;
-define region AHB_RAM_region = mem:[from _AHB_RAM_start__ to _AHB_RAM_end__];
-
 define symbol _PERIPH_RAM_start__  = 0x20000000;
 define symbol _PERIPH_RAM_end__    = 0x20007FFF;
 define region PERIPH_RAM_region = mem:[from _PERIPH_RAM_start__ to _PERIPH_RAM_end__];

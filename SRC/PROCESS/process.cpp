@@ -6,6 +6,7 @@ CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet) : rAdc(rAdc), rSet(rSet) {
   mode = EMode::Work;
   wait_number = WAIT_NUMBER;
   pause_counter = 0;
+  RelReadyOn();
   PN_On();
 }
 
@@ -194,7 +195,17 @@ void CPROCESS::calc_avr(EPhases ph) {
     }
     
   } else if(mode == EMode::Test) { 
-    R = 0; 
+    R = 0;
+    if(testRelAlarm1 == State::ON) {
+      RelAlarm1On();
+    } else {
+      RelAlarm1Off();
+    }
+    if(testRelAlarm2 == State::ON) {
+      RelAlarm2On();
+    } else {
+      RelAlarm2Off();
+    }
   }
   
 }
@@ -209,6 +220,11 @@ void CPROCESS::conv_adc() {
 
 void CPROCESS::set_test_mode() { 
   PN_Off();
+  testRelAlarm1 = State::OFF;
+  testRelAlarm2 = State::OFF;
+  RelAlarm1Off();
+  RelAlarm2Off();
+  RelReadyOff();
   wait_number = TEST_NUMBER;
   mode = EMode::Test; 
 }
@@ -221,4 +237,9 @@ void CPROCESS::clr_test_mode() {
   mode = EMode::Work; 
   LampAlarm1Off(); 
   LampAlarm2Off();
+  testRelAlarm1 = State::OFF;
+  testRelAlarm2 = State::OFF;
+  RelAlarm1Off();
+  RelAlarm2Off();
+  RelReadyOn();
 }

@@ -55,10 +55,12 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
                   "shift", &set.shift_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)], "d",1,p0,vt::sshort,nm::IE2V,-23,2070),
           o::Dual("ILeak2",rProcess.getPointerTILeak2(),                                          "d",1,p0,vt::sshort,
                   "shift", &set.shift_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)], "d",1,p0,vt::sshort,nm::IE2V,-23,2070),
-          o::Dual("Rk1",  rProcess.getPointerR(),  "kOhm",1,p2,vt::vfloat,
-                  "k1Ls", &set.k1Ls,               "",    1,p3,vt::vfloat,nm::IE2V, 0.1f, 100),
-          o::Dual("Rk2",  rProcess.getPointerR(),  "kOhm",1,p2,vt::vfloat,
-                  "k2Ls", &set.k2Ls,               "",    1,p3,vt::vfloat,nm::IE2V, 0.1f, 100),}),      
+          o::Dual("Rk1",  rProcess.getPointerR(),    "kOhm",1,p2,vt::vfloat,
+                  "k1Ls", &set.k1Ls,                 "",    1,p3,vt::vfloat,nm::IE2V, 0.1f, 100),
+          o::Dual("Rk2",  rProcess.getPointerR(),    "kOhm",1,p2,vt::vfloat,
+                  "k2Ls", &set.k2Ls,                 "",    1,p3,vt::vfloat,nm::IE2V, 0.1f, 100),
+          o("RelAl1", {}, rProcess.getPointerSRl1(), "",    1,p0,vt::vbool, nm::Ed1V, 0, 1),
+          o("RelAl2", {}, rProcess.getPointerSRl2(), "",    1,p0,vt::vbool, nm::Ed1V, 0, 1),}),      
       o(Mn.LANGUAGE[l],{
           o("Language:", {}, &set.Language,"", 1, p0, vt::ushort, nm::Ed1V, 1, G_CONST::Nlang),}),})};
   

@@ -15,7 +15,9 @@ public:
   inline float*        getPointerR()       { return &R;               }
   inline signed short* getPointerTUd()     { return &test_Ud_avr;     }
   inline signed short* getPointerTILeak1() { return &test_ILeak1_avr; }
-  inline signed short* getPointerTILeak2() { return &test_ILeak2_avr; }
+  inline signed short* getPointerTILeak2() { return &test_ILeak2_avr; }  
+  inline State*        getPointerSRl1()    { return &testRelAlarm1;   }
+  inline State*        getPointerSRl2()    { return &testRelAlarm2;   }
    
   static inline void UserLedOn()  { LPC_GPIO0->CLR  = (1UL << 9); } 
   static inline void UserLedOff() { LPC_GPIO0->SET  = (1UL << 9); }
@@ -75,6 +77,9 @@ private:
   signed short test_ILeak1_avr; 
   signed short test_ILeak2_avr;
   
+  State testRelAlarm1;
+  State testRelAlarm2;
+   
   enum class EPhases {
     PhaseP,
     MeasP,

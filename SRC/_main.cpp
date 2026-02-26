@@ -13,15 +13,13 @@ void main(void) {
   static auto process = CFactory::create_Process();             // Основной объект измерений
   static auto& menu_navigation = CFactory::create_MN(process);  // Навигация по меню ПТ
     
-  
-  CSET_CONTROL::err_load = StatusRet::ERROR;
   // При ошибке КС требуется зпись дефолтных уставок  
   if(CSET_CONTROL::err_load == StatusRet::ERROR) { 
     CPROCESS::RelReadyOff();
     CSET_CONTROL::prev_TC0 = LPC_TIM0->TC;
     while(CEEPSettings::getInstance().save_status == State::OFF) {
       CSET_CONTROL::indication();
-      menu_navigation.get_key(true);
+      menu_navigation.get_key(CSET_CONTROL::only_ctr_enter);
     } 
     process.prev_TC0_Phase = LPC_TIM0->TC;
     CPROCESS::RelReadyOn();

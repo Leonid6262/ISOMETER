@@ -24,6 +24,8 @@ public:
     }   
   }
   
+  static constexpr bool only_ctr_enter = true;
+  
 private: 
   static inline bool led_on = false; 
   static inline unsigned int dTrsPhase = 0;

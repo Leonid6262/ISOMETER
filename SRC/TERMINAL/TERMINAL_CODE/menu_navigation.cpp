@@ -97,7 +97,6 @@ void CMenuNavigation::get_key(bool only_ctr_enter) {
         const unsigned char* text2 = reinterpret_cast<const unsigned char*>("                \r");
         uartDrv.sendBuffer(text2, 18);
         handleEscape();
-        handleEnter();
         Key_Handler(static_cast<EKey_code>(input_key));
       }
     } else {     

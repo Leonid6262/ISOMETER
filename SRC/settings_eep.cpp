@@ -39,7 +39,7 @@ StatusRet CEEPSettings::readFromEEPInternal(WorkSettings& outSettings) {
 }
 
 // Запись уставок
-void CEEPSettings::saveSettings() { writeToEEPInternal(settings); }
+void CEEPSettings::saveSettings() { writeToEEPInternal(settings); save_status = State::ON; }
 
 // Функция записи в EEP из структуры уставок
 void CEEPSettings::writeToEEPInternal(WorkSettings& inSettings) {

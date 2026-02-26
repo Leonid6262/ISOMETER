@@ -7,7 +7,6 @@
 
 class CPROCESS {
   
-  
 public:  
   CPROCESS(CADC&, CEEPSettings&);
   CEEPSettings& rSet;
@@ -22,6 +21,18 @@ public:
    
   static inline void UserLedOn()  { LPC_GPIO0->CLR  = (1UL << 9); } 
   static inline void UserLedOff() { LPC_GPIO0->SET  = (1UL << 9); }
+  
+  static inline void LampMeasOn()     { LPC_GPIO2->SET = (1UL << 27); }
+  static inline void LampMeasOff()    { LPC_GPIO2->CLR = (1UL << 27); }
+  static inline void LampAlarm1On()   { LPC_GPIO2->SET = (1UL << 29); }
+  static inline void LampAlarm1Off()  { LPC_GPIO2->CLR = (1UL << 29); }
+  static inline void LampAlarm2On()   { LPC_GPIO2->SET = (1UL << 31); }
+  static inline void LampAlarm2Off()  { LPC_GPIO2->CLR = (1UL << 31); }
+  
+  static inline void RelReadyOn()     {  }
+  static inline void RelReadyOff()    {  }
+  
+  unsigned int prev_TC0_Phase;
   
   // --- Статус ---
   union {
@@ -50,22 +61,12 @@ public:
   void step();
   
 private:
-  unsigned int prev_TC0_Phase;
   unsigned int dTrsPhase;
   
-  static inline void RelReadyOn()     {  }
-  static inline void RelReadyOff()    {  }
   static inline void RelAlarm1On()    { LPC_GPIO2->SET = (1UL << 25); }
   static inline void RelAlarm1Off()   { LPC_GPIO2->CLR = (1UL << 25); }
   static inline void RelAlarm2On()    { LPC_GPIO2->SET = (1UL << 26); }  
   static inline void RelAlarm2Off()   { LPC_GPIO2->CLR = (1UL << 26); }
-  
-  static inline void LampMeasOn()     { LPC_GPIO2->SET = (1UL << 27); }
-  static inline void LampMeasOff()    { LPC_GPIO2->CLR = (1UL << 27); }
-  static inline void LampAlarm1On()   { LPC_GPIO2->SET = (1UL << 29); }
-  static inline void LampAlarm1Off()  { LPC_GPIO2->CLR = (1UL << 29); }
-  static inline void LampAlarm2On()   { LPC_GPIO2->SET = (1UL << 31); }
-  static inline void LampAlarm2Off()  { LPC_GPIO2->CLR = (1UL << 31); }
   
   static inline void PN_On()  { LPC_GPIO1->CLR = (1UL << 13); }   /* Два порта в реальном изделии. */ 
   static inline void PN_Off() { LPC_GPIO1->SET = (1UL << 13); }   /* В стенде - реле.  */ 

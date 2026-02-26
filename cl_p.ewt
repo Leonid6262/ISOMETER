@@ -2862,6 +2862,9 @@
                 <name>$PROJ_DIR$\SRC\INIT\Ports_init.hpp</name>
             </file>
             <file>
+                <name>$PROJ_DIR$\SRC\INIT\Set_control.hpp</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\SRC\INIT\Timers_init.hpp</name>
             </file>
         </group>

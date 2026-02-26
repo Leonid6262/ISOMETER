@@ -86,13 +86,39 @@ CMenuNavigation::MenuNode::Dual(const char* title1,
 
 
 // "Опрос" клавиатуры
-void CMenuNavigation::get_key() {
+void CMenuNavigation::get_key(bool only_ctr_enter) {
   unsigned char input_key;
+  
+  if(only_ctr_enter) {
+    if (uartDrv.poll_rx(input_key)) {
+      if(static_cast<EKey_code>(input_key) == EKey_code::FnENTER) {
+        const unsigned char* text1 = reinterpret_cast<const unsigned char*>("                \r\n");
+        uartDrv.sendBuffer(text1, 19);
+        const unsigned char* text2 = reinterpret_cast<const unsigned char*>("                \r");
+        uartDrv.sendBuffer(text2, 18);
+        handleEscape();
+        handleEnter();
+        Key_Handler(static_cast<EKey_code>(input_key));
+      }
+    } else {     
+      unsigned int dTrs = LPC_TIM0->TC - prev_TC0;
+      if (dTrs >= DISPLAY_PERIOD_TICKS * 8) {           
+        prev_TC0 = LPC_TIM0->TC;
+        const unsigned char* text1 = reinterpret_cast<const unsigned char*>("Default settings\r\n");
+        uartDrv.sendBuffer(text1, 19);
+        const unsigned char* text2 = reinterpret_cast<const unsigned char*>("Press Fn+Enter  \r");
+        uartDrv.sendBuffer(text2, 18);
+      }
+    }
+    return;
+  }
+  
   if (uartDrv.poll_rx(input_key)) {
-    Key_Handler(static_cast<EKey_code>(input_key));
+    Key_Handler(static_cast<EKey_code>(input_key)); 
   } else {
     Key_Handler(EKey_code::NONE);  // нет нажатий
   }
+  
 }
 
 // Manager Renders

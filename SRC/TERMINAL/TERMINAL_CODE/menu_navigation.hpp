@@ -13,7 +13,7 @@
 class CMenuNavigation {
 public:
   CMenuNavigation(CTerminalUartDriver&, CEEPSettings&, CPROCESS&);
-  void get_key();
+  void get_key(bool only_ctr_enter = false);
   void first_render();
   
   unsigned int prev_TC0;

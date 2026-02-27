@@ -100,8 +100,8 @@ private:
   signed short test_ILeak1_avr; 
   signed short test_ILeak2_avr;
   
-  State testRelAlarm1;
-  State testRelAlarm2;
+  State testRelAlarm1 = State::OFF;
+  State testRelAlarm2 = State::OFF;
    
   enum class EPhases {
     PhaseP,

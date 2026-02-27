@@ -18,14 +18,12 @@ void CMbUartDriver::init(LPC_UART_TypeDef* UART, IRQn_Type UART_IRQ) {
 CMbUartDriver& CMbUartDriver::getInstance() {
   static CMbUartDriver instance;
   return instance;
-}
-             
+}      
 // RBR Handler
 void CMbUartDriver::irq_handler() {
   unsigned int IRQ = UART->IIR;
   unsigned char byte = UART->RBR;
-  if ((IRQ & INTID_I) == INTID_I)  // RBR interrupt
-  {    
+  if ((IRQ & INTID_I) == INTID_I) { 
     if (rx_idx < CMBSLAVE::TRANSACTION_LENGTH) { 
       CMBSLAVE::rx_mbs_buffer[rx_idx++] = byte;
     }    

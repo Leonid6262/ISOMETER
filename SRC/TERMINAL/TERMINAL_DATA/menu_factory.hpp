@@ -66,8 +66,8 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
                   "k1Ls",  &set.k1Ls,                     "",    1, p3, vt::vfloat, nm::IE2V,   0.1f, 100 ),
           o::Dual("Rk2",   rProcess.getPointerR(),        "kOhm",1, p2, vt::vfloat,
                   "k2Ls",  &set.k2Ls,                     "",    1, p3, vt::vfloat, nm::IE2V,   0.1f, 100 ),
-          o("RelAl1",  {}, rProcess.getPointerSRl1(),     "",    1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),
-          o("RelAl2",  {}, rProcess.getPointerSRl2(),     "",    1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),}),
+          o("Control RelAl1",  {}, rProcess.getPointerSRl1(),     "",    1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),
+          o("Control RelAl2",  {}, rProcess.getPointerSRl2(),     "",    1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),}),
       o("RS-485",{
           o("Slave address",    {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 247  ),
           o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}),      

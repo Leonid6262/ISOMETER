@@ -25,7 +25,11 @@ class CEEPSettings {
     float k1Ls;                                         // 6 k1Ls
     float k2Ls;                                         // 7 k2Ls
     unsigned short Rmax;                                // 8 Максимально измеряемое сопротивление [kOhm]
-    unsigned short Rmin;                                // 9 Минимально измеряемое сопротивление [kOhm]    
+    unsigned short Rmin;                                // 9 Минимально измеряемое сопротивление [kOhm] 
+    unsigned short Address;                             // 10 Адрес Slave
+    unsigned short Baud_rate;                           // 11 Скорость
+    bool Parity;                                        // 12 Чётность
+    unsigned short Stop_bits;                           // 13 Количество стоповых битов
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -40,6 +44,10 @@ class CEEPSettings {
     .k2Ls = 1.429f,
     .Rmax = 1000,
     .Rmin = 10,
+    .Address = 3,
+    .Baud_rate = 5,
+    .Parity = false,
+    .Stop_bits = 1
   };
     
   // Текущий набор уставок, хранящийся в RAM ---

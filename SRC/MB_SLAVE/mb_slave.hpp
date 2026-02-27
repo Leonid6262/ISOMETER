@@ -7,18 +7,17 @@
 class CMBSLAVE {
   
 private:
- LPC_UART_TypeDef* UART;
  CMbUartDriver& rUartDrv;
 
 public:
   
- CMBSLAVE(CMbUartDriver&, CDMAcontroller&, LPC_UART_TypeDef*);
+ CMBSLAVE(CMbUartDriver&, CDMAcontroller&);
  CDMAcontroller& rDMAc;
  
- static constexpr unsigned short TRANSACTION_LENGTH = 0x1F;  
+ static constexpr unsigned short TRANSACTION_LENGTH = 0x3F;  
  
- static unsigned short tx_mbs_buffer[];
- static unsigned short rx_mbs_buffer[];
+ static unsigned char tx_mbs_buffer[];
+ static unsigned char rx_mbs_buffer[];
  
  void monitor();
   

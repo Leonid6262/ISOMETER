@@ -1,6 +1,6 @@
 #include "set_uart.hpp"
 
-LPC_UART_TypeDef* CSET_UART::configure(EUartInstance UN) {
+LPC_UART_TypeDef* CSET_UART::configure(EUartInstance UN, CEEPSettings& rSet) {
   LPC_UART_TypeDef* UART = nullptr;
 
   switch (UN) {
@@ -27,9 +27,33 @@ LPC_UART_TypeDef* CSET_UART::configure(EUartInstance UN) {
       /* Настройка частоты */
       UART->TER = 0x00;         // Запрет передачи на момент настройки
       UART->LCR = LCR_DLAB_ON;  // b7 - DLAB вкл.
-      UART->DLM = baud_115200.DLM;
-      UART->DLL = baud_115200.DLL;
-      UART->FDR = baud_115200.FDR;
+      switch (rSet.getSettings().Baud_rate) {
+      case 1:
+        UART->DLM = baud_9600.DLM;
+        UART->DLL = baud_9600.DLL;
+        UART->FDR = baud_9600.FDR;
+        break;
+      case 2:
+        UART->DLM = baud_19200.DLM;
+        UART->DLL = baud_19200.DLL;
+        UART->FDR = baud_19200.FDR;
+        break;
+      case 3:
+        UART->DLM = baud_38400.DLM;
+        UART->DLL = baud_38400.DLL;
+        UART->FDR = baud_38400.FDR;
+        break;
+      case 4:
+        UART->DLM = baud_57600.DLM;
+        UART->DLL = baud_57600.DLL;
+        UART->FDR = baud_57600.FDR;        
+        break;
+      case 5:
+        UART->DLM = baud_115200.DLM;
+        UART->DLL = baud_115200.DLL;
+        UART->FDR = baud_115200.FDR;        
+        break;
+      }
       break;
   }
   UART->IER = 0;

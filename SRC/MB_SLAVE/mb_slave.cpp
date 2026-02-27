@@ -1,6 +1,6 @@
 #include "mb_slave.hpp" 
 
-CMBSLAVE::CMBSLAVE(CMbUartDriver& rUartDrv, CDMAcontroller& rDMAc, LPC_UART_TypeDef* UART) : rUartDrv(rUartDrv), rDMAc(rDMAc), UART(UART) {}
+CMBSLAVE::CMBSLAVE(CMbUartDriver& rUartDrv, CDMAcontroller& rDMAc) : rUartDrv(rUartDrv), rDMAc(rDMAc) {}
 
 
 void CMBSLAVE::monitor() {

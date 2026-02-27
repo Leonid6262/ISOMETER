@@ -7,8 +7,7 @@ class CSET_UART{
 public:    
   enum class EUartInstance {
     UART_0,              
-    UART_1,             
-    UART_2              
+    UART_2,                        
   };
   
   static LPC_UART_TypeDef* configure(EUartInstance);

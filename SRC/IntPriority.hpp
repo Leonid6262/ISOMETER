@@ -30,7 +30,8 @@ namespace Priorities {
   // ---  Группа 1  --- 8 подгрупп
 
   // ---  Группа 2  --- 8 подгрупп
-  constexpr unsigned int UART = make_priority(EG::group2, ES::sgroup0);
+  constexpr unsigned int UART0 = make_priority(EG::group2, ES::sgroup0);
+  constexpr unsigned int UART2 = make_priority(EG::group2, ES::sgroup1);
   
   // ---  Группа 3  --- 8 подгрупп
   
@@ -41,7 +42,8 @@ namespace Priorities {
     
     NVIC_SetPriorityGrouping(G4S8); // распределение по группам 
     
-    NVIC_SetPriority(UART0_IRQn, UART);     // Терминал
+    NVIC_SetPriority(UART0_IRQn, UART0);     // Терминал
+    NVIC_SetPriority(UART2_IRQn, UART2);     // ModBus
     
   }
 }

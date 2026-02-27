@@ -9,6 +9,7 @@
 #include "controllerDMA.hpp"
 #include "bool_name.hpp"
 
+#include "mbUartDriver.hpp"
 #include "mb_slave.hpp" 
 #include "process.hpp"
 
@@ -20,6 +21,7 @@ public:
   static StatusRet load_settings();                 
   static CMBSLAVE create_MBslave(); 
   static CPROCESS create_Process();
-  static CMenuNavigation& create_MN(CPROCESS&);  
+  static CMenuNavigation create_MN(CPROCESS&);
+  static void control_set(CMenuNavigation&);  
 };
 

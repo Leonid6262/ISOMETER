@@ -86,10 +86,10 @@ CMenuNavigation::MenuNode::Dual(const char* title1,
 
 
 // "Опрос" клавиатуры
-void CMenuNavigation::get_key(bool only_ctr_enter) {
+void CMenuNavigation::get_key(bool only_fn_enter) {
   unsigned char input_key;
   
-  if(only_ctr_enter) {
+  if(only_fn_enter) {
     if (uartDrv.poll_rx(input_key)) {
       if(static_cast<EKey_code>(input_key) == EKey_code::FnENTER) {
         const unsigned char* text1 = reinterpret_cast<const unsigned char*>("                \r\n");
@@ -109,6 +109,7 @@ void CMenuNavigation::get_key(bool only_ctr_enter) {
         uartDrv.sendBuffer(text2, 18);
       }
     }
+    rProcess.prev_TC0_Phase = LPC_TIM0->TC;
     return;
   }
   

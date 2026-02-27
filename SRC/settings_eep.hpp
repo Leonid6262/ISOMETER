@@ -66,6 +66,7 @@ class CEEPSettings {
   StatusRet loadSettings();  // Загружает из EEP. Если ошибка CRC - остаются дефолтные.
   void saveSettings();       // Сохраняет текущие уставки в EEP.
   State save_status = State::OFF;
+  StatusRet err_load;
 
   // Прочитать/Изменить уставку ---
   inline WorkSettings& getSettings() { return settings; }

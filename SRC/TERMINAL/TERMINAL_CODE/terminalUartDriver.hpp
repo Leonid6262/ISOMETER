@@ -15,10 +15,11 @@ class CTerminalUartDriver {
   void irq_handler();
 
  private:
-  static constexpr unsigned char UART_FIFO_SIZE = 16;  // глубина аппаратного FIFO
-  static constexpr unsigned int THRE_F = 1UL << 5;     // THRE flag. FIFO empty
-  static constexpr unsigned int THRE_I = 1UL << 1;     // THRE interrupt. FIFO empty
-  static constexpr unsigned int RDR_F = 1UL << 0;      // RDR flag. Есть данные для чтения
+  static constexpr unsigned char UART_FIFO_SIZE = 16;   // глубина аппаратного FIFO
+  static constexpr unsigned int THRE_F  = 1UL << 5;     // THRE flag. FIFO empty
+  static constexpr unsigned int THRE_I  = 1UL << 1;     // THRE interrupt. FIFO empty
+  static constexpr unsigned int INTID_I = 0x01 << 1;    // ID THRE interrupt. FIFO empty
+  static constexpr unsigned int RDR_F   = 1UL << 0;     // RDR flag. Есть данные для чтения
 
   // Внутренний кольцевой буфер
   struct RingBuffer {

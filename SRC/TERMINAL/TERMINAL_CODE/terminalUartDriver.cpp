@@ -10,7 +10,6 @@ void CTerminalUartDriver::init(LPC_UART_TypeDef* UART, IRQn_Type UART_IRQ) {
   txbuf.head = 0;
   txbuf.tail = 0;
   // Настройка прерываний
-  UART->IER = 0;
   UART->IER |= THRE_I;  // b1-THRE
 
   NVIC_EnableIRQ(UART_IRQ);
@@ -83,7 +82,7 @@ bool CTerminalUartDriver::poll_rx(unsigned char& byte) {
 // THRE Handler
 void CTerminalUartDriver::irq_handler() {
   unsigned int IRQ = UART->IIR;
-  if ((IRQ & THRE_I) == THRE_I)  // THRE interrupt
+  if ((IRQ & INTID_I) == INTID_I)  // THRE interrupt
   {
     unsigned char FIFO_SPACE = UART_FIFO_SIZE;
     while (FIFO_SPACE--) {

@@ -13,6 +13,8 @@
 class CMenuNavigation {
 public:
   CMenuNavigation(CTerminalUartDriver&, CEEPSettings&, CPROCESS&);
+  CPROCESS& rProcess;
+  
   void get_key(bool only_ctr_enter = false);
   void first_render();
   
@@ -76,7 +78,6 @@ public:
   
 private:
   CTerminalUartDriver& uartDrv;
-  CPROCESS& rProcess;
   
   enum class ELED { 
     LED_GREEN  = 0x02, 

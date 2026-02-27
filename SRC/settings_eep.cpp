@@ -21,9 +21,11 @@ StatusRet CEEPSettings::loadSettings() {
   WorkSettings tempSettings;
   if (readFromEEPInternal(tempSettings) == StatusRet::SUCCESS) {
     settings = tempSettings;  // CRC - Ok, копируем вместо дефолтныхг
+    err_load = StatusRet::SUCCESS;
     return StatusRet::SUCCESS;
   }
   // В settings остаются дефолтные!
+  err_load = StatusRet::ERROR;
   return StatusRet::ERROR;
 }
 

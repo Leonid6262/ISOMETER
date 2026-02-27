@@ -346,6 +346,7 @@
                     <state>$PROJ_DIR$\SRC\INIT\</state>
                     <state>$PROJ_DIR$\SRC\ANALOG\</state>
                     <state>$PROJ_DIR$\SRC\TEST\</state>
+                    <state>$PROJ_DIR$\SRC\MB_SLAVE\</state>
                     <state>$PROJ_DIR$\SRC\PULSES\</state>
                     <state>$PROJ_DIR$\SRC\PULSES\REGULATORS\</state>
                     <state>$PROJ_DIR$\SRC\SERIAL\</state>
@@ -2145,10 +2146,16 @@
                 <name>$PROJ_DIR$\SRC\INIT\Ports_init.hpp</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\SRC\INIT\Set_control.hpp</name>
+                <name>$PROJ_DIR$\SRC\INIT\Timers_init.hpp</name>
+            </file>
+        </group>
+        <group>
+            <name>MB_SLAVE</name>
+            <file>
+                <name>$PROJ_DIR$\SRC\MB_SLAVE\mb_slave.cpp</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\SRC\INIT\Timers_init.hpp</name>
+                <name>$PROJ_DIR$\SRC\MB_SLAVE\mbUartDriver.cpp</name>
             </file>
         </group>
         <group>
@@ -2204,9 +2211,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\IntPriority.hpp</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\SRC\mb_slave.cpp</name>
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\rtc.cpp</name>

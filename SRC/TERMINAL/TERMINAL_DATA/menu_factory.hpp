@@ -12,9 +12,8 @@ namespace menu_alias {
 // таблица переводов (масштабируемая)
 static const struct {
     const char* INDICATION[G_CONST::Nlang]     = {"ИНДИКАЦИЯ",       "INDICATION",       "IНДИКАЦIЯ"   };
-    const char* SETTINGS[G_CONST::Nlang]       = {"УСТАВКИ",         "SETTINGS",         "УСТАНОВКИ"   };
+    const char* SETTINGS[G_CONST::Nlang]       = {"УСТАВКИ",         "SETPOINT",         "УСТАВКИ"     };
     const char* PARAMS[G_CONST::Nlang]         = {"ПАРАМЕТРЫ",       "PARAMETERS",       "ПАРАМЕТРИ"   };
-    const char* RS_485[G_CONST::Nlang]         = {"RS-485",          "RS-485",           "RS-485"      };
     const char* SETTING_UP[G_CONST::Nlang]     = {"НАСТРОЙКА",       "SETTING UP",       "НАЛАШТУВАННЯ"};
     const char* LANGUAGE[G_CONST::Nlang]       = {"ЯЗЫК",            "LANGUAGE",         "МОВА"        };  
 } Mn;
@@ -69,11 +68,9 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
                   "k2Ls",  &set.k2Ls,                     "",    1, p3, vt::vfloat, nm::IE2V,   0.1f, 100 ),
           o("RelAl1",  {}, rProcess.getPointerSRl1(),     "",    1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),
           o("RelAl2",  {}, rProcess.getPointerSRl2(),     "",    1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),}),
-      o(Mn.RS_485[l],{
-          o("Address",   {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 200  ),
-          o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1, 5  ),
-          o("Parity",    {}, &set.Parity,    "", 1, p0, vt::vbool,  nm::Ed1V, 0, 1 ),
-          o("Stop bits", {}, &set.Stop_bits, "", 1, p0, vt::ushort, nm::Ed1V, 1, 2 ),}),      
+      o("RS-485",{
+          o("Slave address",    {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 247  ),
+          o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}),      
       o(Mn.LANGUAGE[l],{
           o("Language:", {}, &set.Language,"", 1, p0, vt::ushort, nm::Ed1V, 1, G_CONST::Nlang),}),})};
   

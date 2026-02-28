@@ -19,7 +19,7 @@
 class CFactory {
 public:    
   static StatusRet load_settings();                 
-  static CMBSLAVE create_MBslave(); 
+  static CMBSLAVE create_MBslave(CPROCESS&); 
   static CPROCESS create_Process();
   static CMenuNavigation create_MN(CPROCESS&);
   static void control_set(CMenuNavigation&);  

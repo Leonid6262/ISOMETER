@@ -13,13 +13,13 @@ using ESPI  = CSET_SPI::ESPIInstance;
 StatusRet CFactory::load_settings()   { return ESET::getInstance().loadSettings(); }        // Загрузка уставок
 
 // ModBus slave
-CMBSLAVE CFactory::create_MBslave() {
+CMBSLAVE CFactory::create_MBslave(CPROCESS& rProcess) {
   static CDMAcontroller cont_dma;                                                           // Управление каналами DMA
-  auto& udrv = CMbUartDriver::getInstance();                                                // Конфигурация и инициализация UART-2
+  auto& udrv = CMBUartDriver::getInstance();                                                // Конфигурация и инициализация UART-2
   udrv.init(CSET_UART::configure(EUART::UART_2, ESET::getInstance()), UART2_IRQn); 
-  return CMBSLAVE(udrv, cont_dma);
+  return CMBSLAVE(udrv, cont_dma, ESET::getInstance(), rProcess);
 }
-extern "C" void UART2_IRQHandler(void) { CMbUartDriver::getInstance().irq_handler(); }      // Вызов обработчика UART-2
+extern "C" void UART2_IRQHandler(void) { CMBUartDriver::getInstance().irq_handler(); }      // Вызов обработчика UART-2
 
 // Основной класс
 CPROCESS CFactory::create_Process() {

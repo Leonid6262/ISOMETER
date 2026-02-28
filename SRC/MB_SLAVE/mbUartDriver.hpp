@@ -3,10 +3,10 @@
 #include "LPC407x_8x_177x_8x.h"
 
 // Singleton класс драйвера UART для MbSlave
-class CMbUartDriver {
+class CMBUartDriver {
 public:
   void init(LPC_UART_TypeDef*, IRQn_Type);
-  static CMbUartDriver& getInstance();
+  static CMBUartDriver& getInstance();
   
   unsigned short rx_idx = 0;
   unsigned int last_byte_time;
@@ -20,7 +20,7 @@ private:
   
   LPC_UART_TypeDef* UART;
   
-  CMbUartDriver();
-  CMbUartDriver(const CMbUartDriver&) = delete;
-  CMbUartDriver& operator=(const CMbUartDriver&) = delete;
+  CMBUartDriver();
+  CMBUartDriver(const CMBUartDriver&) = delete;
+  CMBUartDriver& operator=(const CMBUartDriver&) = delete;
 };

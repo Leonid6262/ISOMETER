@@ -60,6 +60,8 @@ public:
   void clr_test_mode();
   void step();
   
+  float R;
+  
 private:
   unsigned int dTrsPhase;
   
@@ -111,7 +113,6 @@ private:
   };
   
   EPhases phases;
-
   
   void conv_adc();
   void wait(EPhases);
@@ -123,7 +124,6 @@ private:
   float ILeak1P_avr;
   float ILeak1N_avr;
   float ILeak2P_avr;
-  float ILeak2N_avr;
-  float R; 
+  float ILeak2N_avr; 
   
 };

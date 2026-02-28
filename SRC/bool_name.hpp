@@ -2,7 +2,6 @@
 
 enum class StatusRet     { ERROR       = 0, SUCCESS = 1 };
 enum class State         { OFF         = 0, ON      = 1 };
-enum class StatusTO      { NOT_EXPIRED = 0, EXPIRED = 1, NO_RECEPTION = 2};
 enum class EVarType {
     NONE,
     sshort,

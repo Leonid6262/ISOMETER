@@ -4,9 +4,9 @@
 #include "LPC407x_8x_177x_8x.h"
 #include "system_LPC177x.h"
 
-CMbUartDriver::CMbUartDriver() {};
+CMBUartDriver::CMBUartDriver() {};
 
-void CMbUartDriver::init(LPC_UART_TypeDef* UART, IRQn_Type UART_IRQ) {
+void CMBUartDriver::init(LPC_UART_TypeDef* UART, IRQn_Type UART_IRQ) {
   this->UART = UART;
   // Настройка прерываний
   UART->IER |= RBR_I;  // b0-RBR
@@ -14,7 +14,7 @@ void CMbUartDriver::init(LPC_UART_TypeDef* UART, IRQn_Type UART_IRQ) {
 }
 
 // RBR Handler
-void CMbUartDriver::irq_handler() {
+void CMBUartDriver::irq_handler() { 
   
   while (UART->LSR & RDR) { 
     unsigned char byte = UART->RBR; // Чтение RBR сбрасывает прерывание в IIR
@@ -27,7 +27,7 @@ void CMbUartDriver::irq_handler() {
   
 }
 
-CMbUartDriver& CMbUartDriver::getInstance() {
-  static CMbUartDriver instance;
+CMBUartDriver& CMBUartDriver::getInstance() {
+  static CMBUartDriver instance;
   return instance;
 }  

@@ -1,9 +1,7 @@
 #include "menu_navigation.hpp"
-#include <algorithm>
 #include "string_utils.hpp"
 #include "menu_factory.hpp"
 #include "pause_us.hpp"
-#include "settings_eep.hpp"
 
 CMenuNavigation::CMenuNavigation(CTerminalUartDriver& uartDrv, CEEPSettings& rSet, CPROCESS& rProcess ) :  
   uartDrv(uartDrv), rProcess(rProcess) { 

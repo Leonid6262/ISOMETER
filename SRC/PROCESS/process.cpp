@@ -30,13 +30,6 @@ void CPROCESS::step() {
     break;
   }
   
-  CMBSLAVE::tx_mbs_buffer[0] = UStatus.all;
-  CMBSLAVE::tx_mbs_buffer[1] = static_cast<unsigned short>(R + 0.5f);
-  CMBSLAVE::tx_mbs_buffer[2] = rSet.getSettings().RAlarm1;
-  CMBSLAVE::tx_mbs_buffer[3] = rSet.getSettings().RAlarm2;
-  CMBSLAVE::tx_mbs_buffer[4] = rSet.getSettings().Rmin;
-  CMBSLAVE::tx_mbs_buffer[5] = rSet.getSettings().Rmax;
-  
 }
 
 void CPROCESS::wait(EPhases ph) {

@@ -8,6 +8,8 @@ class CMBSLAVE {
   
 private:
  CMbUartDriver& rUartDrv;
+ 
+ static constexpr unsigned int MODBUS_SILENCE_TICKS = 50000; // 5 мс
 
 public:
   

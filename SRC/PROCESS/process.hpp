@@ -85,6 +85,7 @@ private:
   static constexpr unsigned short gis_const    = 2;       // 2kOhm - гитерезис 1-го диапазона 
   static constexpr unsigned short range        = 50;      // 50kOhm - 1-й диапазон от 0 до range
   static constexpr unsigned short gis_percent  = 15;      // 15% - гитерезис 2-го диапазона (от range_1 и выше) 
+  static constexpr unsigned short Rmax         = 1000;
   
   static constexpr float Umeas  = 20000.0f;               // U измерений [mV]
   static constexpr float RT     = 39.0f + 3.9f + 3.9f;    // RT [kOhm]

@@ -24,10 +24,8 @@ class CEEPSettings {
     unsigned short RTadd;                               // 5 RLadd
     float k1Ls;                                         // 6 k1Ls
     float k2Ls;                                         // 7 k2Ls
-    unsigned short Rmax;                                // 8 Максимально измеряемое сопротивление [kOhm]
-    unsigned short Rmin;                                // 9 Минимально измеряемое сопротивление [kOhm] 
-    unsigned char  Address;                             // 10 Адрес Slave
-    unsigned short Baud_rate;                           // 11 Скорость
+    unsigned char  Address;                             // 8 Адрес Slave
+    unsigned short Baud_rate;                           // 9 Скорость
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -40,8 +38,6 @@ class CEEPSettings {
     .RTadd = 0,
     .k1Ls = 1.0f,
     .k2Ls = 1.429f,
-    .Rmax = 1000,
-    .Rmin = 10,
     .Address = 3,
     .Baud_rate = 5
   };

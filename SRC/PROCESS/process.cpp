@@ -35,8 +35,6 @@ void CPROCESS::step() {
   rModbusData.getInstance().Modbas_fields[1] = static_cast<unsigned short>(R + 0.5f);
   rModbusData.getInstance().Modbas_fields[2] = rSet.getSettings().RAlarm1;
   rModbusData.getInstance().Modbas_fields[3] = rSet.getSettings().RAlarm2;
-  rModbusData.getInstance().Modbas_fields[4] = rSet.getSettings().Rmin;
-  rModbusData.getInstance().Modbas_fields[5] = rSet.getSettings().Rmax;
   
 }
 
@@ -46,7 +44,7 @@ void CPROCESS::wait(EPhases ph) {
     conv_adc();
     prev_TC0_Phase = LPC_TIM0->TC;
     pause_counter++;
-    if(R == rSet.getSettings().Rmax) {
+    if(R == Rmax) {
       if(pause_counter > wait_number / 2) {
         LampMeasOff();
       } else {
@@ -62,7 +60,7 @@ void CPROCESS::wait(EPhases ph) {
     conv_adc();
     prev_TC0_Phase = LPC_TIM0->TC;
     pause_counter++;
-    if(R == rSet.getSettings().Rmax) {
+    if(R == Rmax) {
       if(pause_counter > wait_number / 2) {
         LampMeasOff();
       } else {
@@ -180,15 +178,18 @@ void CPROCESS::calc_avr(EPhases ph) {
   float pUd = UdN_avr + UdP_avr;
   
   float Ucor = (pIL * dUd) / (pIL * dUd - dIL * pUd);
+  
+  bool r_min = false;
+  if((ILeak2N_avr >= 2040) || (ILeak2P_avr >= 2040)) r_min = true;
 
   if(UStatus.sWork) {
     float r = ((rSet.getSettings().k2Ls * (2.0f * Umeas * (1 - Ucor))) / dIL) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs2;
     
-    if(r > rSet.getSettings().Rmax) { 
-      R = rSet.getSettings().Rmax;
+    if(r > Rmax) { 
+      R = Rmax;
       bsMoreMax(State::ON);
-    } else if(r < rSet.getSettings().Rmin) { 
-      R = rSet.getSettings().Rmin;
+    } else if(r_min) { 
+      R = 0;
       bsLessMin(State::ON);
     } else { 
       R = r; 

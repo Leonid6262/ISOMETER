@@ -52,9 +52,7 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
       o(Mn.PARAMS[l],{
           o("Alarm1",  {}, &set.RAlarm1, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
           o("Alarm2",  {}, &set.RAlarm2, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
-          o("RTadd",   {}, &set.RTadd,   "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 1000 ),
-          o("Rmax",    {}, &set.Rmax,    "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 2000 ),
-          o("Rmin",    {}, &set.Rmin,    "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 2000 ),}),
+          o("RTadd",   {}, &set.RTadd,   "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 1000 ),}),
       o(Mn.SETTING_UP[l],{
           o::Dual("Ud",    rProcess.getPointerTUd(),      "d",   1, p0, vt::sshort,
                   "shift", &set.shift_adc[ch_UD],         "d",   1, p0, vt::sshort, nm::IE2V, -23, 2070   ),

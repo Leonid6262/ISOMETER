@@ -6,8 +6,9 @@
 
 CMBUartDriver::CMBUartDriver() {};
 
-void CMBUartDriver::init(LPC_UART_TypeDef* UART, IRQn_Type UART_IRQ) {
+void CMBUartDriver::init(LPC_UART_TypeDef* UART, IRQn_Type UART_IRQ, CDMAcontroller* pCont_dma) {
   this->UART = UART;
+  this->pCont_dma = pCont_dma;
   // Настройка прерываний
   UART->IER |= RBR_I;  // b0-RBR
   NVIC_EnableIRQ(UART_IRQ);

@@ -71,11 +71,15 @@ void CMBSLAVE::Answer(unsigned char Function) {
     }
     break;
   case F06:
-    rModbusData.Modbas_fields[AddressReg] = Value;      // Записываем значение в Proxy-массив     
-    //rModbusData.isDirty = true;                       // Устанавливаем флаг - данные изменились (для EEPROM)
-    for (int i = 0; i < LRequestF346; i++) {            // Формируем ответ (Эхо запроса)
+    // 1. Записываем значение в Proxy-массив
+    rModbusData.Modbas_fields[AddressReg] = Value;    
+    // 2. Устанавливаем флаг, что данные изменились (для EEPROM)
+    //rModbusData.isDirty = true;     
+    // 3. Формируем ответ (Эхо запроса)
+    for (int i = 0; i < LRequestF346; i++) {
       tx_mbs_buffer[i] = rx_mbs_buffer[i];
     }   
+    // 4. Отправляем те же 8 байт
     rUartDrv.transfer_data(LRequestF346);    
     break;
   default:

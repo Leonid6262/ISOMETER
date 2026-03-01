@@ -1,11 +1,12 @@
 #pragma once
+#include "controllerDMA.hpp"
 #include <cstdint>
 #include "LPC407x_8x_177x_8x.h"
 
 // Singleton класс драйвера UART для MbSlave
 class CMBUartDriver {
 public:
-  void init(LPC_UART_TypeDef*, IRQn_Type);
+  void init(LPC_UART_TypeDef*, IRQn_Type, CDMAcontroller*);
   static CMBUartDriver& getInstance();
   
   unsigned short rx_idx = 0;
@@ -20,6 +21,7 @@ private:
   static constexpr unsigned int RDR     = 1UL << 0;
   
   LPC_UART_TypeDef* UART;
+  CDMAcontroller* pCont_dma;
   
   CMBUartDriver();
   CMBUartDriver(const CMBUartDriver&) = delete;

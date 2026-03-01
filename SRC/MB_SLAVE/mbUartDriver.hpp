@@ -12,6 +12,7 @@ public:
   unsigned int last_byte_time;
   
   void irq_handler();
+  void transfer_data(unsigned short);
   
 private:
   static constexpr unsigned char UART_FIFO_SIZE = 16;  // глубина аппаратного FIFO

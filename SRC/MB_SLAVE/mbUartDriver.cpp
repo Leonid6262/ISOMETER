@@ -27,6 +27,9 @@ void CMBUartDriver::irq_handler() {
   
 }
 
+void CMBUartDriver::transfer_data(unsigned short Length) {
+}
+
 CMBUartDriver& CMBUartDriver::getInstance() {
   static CMBUartDriver instance;
   return instance;

@@ -12,7 +12,6 @@ class CMBSLAVE {
 private:
  CModbusDataProxy& rModbusData; 
  CMBUartDriver& rUartDrv;
- CDMAcontroller& rDMAc;
 
  enum class StatusTO { NO_RECEPTION, NOT_EXPIRED, EXPIRED };
  StatusTO TimeoutStatus();
@@ -43,7 +42,7 @@ private:
  unsigned short Value;
 
 public: 
- CMBSLAVE(CMBUartDriver&, CDMAcontroller&, CModbusDataProxy&, unsigned char*);
+ CMBSLAVE(CMBUartDriver&, CModbusDataProxy&, unsigned char*);
  
  static constexpr unsigned short TRANSACTION_LENGTH = 0x3F;  
  

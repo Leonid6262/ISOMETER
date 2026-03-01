@@ -5,7 +5,7 @@ class CModbusDataProxy {
 public:  
   static CModbusDataProxy& getInstance();
   
-  static constexpr unsigned short QFields = 6;
+  static constexpr unsigned short QFields = 4;
   unsigned short Modbas_fields[QFields];
 
 private:

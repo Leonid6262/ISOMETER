@@ -17,7 +17,7 @@ CMBSLAVE CFactory::create_MBslave() {
   static CDMAcontroller cont_dma;                                                           // Управление каналами DMA
   auto& udrv = CMBUartDriver::getInstance();                                                // Конфигурация и инициализация UART-2
   udrv.init(CSET_UART::configure(EUART::UART_2, ESET::getInstance()), UART2_IRQn); 
-  return CMBSLAVE(udrv, cont_dma, CModbusDataProxy::getInstance(), &ESET::getInstance().getSettings().Address);
+  return CMBSLAVE(udrv, CModbusDataProxy::getInstance(), &ESET::getInstance().getSettings().Address);
 }
 extern "C" void UART2_IRQHandler(void) { CMBUartDriver::getInstance().irq_handler(); }      // Вызов обработчика UART-2
 

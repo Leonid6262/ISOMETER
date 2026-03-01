@@ -1,7 +1,7 @@
 #include "mb_slave.hpp" 
 
-CMBSLAVE::CMBSLAVE(CMBUartDriver& rUartDrv, CDMAcontroller& rDMAc, CModbusDataProxy& rModbusData, unsigned char* AddressSlave) : 
-  rUartDrv(rUartDrv), rDMAc(rDMAc), rModbusData(rModbusData), pAddressSlave(pAddressSlave) {}
+CMBSLAVE::CMBSLAVE(CMBUartDriver& rUartDrv, CModbusDataProxy& rModbusData, unsigned char* AddressSlave) : 
+  rUartDrv(rUartDrv), rModbusData(rModbusData), pAddressSlave(pAddressSlave) {}
 
 CMBSLAVE::StatusTO CMBSLAVE::TimeoutStatus() { 
   if (rUartDrv.rx_idx == 0) { 
@@ -49,15 +49,25 @@ void CMBSLAVE::Answer(unsigned char Function) {
   case F03:
   case F04:
     {
-    tx_mbs_buffer[0] = *pAddressSlave;
-    tx_mbs_buffer[1] = Function;
-    tx_mbs_buffer[2] = Quantity * 2;
-    
-    //tx_mbs_buffer[3] = static_cast<unsigned char>(rProcess.UStatus.all >> 8);
-    //tx_mbs_buffer[4] = static_cast<unsigned char>(rProcess.UStatus.all & 0xFF);
-    //unsigned short R = static_cast<unsigned short>(rProcess.R + 0.5f);
-    //tx_mbs_buffer[5] = static_cast<unsigned char>(R >> 8);
-    //tx_mbs_buffer[6] = static_cast<unsigned char>(R & 0xFF);    
+      unsigned short reg_idx = StartingAddress;
+      unsigned short tx_idx = 0;
+      
+      tx_mbs_buffer[tx_idx++] = *pAddressSlave;
+      tx_mbs_buffer[tx_idx++] = Function;
+      tx_mbs_buffer[tx_idx++] = Quantity * 2;
+      
+      for(int i = 0; i < Quantity; i++) {
+        unsigned short val = rModbusData.Modbas_fields[reg_idx++];
+        tx_mbs_buffer[tx_idx++] = static_cast<unsigned char>(val >> 8);   // Hi
+        tx_mbs_buffer[tx_idx++] = static_cast<unsigned char>(val & 0xFF); // Lo
+      }
+      
+      unsigned short crc_calc = CCRC16::calc(tx_mbs_buffer, tx_idx);
+      
+      tx_mbs_buffer[tx_idx++] = static_cast<unsigned char>(crc_calc & 0xFF); // CRC Lo
+      tx_mbs_buffer[tx_idx++] = static_cast<unsigned char>(crc_calc >> 8);   // CRC Hi
+      
+      rUartDrv.transfer_data(tx_idx);
     }
     break;
   case F06:

@@ -31,10 +31,17 @@ void CPROCESS::step() {
     break;
   }
   
-  rModbusData.getInstance().Modbas_fields[0] = UStatus.all;
-  rModbusData.getInstance().Modbas_fields[1] = static_cast<unsigned short>(R + 0.5f);
-  rModbusData.getInstance().Modbas_fields[2] = rSet.getSettings().RAlarm1;
-  rModbusData.getInstance().Modbas_fields[3] = rSet.getSettings().RAlarm2;
+  //--- Обновление данных MoBus ---
+  if(rModbusData.getInstance().isDirty) {
+    rModbusData.getInstance().isDirty = false;
+    rSet.getSettings().RAlarm1 = rModbusData.getInstance().registers[2].value;
+    rSet.getSettings().RAlarm2 = rModbusData.getInstance().registers[3].value;
+  } 
+  rModbusData.getInstance().registers[0].value = UStatus.all;
+  rModbusData.getInstance().registers[1].value = static_cast<unsigned short>(R + 0.5f);
+  rModbusData.getInstance().registers[2].value = rSet.getSettings().RAlarm1;
+  rModbusData.getInstance().registers[3].value = rSet.getSettings().RAlarm2;
+  //------–-------–----------------
   
 }
 
@@ -171,6 +178,10 @@ void CPROCESS::calc_avr(EPhases ph) {
   case EPhases::PhaseN:
     break;
   }
+  
+  ////
+  //// Добавить расчёт для ILeak1 (для 1-го канала)
+  ////
   
   float dIL = ILeak2N_avr - ILeak2P_avr;
   float pIL = ILeak2N_avr + ILeak2P_avr;

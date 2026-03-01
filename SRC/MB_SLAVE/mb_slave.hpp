@@ -16,12 +16,14 @@ private:
  StatusTO TimeoutStatus();
  void ParseRequestF346();
  void Answer(unsigned char);
+ void sendException(unsigned char, unsigned char);
  
  static constexpr unsigned char F03 = 3;
  static constexpr unsigned char F04 = 4;
  static constexpr unsigned char F06 = 6;
  
  static constexpr unsigned char LRequestF346 = 8;
+ static constexpr unsigned char Illegal_Function = 1;
  
  static constexpr unsigned short bAddressSlave  = 0;
  static constexpr unsigned short bFunction      = 1;

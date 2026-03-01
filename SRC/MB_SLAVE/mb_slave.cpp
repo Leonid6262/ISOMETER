@@ -1,6 +1,6 @@
 #include "mb_slave.hpp" 
 
-CMBSLAVE::CMBSLAVE(CMBUartDriver& rUartDrv, CModbusDataProxy& rModbusData, unsigned char* AddressSlave) : 
+CMBSLAVE::CMBSLAVE(CMBUartDriver& rUartDrv, CModbusDataProxy& rModbusData, unsigned char* pAddressSlave) : 
   rUartDrv(rUartDrv), rModbusData(rModbusData), pAddressSlave(pAddressSlave) {}
 
 CMBSLAVE::StatusTO CMBSLAVE::TimeoutStatus() { 
@@ -57,7 +57,7 @@ void CMBSLAVE::Answer(unsigned char Function) {
       tx_mbs_buffer[tx_idx++] = Quantity * 2;
       
       for(int i = 0; i < Quantity; i++) {
-        unsigned short val = rModbusData.Modbas_fields[reg_idx++];
+        unsigned short val = rModbusData.registers[reg_idx++].value;
         tx_mbs_buffer[tx_idx++] = static_cast<unsigned char>(val >> 8);   // Hi
         tx_mbs_buffer[tx_idx++] = static_cast<unsigned char>(val & 0xFF); // Lo
       }
@@ -71,17 +71,36 @@ void CMBSLAVE::Answer(unsigned char Function) {
     }
     break;
   case F06:
-    rModbusData.Modbas_fields[AddressReg] = Value;      // Записываем значение в Proxy-массив     
-    //rModbusData.isDirty = true;                       // Устанавливаем флаг - данные изменились (для EEPROM)
-    for (int i = 0; i < LRequestF346; i++) {            // Формируем ответ (Эхо запроса)
-      tx_mbs_buffer[i] = rx_mbs_buffer[i];
-    }   
-    rUartDrv.transfer_data(LRequestF346);    
+    if (rModbusData.registers[AddressReg].isWritable) {
+      rModbusData.registers[AddressReg].value = Value;  // Записываем значение в Proxy-массив 
+      rModbusData.isDirty = true;                       // Устанавливаем флаг - данные изменились (для EEPROM)
+      for (int i = 0; i < LRequestF346; i++) {          // Формируем ответ (Эхо запроса)
+        tx_mbs_buffer[i] = rx_mbs_buffer[i];
+      }   
+      rUartDrv.transfer_data(LRequestF346); 
+    } else {
+      sendException(F06, Illegal_Function);             // Ошибка доступа
+    }       
     break;
   default:
+    sendException(Function, Illegal_Function);
     break;
   } 
   
+}
+
+void CMBSLAVE::sendException(unsigned char function, unsigned char exceptionCode) {
+  unsigned short tx_idx = 0;
+  tx_mbs_buffer[tx_idx++] = *pAddressSlave;
+  tx_mbs_buffer[tx_idx++] = function | 0x80; // Устанавливаем старший бит
+  tx_mbs_buffer[tx_idx++] = exceptionCode;   // Код ошибки
+  
+  unsigned short crc_calc = CCRC16::calc(tx_mbs_buffer, tx_idx);
+  
+  tx_mbs_buffer[tx_idx++] = (unsigned char)(crc_calc & 0xFF);
+  tx_mbs_buffer[tx_idx++] = (unsigned char)(crc_calc >> 8);
+  
+  rUartDrv.transfer_data(tx_idx);
 }
 
 void CMBSLAVE::monitor() {  

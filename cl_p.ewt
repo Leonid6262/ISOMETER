@@ -2871,7 +2871,7 @@
                 <name>$PROJ_DIR$\SRC\MB_SLAVE\mb_slave.cpp</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\SRC\MB_SLAVE\mbDataProxy.cpp</name>
+                <name>$PROJ_DIR$\SRC\MB_SLAVE\mbDataProxy.hpp</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\SRC\MB_SLAVE\mbUartDriver.cpp</name>

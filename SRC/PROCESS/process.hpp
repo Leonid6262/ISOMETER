@@ -4,11 +4,13 @@
 #include "controllerDMA.hpp"
 #include "adc.hpp"
 #include "mb_slave.hpp" 
+#include "mbDataProxy.hpp"
 
 class CPROCESS {
   
 public:  
-  CPROCESS(CADC&, CEEPSettings&);
+  CPROCESS(CADC&, CEEPSettings&, CModbusDataProxy&);
+  CModbusDataProxy& rModbusData;
   CEEPSettings& rSet;
   CADC& rAdc;
   

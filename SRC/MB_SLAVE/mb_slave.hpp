@@ -1,9 +1,8 @@
 #pragma once 
 #include "bool_name.hpp"
-#include "settings_eep.hpp"
 #include "controllerDMA.hpp"
 #include "mbUartDriver.hpp"
-#include "process.hpp"
+#include "mbDataProxy.hpp"
 #include "crc16.hpp"
 
 class CPROCESS;
@@ -11,10 +10,9 @@ class CPROCESS;
 class CMBSLAVE {
   
 private:
+ CModbusDataProxy& rModbusData; 
  CMBUartDriver& rUartDrv;
  CDMAcontroller& rDMAc;
- CEEPSettings& rSet;
- CPROCESS& rProcess;
 
  enum class StatusTO { NO_RECEPTION, NOT_EXPIRED, EXPIRED };
  StatusTO TimeoutStatus();
@@ -26,7 +24,6 @@ private:
  static constexpr unsigned char F06 = 6;
  
  static constexpr unsigned char LRequestF346 = 8;
- static constexpr unsigned short QFields = 6;
  
  static constexpr unsigned short bAddressSlave  = 0;
  static constexpr unsigned short bFunction      = 1;
@@ -38,16 +35,15 @@ private:
  
  static constexpr unsigned int MODBUS_SILENCE_TICKS = 50000; // 5 мс
  
+ unsigned char* pAddressSlave;
  unsigned char Function;
  unsigned short StartingAddress;
  unsigned short AddressReg;
  unsigned short Quantity;
  unsigned short Value;
- 
- unsigned short Modbas_fields[QFields];
 
 public: 
- CMBSLAVE(CMBUartDriver&, CDMAcontroller&, CEEPSettings&, CPROCESS&);
+ CMBSLAVE(CMBUartDriver&, CDMAcontroller&, CModbusDataProxy&, unsigned char*);
  
  static constexpr unsigned short TRANSACTION_LENGTH = 0x3F;  
  

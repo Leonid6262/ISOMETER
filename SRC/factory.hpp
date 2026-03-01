@@ -5,21 +5,19 @@
 #include "set_uart.hpp"
 #include "set_spi.hpp"
 #include "adc.hpp"
-
 #include "controllerDMA.hpp"
 #include "bool_name.hpp"
-
 #include "mbUartDriver.hpp"
 #include "mb_slave.hpp" 
 #include "process.hpp"
-
 #include "terminalUartDriver.hpp"
 #include "menu_navigation.hpp"
+#include "mbDataProxy.hpp"
 
 class CFactory {
 public:    
   static StatusRet load_settings();                 
-  static CMBSLAVE create_MBslave(CPROCESS&); 
+  static CMBSLAVE create_MBslave(); 
   static CPROCESS create_Process();
   static CMenuNavigation create_MN(CPROCESS&);
   static void control_set(CMenuNavigation&);  

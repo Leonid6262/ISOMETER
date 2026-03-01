@@ -10,7 +10,7 @@ void main(void) {
 
   static auto process = CFactory::create_Process();             // Основной объект измерений
   static auto menu_navigation = CFactory::create_MN(process);   // Навигация по меню ПТ
-  static auto mb_slave = CFactory::create_MBslave(process);     // ModBus slave
+  static auto mb_slave = CFactory::create_MBslave();            // ModBus slave
     
   CFactory::control_set(menu_navigation);                       // При ошибке КС требуется зпись дефолтных уставок  
   

@@ -1,6 +1,7 @@
 #include "process.hpp" 
 
-CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet) : rAdc(rAdc), rSet(rSet) { 
+CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet,CModbusDataProxy& rModbusData) : 
+  rAdc(rAdc), rSet(rSet), rModbusData(rModbusData) {
   prev_TC0_Phase = LPC_TIM0->TC; 
   phases = EPhases::PhaseP;
   wait_number = WAIT_NUMBER;
@@ -29,6 +30,13 @@ void CPROCESS::step() {
     if(dTrsPhase > MEAS_PAUSED) { conv(phases); }    
     break;
   }
+  
+  rModbusData.getInstance().Modbas_fields[0] = UStatus.all;
+  rModbusData.getInstance().Modbas_fields[1] = static_cast<unsigned short>(R + 0.5f);
+  rModbusData.getInstance().Modbas_fields[2] = rSet.getSettings().RAlarm1;
+  rModbusData.getInstance().Modbas_fields[3] = rSet.getSettings().RAlarm2;
+  rModbusData.getInstance().Modbas_fields[4] = rSet.getSettings().Rmin;
+  rModbusData.getInstance().Modbas_fields[5] = rSet.getSettings().Rmax;
   
 }
 

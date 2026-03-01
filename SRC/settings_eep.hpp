@@ -26,7 +26,7 @@ class CEEPSettings {
     float k2Ls;                                         // 7 k2Ls
     unsigned short Rmax;                                // 8 Максимально измеряемое сопротивление [kOhm]
     unsigned short Rmin;                                // 9 Минимально измеряемое сопротивление [kOhm] 
-    unsigned short Address;                             // 10 Адрес Slave
+    unsigned char  Address;                             // 10 Адрес Slave
     unsigned short Baud_rate;                           // 11 Скорость
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };

@@ -13,11 +13,13 @@ public:
   unsigned int last_byte_time;
   
   void irq_handler();
+  void init_dma();
   void transfer_data(unsigned short);
   
 private:
   static constexpr unsigned char UART_FIFO_SIZE = 16;  // глубина аппаратного FIFO
   static constexpr unsigned int RBR_I   = 1UL << 0;    // RBR interrupt
+  static constexpr unsigned int DMAMODE = 1UL << 3; 
   static constexpr unsigned int RDR     = 1UL << 0;
   
   LPC_UART_TypeDef* UART;

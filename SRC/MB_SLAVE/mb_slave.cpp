@@ -39,6 +39,7 @@ void CMBSLAVE::ParseRequestF346() {
     Answer(F06);
     break;
   default:
+    sendException(Function, Illegal_Function);
     break;
   } 
 }
@@ -83,7 +84,6 @@ void CMBSLAVE::Answer(unsigned char Function) {
     }       
     break;
   default:
-    sendException(Function, Illegal_Function);
     break;
   } 
   

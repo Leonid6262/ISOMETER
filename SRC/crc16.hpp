@@ -34,6 +34,6 @@ class CCRC16 {
       crc_t >>= 8;
       crc_t = crc_t xor CRCT16Table[nIndex];
     }
-    return (crc_t << 8) | ((crc_t >> 8) & 0x00FF);
+    return crc_t;
   }
 };

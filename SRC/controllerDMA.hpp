@@ -13,10 +13,10 @@ class CDMAcontroller {
     Ch1 = 1, 
     Ch2 = 2, 
     Ch3 = 3, 
-    Ch4 = 4, 
+    UART2_Tx_Channel = 4, 
     Ch5 = 5, 
-    SPI2_Tx_Channel = 6, 
-    SPI2_Rx_Channel = 7 
+    Ch6 = 6,//SPI2_Tx_Channel = 6, 
+    Ch7 = 7,//SPI2_Rx_Channel = 7,
   };
 
   // Типы каналов
@@ -97,8 +97,9 @@ class CDMAcontroller {
   static constexpr unsigned char MaxChannels = 8;
   static constexpr unsigned int TransferSize_MASK = 0x00000FFF;
 
-  static constexpr LPC_GPDMACH_TypeDef* const DmaChannels[MaxChannels] = {LPC_GPDMACH0, LPC_GPDMACH1, LPC_GPDMACH2, LPC_GPDMACH3,
-                                                                          LPC_GPDMACH4, LPC_GPDMACH5, LPC_GPDMACH6, LPC_GPDMACH7};
+  static constexpr LPC_GPDMACH_TypeDef* const DmaChannels[MaxChannels] = {LPC_GPDMACH0,  LPC_GPDMACH1,  LPC_GPDMACH2,  LPC_GPDMACH3,
+                                                                          LPC_GPDMACH4,  LPC_GPDMACH5,  LPC_GPDMACH6,  LPC_GPDMACH7
+                                                                          };
 
   static constexpr const volatile void* LUTPerAddr[] = {
       nullptr,          // Reserved

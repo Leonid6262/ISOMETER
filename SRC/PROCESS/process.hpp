@@ -121,6 +121,7 @@ private:
   void wait(EPhases);
   void conv(EPhases);
   void calc_avr(EPhases);
+  void update_modbus_data();
   
   float UdP_avr;
   float UdN_avr;

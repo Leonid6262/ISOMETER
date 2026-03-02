@@ -36,7 +36,7 @@ private:
  static constexpr unsigned int MODBUS_SILENCE_TICKS = 50000; // 5 мс
  
  unsigned char* pAddressSlave;
- unsigned char Function;
+ unsigned char  Function;
  unsigned short StartingAddress;
  unsigned short AddressReg;
  unsigned short Quantity;

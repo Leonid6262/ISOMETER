@@ -31,17 +31,7 @@ void CPROCESS::step() {
     break;
   }
   
-  //--- Обновление данных MoBus ---
-  if(rModbusData.getInstance().isDirty) {
-    rModbusData.getInstance().isDirty = false;
-    rSet.getSettings().RAlarm1 = rModbusData.getInstance().registers[2].value;
-    rSet.getSettings().RAlarm2 = rModbusData.getInstance().registers[3].value;
-  } 
-  rModbusData.getInstance().registers[0].value = UStatus.all;
-  rModbusData.getInstance().registers[1].value = static_cast<unsigned short>(R + 0.5f);
-  rModbusData.getInstance().registers[2].value = rSet.getSettings().RAlarm1;
-  rModbusData.getInstance().registers[3].value = rSet.getSettings().RAlarm2;
-  //------–-------–----------------
+  update_modbus_data(); //--- Обновление данных для MoBus (F03, F04), запись по F06 ---
   
 }
 
@@ -280,4 +270,21 @@ void CPROCESS::clr_test_mode() {
   RelAlarm1Off();
   RelAlarm2Off();
   RelReadyOn();
+}
+
+void CPROCESS::update_modbus_data() {
+  //--- Обновление данных для MoBus (F03, F04), запись по F06 ---
+  if(rModbusData.getInstance().isDirty) {
+    rModbusData.getInstance().isDirty = false;
+    rSet.getSettings().RAlarm1 = rModbusData.getInstance().registers[CModbusDataProxy::RegAlarm1].value;
+    rSet.getSettings().RAlarm2 = rModbusData.getInstance().registers[CModbusDataProxy::RegAlarm2].value;
+  } 
+  if(rModbusData.getInstance().registers[CModbusDataProxy::RegSaveEEP].value == CModbusDataProxy::SaveCode) {
+    rModbusData.getInstance().registers[CModbusDataProxy::RegSaveEEP].value = 0;
+    rSet.saveSettings();
+  } 
+  rModbusData.getInstance().registers[CModbusDataProxy::RegStatus].value = UStatus.all;
+  rModbusData.getInstance().registers[CModbusDataProxy::RegR].value      = static_cast<unsigned short>(R + 0.5f);
+  rModbusData.getInstance().registers[CModbusDataProxy::RegAlarm1].value = rSet.getSettings().RAlarm1;
+  rModbusData.getInstance().registers[CModbusDataProxy::RegAlarm2].value = rSet.getSettings().RAlarm2;
 }

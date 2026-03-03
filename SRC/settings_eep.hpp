@@ -21,7 +21,7 @@ class CEEPSettings {
     signed short shift_adc[G_CONST::N_CHANNELS];        // 2 Смещения АЦП
     unsigned short RAlarm1;                             // 3 RAlarm1
     unsigned short RAlarm2;                             // 4 RAlarm2
-    unsigned short RTadd;                               // 5 RLadd
+    float RTadd;                                        // 5 RLadd
     float k1Ls;                                         // 6 k1Ls
     float k2Ls;                                         // 7 k2Ls
     unsigned char  Address;                             // 8 Адрес Slave
@@ -35,7 +35,7 @@ class CEEPSettings {
     .shift_adc =   { 0, 2047, 2047, 0 },
     .RAlarm1 = 40,
     .RAlarm2 = 20,
-    .RTadd = 0,
+    .RTadd = 4.7,
     .k1Ls = 1.0f,
     .k2Ls = 1.429f,
     .Address = 3,

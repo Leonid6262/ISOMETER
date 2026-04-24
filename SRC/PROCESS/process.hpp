@@ -5,6 +5,7 @@
 #include "adc.hpp"
 #include "mb_slave.hpp" 
 #include "mbDataProxy.hpp"
+#include "pause_us.hpp"
 
 class CPROCESS {
   
@@ -24,16 +25,16 @@ public:
   static inline void UserLedOn()  { LPC_GPIO0->CLR  = (1UL << 9); } 
   static inline void UserLedOff() { LPC_GPIO0->SET  = (1UL << 9); }
   
-  static inline void LampMeasOn()     { LPC_GPIO2->SET = (1UL << 27); }
-  static inline void LampMeasOff()    { LPC_GPIO2->CLR = (1UL << 27); }
-  static inline void LampAlarm1On()   { LPC_GPIO2->SET = (1UL << 29); }
-  static inline void LampAlarm1Off()  { LPC_GPIO2->CLR = (1UL << 29); }
-  static inline void LampAlarm2On()   { LPC_GPIO2->SET = (1UL << 31); }
-  static inline void LampAlarm2Off()  { LPC_GPIO2->CLR = (1UL << 31); }
+  static inline void LampMeasOn()     { LPC_GPIO2->CLR = (1UL << 31); }
+  static inline void LampMeasOff()    { LPC_GPIO2->SET = (1UL << 31); }
+  static inline void LampAlarm1On()   { LPC_GPIO2->CLR = (1UL << 30); }
+  static inline void LampAlarm1Off()  { LPC_GPIO2->SET = (1UL << 30); }
+  static inline void LampAlarm2On()   { LPC_GPIO2->CLR = (1UL << 29); }
+  static inline void LampAlarm2Off()  { LPC_GPIO2->SET = (1UL << 29); }
   
-  static inline void RelReadyOn()     {  }
-  static inline void RelReadyOff()    {  }
-  
+  static inline void RelReadyOn()     { LPC_GPIO2->SET = (1UL << 28); }
+  static inline void RelReadyOff()    { LPC_GPIO2->CLR = (1UL << 28); }
+
   unsigned int prev_TC0_Phase;
   
   // --- Статус ---
@@ -67,13 +68,14 @@ public:
 private:
   unsigned int dTrsPhase;
   
-  static inline void RelAlarm1On()    { LPC_GPIO2->SET = (1UL << 25); }
-  static inline void RelAlarm1Off()   { LPC_GPIO2->CLR = (1UL << 25); }
-  static inline void RelAlarm2On()    { LPC_GPIO2->SET = (1UL << 26); }  
-  static inline void RelAlarm2Off()   { LPC_GPIO2->CLR = (1UL << 26); }
+  static inline void Negative_phase()     { LPC_GPIO2->CLR = (1UL << 25); Pause_us(2); LPC_GPIO2->SET = (1UL << 24); }
+  static inline void Positive_phase()     { LPC_GPIO2->CLR = (1UL << 24); Pause_us(2); LPC_GPIO2->SET = (1UL << 25); }
+  static inline void phase_Off()          { LPC_GPIO2->CLR = (1UL << 24); LPC_GPIO2->CLR = (1UL << 25); }
   
-  static inline void PN_On()  { LPC_GPIO1->CLR = (1UL << 13); }   /* Два порта в реальном изделии. */ 
-  static inline void PN_Off() { LPC_GPIO1->SET = (1UL << 13); }   /* В стенде - реле.  */ 
+  static inline void RelAlarm1On()     { LPC_GPIO2->SET = (1UL << 27); }
+  static inline void RelAlarm1Off()    { LPC_GPIO2->CLR = (1UL << 27); }
+  static inline void RelAlarm2On()     { LPC_GPIO2->SET = (1UL << 26); }
+  static inline void RelAlarm2Off()    { LPC_GPIO2->CLR = (1UL << 26); }
   
   static constexpr unsigned short MEAS_PAUSED  = 7000;    // 700us - пауза между выборками
   static constexpr unsigned short WAIT_NUMBER  = 7000;    // Время заряда - 0.7ms * 7000 = 4.9s

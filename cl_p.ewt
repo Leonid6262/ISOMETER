@@ -2932,6 +2932,9 @@
             <name>$PROJ_DIR$\SRC\IntPriority.hpp</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\SRC\pause_us.hpp</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\SRC\rtc.cpp</name>
         </file>
         <file>

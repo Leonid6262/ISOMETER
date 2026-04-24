@@ -7,7 +7,6 @@ CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet,CModbusDataProxy& rModbusData)
   wait_number = WAIT_NUMBER;
   pause_counter = 0;
   RelReadyOn();
-  PN_On();
   clr_bs();
   bsWork(State::ON);
 }
@@ -88,7 +87,7 @@ void CPROCESS::conv(EPhases ph) {
     if(UStatus.sTest) { LampAlarm1On(); LampAlarm2On(); }
     if(pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
-      PN_Off();
+      Positive_phase();
       calc_avr(ph);
       phases = EPhases::PhaseN;
       LampMeasOff();
@@ -106,7 +105,7 @@ void CPROCESS::conv(EPhases ph) {
     if(UStatus.sTest) { LampAlarm1On(); LampAlarm2On(); }
     if(pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
-      if(UStatus.sWork) { PN_On(); }      
+      if(UStatus.sWork) { Negative_phase(); }      
       calc_avr(ph);
       phases = EPhases::PhaseP;
       LampMeasOff();
@@ -245,7 +244,7 @@ void CPROCESS::conv_adc() {
 }
 
 void CPROCESS::set_test_mode() { 
-  PN_Off();
+  phase_Off();
   testRelAlarm1 = State::OFF;
   testRelAlarm2 = State::OFF;
   RelAlarm1Off();
@@ -259,7 +258,7 @@ void CPROCESS::set_test_mode() {
 void CPROCESS::clr_test_mode() { 
   prev_TC0_Phase = LPC_TIM0->TC; 
   phases = EPhases::PhaseP;
-  PN_On();
+  Positive_phase();
   wait_number = WAIT_NUMBER;
   clr_bs();
   bsWork(State::ON);

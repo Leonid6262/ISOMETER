@@ -1,4 +1,6 @@
 #include "process.hpp" 
+//#include "menu_factory.hpp" 
+#include <math.h>
 
 CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet,CModbusDataProxy& rModbusData) : 
   rAdc(rAdc), rSet(rSet), rModbusData(rModbusData) {
@@ -17,16 +19,20 @@ void CPROCESS::step() {
   
   switch (phases) {
   case EPhases::PhaseP:
-    if(dTrsPhase > MEAS_PAUSED) { wait(phases); } 
+    LampMeasOn();
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; wait(phases); } 
     break;   
-  case EPhases::MeasP:   
-    if(dTrsPhase > MEAS_PAUSED) { conv(phases); }    
+  case EPhases::MeasP:
+    LampMeasOff();
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; conv(phases); }    
     break; 
-  case EPhases::PhaseN:         
-    if(dTrsPhase > MEAS_PAUSED) { wait(phases); } 
+  case EPhases::PhaseN:
+    LampMeasOn();
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; wait(phases); } 
     break;   
-  case EPhases::MeasN:  
-    if(dTrsPhase > MEAS_PAUSED) { conv(phases); }    
+  case EPhases::MeasN:
+    LampMeasOff();
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; conv(phases); }    
     break;
   }
   
@@ -37,33 +43,13 @@ void CPROCESS::step() {
 void CPROCESS::wait(EPhases ph) {
   switch (ph) {
   case EPhases::PhaseP:   
-    conv_adc();
-    prev_TC0_Phase = LPC_TIM0->TC;
-    pause_counter++;
-    if(R == Rmax) {
-      if(pause_counter > wait_number / 2) {
-        LampMeasOff();
-      } else {
-        LampMeasOn();
-      }      
-    }
-    if(pause_counter > wait_number) {
+    if(++pause_counter > wait_number) {
       pause_counter = 0;      
       phases = EPhases::MeasP;
     }
     break; 
   case EPhases::PhaseN:  
-    conv_adc();
-    prev_TC0_Phase = LPC_TIM0->TC;
-    pause_counter++;
-    if(R == Rmax) {
-      if(pause_counter > wait_number / 2) {
-        LampMeasOff();
-      } else {
-        LampMeasOn();
-      }      
-    }
-    if(pause_counter > wait_number) {
+    if(++pause_counter > wait_number) {
       pause_counter = 0;
       phases = EPhases::MeasN;
     }
@@ -78,37 +64,33 @@ void CPROCESS::conv(EPhases ph) {
   switch (ph) {
   case EPhases::MeasP:   
     conv_adc();
+
+    ILeak1_P[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1));
     Ud_P[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
-    ILeak1_P[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)); 
     ILeak2_P[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
-    prev_TC0_Phase = LPC_TIM0->TC;
-    pause_counter++;
-    LampMeasOn();
+    
     if(UStatus.sTest) { LampAlarm1On(); LampAlarm2On(); }
-    if(pause_counter > AVR_NUMBER - 1) {
+    if(++pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
       Positive_phase();
       calc_avr(ph);
       phases = EPhases::PhaseN;
-      LampMeasOff();
       if(UStatus.sTest) { LampAlarm1Off(); LampAlarm2Off(); }
     }
     break; 
   case EPhases::MeasN:  
     conv_adc();
-    Ud_N[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
+    
     ILeak1_N[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)); 
+    Ud_N[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
     ILeak2_N[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
-    prev_TC0_Phase = LPC_TIM0->TC;
-    pause_counter++;
-    LampMeasOn();
+    
     if(UStatus.sTest) { LampAlarm1On(); LampAlarm2On(); }
-    if(pause_counter > AVR_NUMBER - 1) {
+    if(++pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
-      if(UStatus.sWork) { Negative_phase(); }      
+      Negative_phase();    
       calc_avr(ph);
       phases = EPhases::PhaseP;
-      LampMeasOff();
       if(UStatus.sTest) { LampAlarm1Off(); LampAlarm2Off(); }
     }
     break; 
@@ -132,16 +114,16 @@ void CPROCESS::calc_avr(EPhases ph) {
     UdP_avr = ud / N_AVR;
     ILeak1P_avr = ileak1 / N_AVR;
     ILeak2P_avr = ileak2 / N_AVR;
-    if(UStatus.sTest) { 
-      test_Ud_avr = UdP_avr;
-      test_ILeak1_avr = ILeak1P_avr;
-      test_ILeak2_avr = ILeak2P_avr;
-    } 
-    else { 
-      test_Ud_avr = 0;
-      test_ILeak1_avr = 0;
-      test_ILeak2_avr = 0;
-    }
+//    if(UStatus.sTest) { 
+      //test_Ud_avr = UdP_avr;
+      //test_ILeak1_avr = ILeak1P_avr;
+      //test_ILeak2_avr = ILeak2P_avr;
+//    } 
+//    else { 
+//      test_Ud_avr = 0;
+//      test_ILeak1_avr = 0;
+//      test_ILeak2_avr = 0;
+//    }
     break; 
   case EPhases::MeasN:  
     for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
@@ -152,47 +134,62 @@ void CPROCESS::calc_avr(EPhases ph) {
     UdN_avr = ud / N_AVR;
     ILeak1N_avr = ileak1 / N_AVR;
     ILeak2N_avr = ileak2 / N_AVR;
-    if(UStatus.sTest) { 
-      test_Ud_avr = UdN_avr;
-      test_ILeak1_avr = ILeak1N_avr;
-      test_ILeak2_avr = ILeak2N_avr;
-    } 
-    else { 
-      test_Ud_avr = 0;
-      test_ILeak1_avr = 0;
-      test_ILeak2_avr = 0;
-    }
+//    if(UStatus.sTest) { 
+      //test_Ud_avr = UdN_avr;
+      //test_ILeak1_avr = ILeak1N_avr;
+      //test_ILeak2_avr = ILeak2N_avr;
+//    } 
+//    else { 
+//      test_Ud_avr = 0;
+//      test_ILeak1_avr = 0;
+//      test_ILeak2_avr = 0;
+//    }
     break; 
   case EPhases::PhaseP:
   case EPhases::PhaseN:
     break;
   }
   
-  ////
-  //// Добавить расчёт для ILeak1 (для 1-го канала)
-  ////
+  float dIL1 = ILeak1N_avr - ILeak1P_avr;
+  float pIL1 = ILeak2N_avr + ILeak1P_avr;
   
-  float dIL = ILeak2N_avr - ILeak2P_avr;
-  float pIL = ILeak2N_avr + ILeak2P_avr;
+  float dIL2 = ILeak2N_avr - ILeak2P_avr;
+  float pIL2 = ILeak2N_avr + ILeak2P_avr;
+  
   float dUd = UdN_avr - UdP_avr;
   float pUd = UdN_avr + UdP_avr;
   
-  float Ucor = (pIL * dUd) / (pIL * dUd - dIL * pUd);
+  float Ucor1 = 1 - ((pIL1 * dUd) / (pIL1 * dUd - dIL1 * pUd));
+  float Ucor2 = 1 - ((pIL2 * dUd) / (pIL2 * dUd - dIL2 * pUd));
+
+  
+Ucor1 = 1;  
+Ucor2 = 1;  
+  
   
   bool r_min = false;
-  if((ILeak2N_avr >= 2040) || (ILeak2P_avr >= 2040)) r_min = true;
-
+  
   if(UStatus.sWork) {
-    float r = ((rSet.getSettings().k2Ls * (2.0f * Umeas * (1 - Ucor))) / dIL) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs2;
+ 
+    R1 = (((rSet.getSettings().k1Ls * Ucor1 * 10000.0f) / dIL1) - 
+          ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs) * rSet.getSettings().ramp_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)];
+    R2 = (((rSet.getSettings().k2Ls * Ucor2 * 10000.0f) / dIL2) - 
+          ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs) * rSet.getSettings().ramp_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)];
+ 
+    if((ILeak2N_avr > 4080) || (ILeak2P_avr > 4080)){ R = R1; N_ch = 1; } 
+    else { R = R2; N_ch = 2; }
     
-    if(r > Rmax) { 
+    if((ILeak1N_avr >= 4080) || (ILeak1P_avr >= 4080)) r_min = true;
+
+    R = R1; N_ch = 1;
+    
+    if((R > Rmax) || (R < 0)) { 
       R = Rmax;
       bsMoreMax(State::ON);
     } else if(r_min) { 
       R = 0;
       bsLessMin(State::ON);
-    } else { 
-      R = r; 
+    } else {      
       bsMoreMax(State::OFF);
       bsLessMin(State::OFF);
     }
@@ -236,10 +233,12 @@ void CPROCESS::calc_avr(EPhases ph) {
 }
 
 void CPROCESS::conv_adc() {
-  rAdc.conv_tnf({               
+  rAdc.conv_tnf({     
+    
+    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2), 
     static_cast<unsigned char>(CADC::EADC_NameCh::Ud),
-    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1), 
-    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2),
+    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1),
+    
   });  
 }
 

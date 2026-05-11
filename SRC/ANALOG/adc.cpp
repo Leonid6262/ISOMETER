@@ -25,7 +25,8 @@ void CADC::conv_tnf(std::initializer_list<char> list) {
       // Выталкиваем два последних байта из FIFO
       if (ending_index < 2) {
         ending_index++;
-        SSP->DR = cN_CH[static_cast<unsigned char>(EADC_NameCh::ch_HRf)];
+        //SSP->DR = cN_CH[static_cast<unsigned char>(EADC_NameCh::ch_HRf)];
+        SSP->DR = cN_CH[*(list.begin() + index_wr)];
         timing_index++;
       }
     }

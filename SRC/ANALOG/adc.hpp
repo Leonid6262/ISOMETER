@@ -20,7 +20,7 @@ private:
   signed short data[G_CONST::N_CHANNELS] = {};  // Обработанные данные полученные АЦП
   // --- Обработка и запись данных внешнего АЦП ---
   inline void setData(unsigned char channel, signed short raw_adc_data) {
-    data[channel] = (raw_adc_data - rSet.getSettings().shift_adc[channel]);
+    data[channel] = raw_adc_data;
   }
   
 public:
@@ -28,7 +28,7 @@ public:
     Ud     = 0,
     ILeak1 = 1,
     ILeak2 = 2,
-    ch_HRf = 3   // Промежуточный канал (0.5 Ref)
+    ch_HRf = 15   // Промежуточный канал (0.5 Ref)
   };
   
   CADC(LPC_SSP_TypeDef*, CEEPSettings&);

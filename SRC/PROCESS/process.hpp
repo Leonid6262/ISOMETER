@@ -16,9 +16,12 @@ public:
   CADC& rAdc;
   
   inline float*        getPointerR()       { return &R;               }
-  inline signed short* getPointerTUd()     { return &test_Ud_avr;     }
-  inline signed short* getPointerTILeak1() { return &test_ILeak1_avr; }
-  inline signed short* getPointerTILeak2() { return &test_ILeak2_avr; }  
+  inline float*        getPointerR1()      { return &R1;              }
+  inline float*        getPointerR2()      { return &R2;              }
+  inline unsigned short* getPointerNch()   { return &N_ch;            }
+//  inline signed short* getPointerTUd()     { return &test_Ud_avr;     }
+//  inline signed short* getPointerTILeak1() { return &test_ILeak1_avr; }
+//  inline signed short* getPointerTILeak2() { return &test_ILeak2_avr; }  
   inline State*        getPointerSRl1()    { return &testRelAlarm1;   }
   inline State*        getPointerSRl2()    { return &testRelAlarm2;   }
    
@@ -32,8 +35,8 @@ public:
   static inline void LampAlarm2On()   { LPC_GPIO2->CLR = (1UL << 29); }
   static inline void LampAlarm2Off()  { LPC_GPIO2->SET = (1UL << 29); }
   
-  static inline void RelReadyOn()     { LPC_GPIO2->SET = (1UL << 28); }
-  static inline void RelReadyOff()    { LPC_GPIO2->CLR = (1UL << 28); }
+  static inline void RelReadyOn()     { LPC_GPIO2->SET = (1UL << 24); }
+  static inline void RelReadyOff()    { LPC_GPIO2->CLR = (1UL << 24); }
 
   unsigned int prev_TC0_Phase;
   
@@ -64,35 +67,38 @@ public:
   void step();
   
   float R;
+  float R1;
+  float R2;
+  unsigned short N_ch;
   
 private:
   unsigned int dTrsPhase;
   
-  static inline void Negative_phase()     { LPC_GPIO2->CLR = (1UL << 25); Pause_us(2); LPC_GPIO2->SET = (1UL << 24); }
-  static inline void Positive_phase()     { LPC_GPIO2->CLR = (1UL << 24); Pause_us(2); LPC_GPIO2->SET = (1UL << 25); }
-  static inline void phase_Off()          { LPC_GPIO2->CLR = (1UL << 24); LPC_GPIO2->CLR = (1UL << 25); }
+  static inline void Negative_phase()     { LPC_GPIO2->CLR = (1UL << 28); Pause_us(2); LPC_GPIO2->SET = (1UL << 27); }
+  static inline void Positive_phase()     { LPC_GPIO2->CLR = (1UL << 27); Pause_us(2); LPC_GPIO2->SET = (1UL << 28); }
+  static inline void phase_Off()          { LPC_GPIO2->CLR = (1UL << 27); LPC_GPIO2->CLR = (1UL << 28); }
   
-  static inline void RelAlarm1On()     { LPC_GPIO2->SET = (1UL << 27); }
-  static inline void RelAlarm1Off()    { LPC_GPIO2->CLR = (1UL << 27); }
+  static inline void RelAlarm1On()     { LPC_GPIO2->SET = (1UL << 25); }
+  static inline void RelAlarm1Off()    { LPC_GPIO2->CLR = (1UL << 25); }
   static inline void RelAlarm2On()     { LPC_GPIO2->SET = (1UL << 26); }
   static inline void RelAlarm2Off()    { LPC_GPIO2->CLR = (1UL << 26); }
   
-  static constexpr unsigned short MEAS_PAUSED  = 7000;    // 700us - пауза между выборками
-  static constexpr unsigned short WAIT_NUMBER  = 7000;    // Время заряда - 0.7ms * 7000 = 4.9s
-  static constexpr unsigned short TEST_NUMBER  = 1000;    // Время заряда - 0.7ms * 1000 = 0.7s
-  static constexpr unsigned short AVR_NUMBER   = 0x200;   // Количество выборок. (tmeas+0.7ms) * 512 примерно 400ms
+  static constexpr unsigned short MEAS_PAUSED  = 7000;    // 0.7ms - пауза между выборками
+  static constexpr unsigned short WAIT_NUMBER  = 4286;    // Время заряда - 0.7ms * 4286 = 3s в рабочем режиме
+  static constexpr unsigned short TEST_NUMBER  = 714;     // Время заряда - 0.7ms * 714  = 0.5s в тестовом режиме
+  static constexpr unsigned short AVR_NUMBER   = 0x200;   // Количество выборок. 0.7ms * 512 примерно 358ms
   static constexpr unsigned short N_AVR        = 500;     // Кадр усреднения
   static constexpr unsigned short sh_avr       = 5;       // Сдвиг кадра
   
   static constexpr unsigned short gis_const    = 2;       // 2kOhm - гитерезис 1-го диапазона 
   static constexpr unsigned short range        = 50;      // 50kOhm - 1-й диапазон от 0 до range
   static constexpr unsigned short gis_percent  = 15;      // 15% - гитерезис 2-го диапазона (от range_1 и выше) 
-  static constexpr unsigned short Rmax         = 1000;
+  static constexpr unsigned short Rmax         = 2500;
   
-  static constexpr float Umeas  = 20000.0f;               // U измерений [mV]
-  static constexpr float RT     = 39.0f + 3.9f + 3.9f;    // RT [kOhm]
-  static constexpr float Rs1    = 0.1f;                   // R шунта 1 [kOhm]
-  static constexpr float Rs2    = 0.1f;                   // R шунта 2 [kOhm]
+  //static constexpr float Umeas  = 30000.0f;               // U измерений [mV]
+  static constexpr float RT     = 51.0f + 5.1f + 5.1f;    // RT [kOhm]
+  static constexpr float Rs     = 1.0f;                  // R шунта 11 [kOhm]
+  //static constexpr float Rs2    = 1.02f;                  // R шунта 2 [kOhm]
 
   signed short Ud_P[AVR_NUMBER];
   signed short ILeak1_P[AVR_NUMBER]; 
@@ -103,9 +109,9 @@ private:
   
   unsigned short pause_counter;
   unsigned short wait_number;
-  signed short test_Ud_avr;
-  signed short test_ILeak1_avr; 
-  signed short test_ILeak2_avr;
+  //signed short test_Ud_avr;
+  //signed short test_ILeak1_avr; 
+  //signed short test_ILeak2_avr;
   
   State testRelAlarm1 = State::OFF;
   State testRelAlarm2 = State::OFF;

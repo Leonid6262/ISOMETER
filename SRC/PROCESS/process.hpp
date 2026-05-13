@@ -15,13 +15,12 @@ public:
   CEEPSettings& rSet;
   CADC& rAdc;
   
-  inline float*        getPointerR()       { return &R;               }
-  inline float*        getPointerR1()      { return &R1;              }
-  inline float*        getPointerR2()      { return &R2;              }
-  inline unsigned short* getPointerNch()   { return &N_ch;            }
-//  inline signed short* getPointerTUd()     { return &test_Ud_avr;     }
-//  inline signed short* getPointerTILeak1() { return &test_ILeak1_avr; }
-//  inline signed short* getPointerTILeak2() { return &test_ILeak2_avr; }  
+  inline float*          getPointerR()       { return &R;               }
+  inline float*          getPointerR1()      { return &R1;              }
+  inline float*          getPointerR2()      { return &R2;              }
+  inline float*          getPointerUd()      { return &Ud_avr;          }
+  inline unsigned short* getPointerNch()     { return &N_ch;            }
+
   inline State*        getPointerSRl1()    { return &testRelAlarm1;   }
   inline State*        getPointerSRl2()    { return &testRelAlarm2;   }
    
@@ -35,8 +34,8 @@ public:
   static inline void LampAlarm2On()   { LPC_GPIO2->CLR = (1UL << 29); }
   static inline void LampAlarm2Off()  { LPC_GPIO2->SET = (1UL << 29); }
   
-  static inline void RelReadyOn()     { LPC_GPIO2->SET = (1UL << 24); }
-  static inline void RelReadyOff()    { LPC_GPIO2->CLR = (1UL << 24); }
+  static inline void RelReadyOn()     { LPC_GPIO1->SET = (1UL << 21); }
+  static inline void RelReadyOff()    { LPC_GPIO1->CLR = (1UL << 21); }
 
   unsigned int prev_TC0_Phase;
   
@@ -69,6 +68,7 @@ public:
   float R;
   float R1;
   float R2;
+  float Ud_avr;
   unsigned short N_ch;
   
 private:
@@ -85,7 +85,7 @@ private:
   
   static constexpr unsigned short MEAS_PAUSED  = 7000;    // 0.7ms - пауза между выборками
   static constexpr unsigned short WAIT_NUMBER  = 4286;    // Время заряда - 0.7ms * 4286 = 3s в рабочем режиме
-  static constexpr unsigned short TEST_NUMBER  = 714;     // Время заряда - 0.7ms * 714  = 0.5s в тестовом режиме
+  static constexpr unsigned short TEST_NUMBER  = 2134;    // Время заряда - 0.7ms * 2134  = 1.5s в тестовом режиме
   static constexpr unsigned short AVR_NUMBER   = 0x200;   // Количество выборок. 0.7ms * 512 примерно 358ms
   static constexpr unsigned short N_AVR        = 500;     // Кадр усреднения
   static constexpr unsigned short sh_avr       = 5;       // Сдвиг кадра
@@ -95,10 +95,9 @@ private:
   static constexpr unsigned short gis_percent  = 15;      // 15% - гитерезис 2-го диапазона (от range_1 и выше) 
   static constexpr unsigned short Rmax         = 2500;
   
-  //static constexpr float Umeas  = 30000.0f;               // U измерений [mV]
+  static constexpr float u      = 39500.0f;               // u [mV]
   static constexpr float RT     = 51.0f + 5.1f + 5.1f;    // RT [kOhm]
-  static constexpr float Rs     = 1.0f;                  // R шунта 11 [kOhm]
-  //static constexpr float Rs2    = 1.02f;                  // R шунта 2 [kOhm]
+  static constexpr float Rs     = 1.0f;                   // R шунта [kOhm]
 
   signed short Ud_P[AVR_NUMBER];
   signed short ILeak1_P[AVR_NUMBER]; 
@@ -109,10 +108,7 @@ private:
   
   unsigned short pause_counter;
   unsigned short wait_number;
-  //signed short test_Ud_avr;
-  //signed short test_ILeak1_avr; 
-  //signed short test_ILeak2_avr;
-  
+
   State testRelAlarm1 = State::OFF;
   State testRelAlarm2 = State::OFF;
    

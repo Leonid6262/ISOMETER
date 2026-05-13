@@ -37,9 +37,9 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
   
   using namespace menu_alias;
   
-  static constexpr unsigned char ch_UD     = static_cast<unsigned char>(CADC::EADC_NameCh::Ud);
-  static constexpr unsigned char ch_ILeak1 = static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1);
-  static constexpr unsigned char ch_ILeak2 = static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2);
+  static constexpr unsigned char ch_Ud     = CADC::EADC_NameCh::Ud;
+  static constexpr unsigned char ch_ILeak1 = CADC::EADC_NameCh::ILeak1;
+  static constexpr unsigned char ch_ILeak2 = CADC::EADC_NameCh::ILeak2;
   
   unsigned short l = set.Language - 1;                          // Установка языка отображения согласно уставке
   
@@ -49,25 +49,25 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
   o(Mn.INDICATION[l],{
       //o("Rinsul", {}, rProcess.getPointerR(), "kOhm", 1, p0, vt::vfloat, nm::In1V),}),  
       o::Dual("Rinsul", rProcess.getPointerR(),       "kOhm",   1, p0, vt::vfloat,
-              "Nch",    rProcess.getPointerNch(),         "",   1, p0, vt::ushort, nm::In2V ),}),
+              "Nch",    rProcess.getPointerNch(),        "N",   1, p0, vt::ushort, nm::In2V ),}),
   o(Mn.SETTINGS[l],{
       o(Mn.PARAMS[l],{
           o("Alarm1",  {}, &set.RAlarm1, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
           o("Alarm2",  {}, &set.RAlarm2, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
           o("RTadd",   {}, &set.RTadd,   "Ohm", 1,  p1, vt::vfloat, nm::Ed1V, 0, 200000 ),}),
       o(Mn.SETTING_UP[l],{
-          //o::Dual("Ud",    rProcess.getPointerTUd(),      "d",   1, p0, vt::sshort,
-          //        "shift", &set.ramp_adc[ch_UD],         "",   1, p0, vt::sshort, nm::IE2V, -23, 2070   ),
           o::Dual("Rk1",   rProcess.getPointerR1(),       "kOhm",   1, p2, vt::vfloat,
                   "k1Ls",  &set.k1Ls,                     "",       1, p3, vt::vfloat, nm::IE2V,   0.1f, 100 ),
           o::Dual("Rk1",   rProcess.getPointerR1(),       "kOhm",   1, p2, vt::vfloat,
-                  "ramp1", &set.ramp_adc[ch_ILeak1],          "",   1, p4, vt::vfloat, nm::IE2V, 0, 4   ),
+                  "ramp1", &set.k_adc[ch_ILeak1],          "",      1, p4, vt::vfloat, nm::IE2V, 0, 4   ),
           o::Dual("Rk2",   rProcess.getPointerR2(),       "kOhm",   1, p2, vt::vfloat,
                   "k2Ls",  &set.k2Ls,                     "",       1, p3, vt::vfloat, nm::IE2V,   0.1f, 100 ),
           o::Dual("Rk2",   rProcess.getPointerR2(),       "kOhm",   1, p2, vt::vfloat,
-                  "ramp2", &set.ramp_adc[ch_ILeak2],          "",   1, p4, vt::vfloat, nm::IE2V, 0, 4   ),
-          o("Control RelAl1",  {}, rProcess.getPointerSRl1(),     "",    1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),
-          o("Control RelAl2",  {}, rProcess.getPointerSRl2(),     "",    1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),}),
+                  "ramp2", &set.k_adc[ch_ILeak2],          "",      1, p4, vt::vfloat, nm::IE2V, 0, 4   ),
+          o::Dual("Ud",    rProcess.getPointerUd(),       "V",      1, p2, vt::vfloat,
+                  "kADC",  &set.k_adc[ch_Ud],              "",      1, p4, vt::vfloat, nm::IE2V, 0, 100   ),
+          o("Control RelAl1",  {}, rProcess.getPointerSRl1(),   "",   1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),
+          o("Control RelAl2",  {}, rProcess.getPointerSRl2(),   "",   1, p0, vt::vbool,  nm::Ed1V,   0, 1      ),}),
       o("RS-485",{
           o("Slave address",    {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 247  ),
           o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}),      

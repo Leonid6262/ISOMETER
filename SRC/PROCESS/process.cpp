@@ -114,16 +114,6 @@ void CPROCESS::calc_avr(EPhases ph) {
     UdP_avr = ud / N_AVR;
     ILeak1P_avr = ileak1 / N_AVR;
     ILeak2P_avr = ileak2 / N_AVR;
-//    if(UStatus.sTest) { 
-      //test_Ud_avr = UdP_avr;
-      //test_ILeak1_avr = ILeak1P_avr;
-      //test_ILeak2_avr = ILeak2P_avr;
-//    } 
-//    else { 
-//      test_Ud_avr = 0;
-//      test_ILeak1_avr = 0;
-//      test_ILeak2_avr = 0;
-//    }
     break; 
   case EPhases::MeasN:  
     for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
@@ -134,54 +124,30 @@ void CPROCESS::calc_avr(EPhases ph) {
     UdN_avr = ud / N_AVR;
     ILeak1N_avr = ileak1 / N_AVR;
     ILeak2N_avr = ileak2 / N_AVR;
-//    if(UStatus.sTest) { 
-      //test_Ud_avr = UdN_avr;
-      //test_ILeak1_avr = ILeak1N_avr;
-      //test_ILeak2_avr = ILeak2N_avr;
-//    } 
-//    else { 
-//      test_Ud_avr = 0;
-//      test_ILeak1_avr = 0;
-//      test_ILeak2_avr = 0;
-//    }
     break; 
   case EPhases::PhaseP:
   case EPhases::PhaseN:
     break;
   }
   
-  float dIL1 = ILeak1N_avr - ILeak1P_avr;
-  float pIL1 = ILeak2N_avr + ILeak1P_avr;
+  Ud_avr = ((UdN_avr + UdP_avr) * rSet.getSettings().k_adc[CADC::EADC_NameCh::Ud]) / 2.0f;
   
+  float dIL1 = ILeak1N_avr - ILeak1P_avr;   
   float dIL2 = ILeak2N_avr - ILeak2P_avr;
-  float pIL2 = ILeak2N_avr + ILeak2P_avr;
-  
-  float dUd = UdN_avr - UdP_avr;
-  float pUd = UdN_avr + UdP_avr;
-  
-  float Ucor1 = 1 - ((pIL1 * dUd) / (pIL1 * dUd - dIL1 * pUd));
-  float Ucor2 = 1 - ((pIL2 * dUd) / (pIL2 * dUd - dIL2 * pUd));
+  float dUd = 1000.0f * (UdN_avr - UdP_avr) * rSet.getSettings().k_adc[CADC::EADC_NameCh::Ud];
 
-  
-Ucor1 = 1;  
-Ucor2 = 1;  
-  
-  
-  bool r_min = false;
-  
   if(UStatus.sWork) {
  
-    R1 = (((rSet.getSettings().k1Ls * Ucor1 * 10000.0f) / dIL1) - 
-          ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs) * rSet.getSettings().ramp_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)];
-    R2 = (((rSet.getSettings().k2Ls * Ucor2 * 10000.0f) / dIL2) - 
-          ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs) * rSet.getSettings().ramp_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)];
+    R1 = (((rSet.getSettings().k1Ls * ((2 * u) + (dUd / 2.0f))) / dIL1) -  
+          ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);// * rSet.getSettings().k_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)];
+    R2 = (((rSet.getSettings().k2Ls * ((2 * u) + (dUd / 2.0f))) / dIL2) - 
+          ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);// * rSet.getSettings().k_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)];
  
     if((ILeak2N_avr > 4080) || (ILeak2P_avr > 4080)){ R = R1; N_ch = 1; } 
     else { R = R2; N_ch = 2; }
     
+    bool r_min = false;
     if((ILeak1N_avr >= 4080) || (ILeak1P_avr >= 4080)) r_min = true;
-
-    R = R1; N_ch = 1;
     
     if((R > Rmax) || (R < 0)) { 
       R = Rmax;
@@ -235,9 +201,9 @@ Ucor2 = 1;
 void CPROCESS::conv_adc() {
   rAdc.conv_tnf({     
     
-    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2), 
+    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1), 
     static_cast<unsigned char>(CADC::EADC_NameCh::Ud),
-    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1),
+    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2),
     
   });  
 }

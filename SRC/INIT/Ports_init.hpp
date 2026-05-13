@@ -10,10 +10,10 @@ public:
     LPC_GPIO0->DIR = 0x00000200; // U-LED
     
     LPC_GPIO1->CLR = 0xFFFFFFFF;  
-    LPC_GPIO1->DIR = 0x00000000; 
+    LPC_GPIO1->DIR = 0x00200000; // Rel-Ready
     
     LPC_GPIO2->CLR = 0xFFFFFFFF;
-    LPC_GPIO2->DIR = 0xFF000000; // L-Ready, L-Al1, L-Al2, Rel-Ready, Rel-Al1, Rel-Al2, On-N, On-P
+    LPC_GPIO2->DIR = 0xFF000000; // L-Ready, L-Al1, L-Al2, Rel-Al1, Rel-Al2, On-N, On-P
     
     LPC_GPIO3->CLR = 0xFFFFFFFF;
     LPC_GPIO3->DIR = 0x00000000; 

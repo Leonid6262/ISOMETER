@@ -24,7 +24,7 @@ private:
   }
   
 public:
-  enum class EADC_NameCh {
+  enum EADC_NameCh {
     Ud     = 0,
     ILeak1 = 1,
     ILeak2 = 2,

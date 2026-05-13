@@ -18,7 +18,7 @@ class CEEPSettings {
   struct WorkSettings {
     unsigned short checkSum;                            // 0 Контрольная сумма
     unsigned short Language;                            // 1 Номер языка
-    float ramp_adc[G_CONST::N_CHANNELS];        // 2 Смещения АЦП
+    float k_adc[G_CONST::N_CHANNELS];                   // 2 Коэффициенты АЦП
     unsigned short RAlarm1;                             // 3 RAlarm1
     unsigned short RAlarm2;                             // 4 RAlarm2
     float RTadd;                                        // 5 RLadd
@@ -32,7 +32,7 @@ class CEEPSettings {
   static const inline WorkSettings defaultSettings {
     .checkSum = 0x0000,
     .Language = 1,
-    .ramp_adc =   { 1, 1, 1, 1 },
+    .k_adc =   { 1, 1, 1, 1 },
     .RAlarm1 = 40,
     .RAlarm2 = 20,
     .RTadd = 4.7,

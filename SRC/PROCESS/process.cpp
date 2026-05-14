@@ -130,18 +130,17 @@ void CPROCESS::calc_avr(EPhases ph) {
     break;
   }
   
-  Ud_avr = ((UdN_avr + UdP_avr) * rSet.getSettings().k_adc[CADC::EADC_NameCh::Ud]) / 2.0f;
+  Ud_avr_d = lroundf((UdN_avr + UdP_avr) / 2.0f ) + rSet.getSettings().shift_Ud;
+  Ud_avr_V = ((UdN_avr + UdP_avr + 2.0f * rSet.getSettings().shift_Ud) / 2.0f) * rSet.getSettings().k_Ud;
   
   float dIL1 = ILeak1N_avr - ILeak1P_avr;   
   float dIL2 = ILeak2N_avr - ILeak2P_avr;
-  float dUd = 1000.0f * (UdN_avr - UdP_avr) * rSet.getSettings().k_adc[CADC::EADC_NameCh::Ud];
+  float dUd = 1000.0f * (UdN_avr - UdP_avr) * rSet.getSettings().k_Ud;
 
   if(UStatus.sWork) {
  
-    R1 = (((rSet.getSettings().k1Ls * ((2 * u) + (dUd / 2.0f))) / dIL1) -  
-          ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);// * rSet.getSettings().k_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)];
-    R2 = (((rSet.getSettings().k2Ls * ((2 * u) + (dUd / 2.0f))) / dIL2) - 
-          ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);// * rSet.getSettings().k_adc[static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)];
+    R1 = (((rSet.getSettings().k_ch1 * ((2 * u) + (dUd / 2.0f))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
+    R2 = (((rSet.getSettings().k_ch2 * ((2 * u) + (dUd / 2.0f))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
  
     if((ILeak2N_avr > 4080) || (ILeak2P_avr > 4080)){ R = R1; N_ch = 1; } 
     else { R = R2; N_ch = 2; }

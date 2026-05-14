@@ -18,7 +18,8 @@ public:
   inline float*          getPointerR()       { return &R;               }
   inline float*          getPointerR1()      { return &R1;              }
   inline float*          getPointerR2()      { return &R2;              }
-  inline float*          getPointerUd()      { return &Ud_avr;          }
+  inline float*          getPointerUd_V()    { return &Ud_avr_V;        }
+  inline signed short*   getPointerUd_d()    { return &Ud_avr_d;        }
   inline unsigned short* getPointerNch()     { return &N_ch;            }
 
   inline State*        getPointerSRl1()    { return &testRelAlarm1;   }
@@ -68,7 +69,8 @@ public:
   float R;
   float R1;
   float R2;
-  float Ud_avr;
+  signed short Ud_avr_d;
+  float Ud_avr_V;
   unsigned short N_ch;
   
 private:
@@ -95,7 +97,7 @@ private:
   static constexpr unsigned short gis_percent  = 15;      // 15% - гитерезис 2-го диапазона (от range_1 и выше) 
   static constexpr unsigned short Rmax         = 2500;
   
-  static constexpr float u      = 39500.0f;               // u [mV]
+  static constexpr float u      = 40000.0f;               // u [mV]
   static constexpr float RT     = 51.0f + 5.1f + 5.1f;    // RT [kOhm]
   static constexpr float Rs     = 1.0f;                   // R шунта [kOhm]
 

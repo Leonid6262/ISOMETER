@@ -18,26 +18,28 @@ class CEEPSettings {
   struct WorkSettings {
     unsigned short checkSum;                            // 0 Контрольная сумма
     unsigned short Language;                            // 1 Номер языка
-    float k_adc[G_CONST::N_CHANNELS];                   // 2 Коэффициенты АЦП
-    unsigned short RAlarm1;                             // 3 RAlarm1
-    unsigned short RAlarm2;                             // 4 RAlarm2
-    float RTadd;                                        // 5 RLadd
-    float k1Ls;                                         // 6 k1Ls
-    float k2Ls;                                         // 7 k2Ls
-    unsigned char  Address;                             // 8 Адрес Slave
-    unsigned short Baud_rate;                           // 9 Скорость
+    float k_ch1;                                        // 2 Коэффициент ch1
+    float k_ch2;                                        // 3 Коэффициент ch2
+    float k_Ud;                                         // 4 Коэффициент ch Ud
+    signed short shift_Ud;                              // 5 Коэффициент ch Ud
+    unsigned short RAlarm1;                             // 6 RAlarm1
+    unsigned short RAlarm2;                             // 7 RAlarm2
+    float RTadd;                                        // 8 RLadd
+    unsigned char  Address;                             // 11 Адрес Slave
+    unsigned short Baud_rate;                           // 12 Скорость
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
   static const inline WorkSettings defaultSettings {
     .checkSum = 0x0000,
     .Language = 1,
-    .k_adc =   { 1, 1, 1, 1 },
+    .k_ch1 =   1,
+    .k_ch2 =   1,
+    .k_Ud  =   1,
+    .shift_Ud = 0,
     .RAlarm1 = 40,
     .RAlarm2 = 20,
     .RTadd = 4.7,
-    .k1Ls = 1.0f,
-    .k2Ls = 1.429f,
     .Address = 3,
     .Baud_rate = 5
   };

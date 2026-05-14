@@ -45,7 +45,7 @@ public:
     unsigned short all;
     struct {
       unsigned char sWork      : 1; // Работа
-      unsigned char sTest      : 1; // Настройка
+      unsigned char sFault     : 1; // Неисправность
       unsigned char sLessMin   : 1; // R менише Rmin
       unsigned char sMoreMax   : 1; // R больше Rmax
       unsigned char sAlarm1    : 1; // Alarm1
@@ -55,15 +55,15 @@ public:
   
   // Установка/сброс битов статуса
   void bsWork(State state)    { UStatus.sWork    = static_cast<unsigned char>(state); }
-  void bsTest(State state)    { UStatus.sTest    = static_cast<unsigned char>(state); }
+  void bsFault(State state)   { UStatus.sFault   = static_cast<unsigned char>(state); }
   void bsLessMin(State state) { UStatus.sLessMin = static_cast<unsigned char>(state); }
   void bsMoreMax(State state) { UStatus.sMoreMax = static_cast<unsigned char>(state); }
   void bsAlarm1(State state)  { UStatus.sAlarm1  = static_cast<unsigned char>(state); }
   void bsAlarm2(State state)  { UStatus.sAlarm2  = static_cast<unsigned char>(state); }
   void clr_bs()               { UStatus.all  = 0; }
   
-  void set_test_mode();
-  void clr_test_mode();
+//  void set_test_mode();
+//  void clr_test_mode();
   void step();
   
   float R;
@@ -96,6 +96,7 @@ private:
   static constexpr unsigned short range        = 50;      // 50kOhm - 1-й диапазон от 0 до range
   static constexpr unsigned short gis_percent  = 15;      // 15% - гитерезис 2-го диапазона (от range_1 и выше) 
   static constexpr unsigned short Rmax         = 2500;
+  static constexpr unsigned short d_max        = 4070;    // дискрет считающихся насыщеним
   
   static constexpr float u      = 40000.0f;               // u [mV]
   static constexpr float RT     = 51.0f + 5.1f + 5.1f;    // RT [kOhm]
@@ -128,6 +129,10 @@ private:
   void conv(EPhases);
   void calc_avr(EPhases);
   void update_modbus_data();
+  
+  float dIL1;   
+  float dIL2;
+  float dUd;
   
   float UdP_avr;
   float UdN_avr;

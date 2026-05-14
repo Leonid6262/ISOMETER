@@ -332,10 +332,10 @@ void CMenuNavigation::Key_Handler(EKey_code key) {
     break;
     
   case EKey_code::START:
-    rProcess.clr_test_mode();
+    //rProcess.clr_test_mode();
     break;
   case EKey_code::STOP:
-    rProcess.set_test_mode();
+    //rProcess.set_test_mode();
     break;
     
   case EKey_code::NONE:

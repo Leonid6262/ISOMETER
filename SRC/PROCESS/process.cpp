@@ -69,13 +69,13 @@ void CPROCESS::conv(EPhases ph) {
     Ud_P[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
     ILeak2_P[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
     
-    if(UStatus.sTest) { LampAlarm1On(); LampAlarm2On(); }
+    if(UStatus.sFault) { LampAlarm1On(); LampAlarm2On(); }
     if(++pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
       Positive_phase();
       calc_avr(ph);
       phases = EPhases::PhaseN;
-      if(UStatus.sTest) { LampAlarm1Off(); LampAlarm2Off(); }
+      if(UStatus.sFault) { LampAlarm1Off(); LampAlarm2Off(); }
     }
     break; 
   case EPhases::MeasN:  
@@ -85,13 +85,13 @@ void CPROCESS::conv(EPhases ph) {
     Ud_N[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
     ILeak2_N[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2)); 
     
-    if(UStatus.sTest) { LampAlarm1On(); LampAlarm2On(); }
+    if(UStatus.sFault) { LampAlarm1On(); LampAlarm2On(); }
     if(++pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
       Negative_phase();    
       calc_avr(ph);
       phases = EPhases::PhaseP;
-      if(UStatus.sTest) { LampAlarm1Off(); LampAlarm2Off(); }
+      if(UStatus.sFault) { LampAlarm1Off(); LampAlarm2Off(); }
     }
     break; 
   case EPhases::PhaseP:
@@ -101,9 +101,9 @@ void CPROCESS::conv(EPhases ph) {
 }
 
 void CPROCESS::calc_avr(EPhases ph) {
-  float ud = 0;
-  float ileak1 = 0;
-  float ileak2 = 0;
+  signed int ud = 0;
+  signed int ileak1 = 0;
+  signed int ileak2 = 0;
   switch (ph) {
   case EPhases::MeasP:     
     for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
@@ -111,9 +111,9 @@ void CPROCESS::calc_avr(EPhases ph) {
       ileak1 += ILeak1_P[n];
       ileak2 += ILeak2_P[n];
     }
-    UdP_avr = ud / N_AVR;
-    ILeak1P_avr = ileak1 / N_AVR;
-    ILeak2P_avr = ileak2 / N_AVR;
+    UdP_avr = static_cast<float>(ud) / N_AVR;
+    ILeak1P_avr = static_cast<float>(ileak1) / N_AVR;
+    ILeak2P_avr = static_cast<float>(ileak2) / N_AVR;
     break; 
   case EPhases::MeasN:  
     for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
@@ -121,9 +121,9 @@ void CPROCESS::calc_avr(EPhases ph) {
       ileak1 += ILeak1_N[n];
       ileak2 += ILeak2_N[n];
     }
-    UdN_avr = ud / N_AVR;
-    ILeak1N_avr = ileak1 / N_AVR;
-    ILeak2N_avr = ileak2 / N_AVR;
+    UdN_avr = static_cast<float>(ud) / N_AVR;
+    ILeak1N_avr = static_cast<float>(ileak1) / N_AVR;
+    ILeak2N_avr = static_cast<float>(ileak2) / N_AVR;
     break; 
   case EPhases::PhaseP:
   case EPhases::PhaseN:
@@ -133,25 +133,24 @@ void CPROCESS::calc_avr(EPhases ph) {
   Ud_avr_d = lroundf((UdN_avr + UdP_avr) / 2.0f ) + rSet.getSettings().shift_Ud;
   Ud_avr_V = ((UdN_avr + UdP_avr + 2.0f * rSet.getSettings().shift_Ud) / 2.0f) * rSet.getSettings().k_Ud;
   
-  float dIL1 = ILeak1N_avr - ILeak1P_avr;   
-  float dIL2 = ILeak2N_avr - ILeak2P_avr;
-  float dUd = 1000.0f * (UdN_avr - UdP_avr) * rSet.getSettings().k_Ud;
-
+  dIL1 = ILeak1N_avr - ILeak1P_avr;    
+  dIL2 = ILeak2N_avr - ILeak2P_avr;
+  
+  if(abs(round(UdN_avr - UdP_avr)) > 2) dUd = 1000.0f * (UdN_avr - UdP_avr) * rSet.getSettings().k_Ud;
+  else dUd = 0; 
+  
   if(UStatus.sWork) {
  
     R1 = (((rSet.getSettings().k_ch1 * ((2 * u) + (dUd / 2.0f))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
     R2 = (((rSet.getSettings().k_ch2 * ((2 * u) + (dUd / 2.0f))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
  
-    if((ILeak2N_avr > 4080) || (ILeak2P_avr > 4080)){ R = R1; N_ch = 1; } 
+    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ R = R1; N_ch = 1; } 
     else { R = R2; N_ch = 2; }
-    
-    bool r_min = false;
-    if((ILeak1N_avr >= 4080) || (ILeak1P_avr >= 4080)) r_min = true;
     
     if((R > Rmax) || (R < 0)) { 
       R = Rmax;
       bsMoreMax(State::ON);
-    } else if(r_min) { 
+    } else if((ILeak1N_avr >= d_max) || (ILeak1P_avr >= d_max)) { 
       R = 0;
       bsLessMin(State::ON);
     } else {      
@@ -181,7 +180,7 @@ void CPROCESS::calc_avr(EPhases ph) {
       bsAlarm2(State::OFF);
     }
     
-  } else if(UStatus.sTest) { 
+  } else if(UStatus.sFault) { 
     R = 0;
     if(testRelAlarm1 == State::ON) {
       RelAlarm1On();
@@ -207,19 +206,11 @@ void CPROCESS::conv_adc() {
   });  
 }
 
-void CPROCESS::set_test_mode() { 
-  phase_Off();
-  testRelAlarm1 = State::OFF;
-  testRelAlarm2 = State::OFF;
-  RelAlarm1Off();
-  RelAlarm2Off();
-  RelReadyOff();
-  wait_number = TEST_NUMBER;
-  clr_bs();
-  bsTest(State::ON); 
-}
+//void CPROCESS::set_test_mode() { 
 
-void CPROCESS::clr_test_mode() { 
+//}
+
+/*void CPROCESS::clr_test_mode() { 
   prev_TC0_Phase = LPC_TIM0->TC; 
   phases = EPhases::PhaseP;
   Positive_phase();
@@ -234,6 +225,7 @@ void CPROCESS::clr_test_mode() {
   RelAlarm2Off();
   RelReadyOn();
 }
+*/
 
 void CPROCESS::update_modbus_data() {
   //--- Обновление данных для MoBus (F03, F04), запись по F06 ---

@@ -8,7 +8,6 @@ CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet,CModbusDataProxy& rModbusData)
   phases = EPhases::PhaseP;
   wait_number = WAIT_NUMBER;
   pause_counter = 0;
-  RelReadyOn();
   clr_bs();
   bsWork(State::ON);
 }
@@ -105,7 +104,8 @@ void CPROCESS::calc_avr(EPhases ph) {
   signed int ileak1 = 0;
   signed int ileak2 = 0;
   switch (ph) {
-  case EPhases::MeasP:     
+  case EPhases::MeasP:
+    polarity = -1;
     for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
       ud += Ud_P[n];
       ileak1 += ILeak1_P[n];
@@ -115,7 +115,8 @@ void CPROCESS::calc_avr(EPhases ph) {
     ILeak1P_avr = static_cast<float>(ileak1) / N_AVR;
     ILeak2P_avr = static_cast<float>(ileak2) / N_AVR;
     break; 
-  case EPhases::MeasN:  
+  case EPhases::MeasN:
+    polarity = 1;
     for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
       ud += Ud_N[n];
       ileak1 += ILeak1_N[n];
@@ -139,13 +140,15 @@ void CPROCESS::calc_avr(EPhases ph) {
   if(abs(round(UdN_avr - UdP_avr)) > 2) dUd = 1000.0f * (UdN_avr - UdP_avr) * rSet.getSettings().k_Ud;
   else dUd = 0; 
   
+  if(!rSet.getSettings().comp_dUd) dUd = 0;
+  
   if(UStatus.sWork) {
  
     R1 = (((rSet.getSettings().k_ch1 * ((2 * u) + (dUd / 2.0f))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
     R2 = (((rSet.getSettings().k_ch2 * ((2 * u) + (dUd / 2.0f))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
  
-    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ R = R1; N_ch = 1; } 
-    else { R = R2; N_ch = 2; }
+    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ R = R1; N_ch  = 1 * polarity; } 
+    else { R = R2; N_ch = 2 * polarity; }
     
     if((R > Rmax) || (R < 0)) { 
       R = Rmax;
@@ -206,26 +209,28 @@ void CPROCESS::conv_adc() {
   });  
 }
 
-//void CPROCESS::set_test_mode() { 
-
-//}
-
-/*void CPROCESS::clr_test_mode() { 
-  prev_TC0_Phase = LPC_TIM0->TC; 
-  phases = EPhases::PhaseP;
-  Positive_phase();
-  wait_number = WAIT_NUMBER;
-  clr_bs();
-  bsWork(State::ON);
-  LampAlarm1Off(); 
-  LampAlarm2Off();
-  testRelAlarm1 = State::OFF;
-  testRelAlarm2 = State::OFF;
+void CPROCESS::start_test() { 
+  CPROCESS::LampMeasOn();
+  RelAlarm1On();
+  Pause_us(500000); 
+  CPROCESS::LampMeasOff();
   RelAlarm1Off();
+  
+  CPROCESS::LampAlarm1On();
+  RelAlarm2On();
+  Pause_us(500000);
+  CPROCESS::LampAlarm1Off();
   RelAlarm2Off();
+  
+  CPROCESS::LampAlarm2On(); 
+  RelReadyOn();
+  Pause_us(500000);
+  CPROCESS::LampAlarm2Off();
+  RelReadyOff();
+  
+  Pause_us(500000);
   RelReadyOn();
 }
-*/
 
 void CPROCESS::update_modbus_data() {
   //--- Обновление данных для MoBus (F03, F04), запись по F06 ---

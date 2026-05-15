@@ -25,21 +25,23 @@ class CEEPSettings {
     unsigned short RAlarm1;                             // 6 RAlarm1
     unsigned short RAlarm2;                             // 7 RAlarm2
     float RTadd;                                        // 8 RLadd
-    unsigned char  Address;                             // 11 Адрес Slave
-    unsigned short Baud_rate;                           // 12 Скорость
+    bool comp_dUd;                                      // 9 Компенсация dUd On/Off
+    unsigned char  Address;                             // 10 Адрес Slave
+    unsigned short Baud_rate;                           // 11 Скорость
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
   static const inline WorkSettings defaultSettings {
     .checkSum = 0x0000,
     .Language = 1,
-    .k_ch1 =   1,
-    .k_ch2 =   1,
-    .k_Ud  =   1,
+    .k_ch1 =   0.7,
+    .k_ch2 =   4.8,
+    .k_Ud  =   0.05,
     .shift_Ud = 0,
     .RAlarm1 = 40,
     .RAlarm2 = 20,
-    .RTadd = 4.7,
+    .RTadd = 100,
+    .comp_dUd = true,
     .Address = 3,
     .Baud_rate = 5
   };

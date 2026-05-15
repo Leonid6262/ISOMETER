@@ -22,7 +22,7 @@ void main(void) {
   CPROCESS::LampAlarm1Off();
   CPROCESS::LampAlarm2Off();
   
-  Pause_us(500000);
+  process.start_test();
 
   while (true) {       
     process.step();             // Процесс измерений

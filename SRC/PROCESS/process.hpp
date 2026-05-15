@@ -15,12 +15,11 @@ public:
   CEEPSettings& rSet;
   CADC& rAdc;
   
-  inline float*          getPointerR()       { return &R;               }
   inline float*          getPointerR1()      { return &R1;              }
   inline float*          getPointerR2()      { return &R2;              }
   inline float*          getPointerUd_V()    { return &Ud_avr_V;        }
   inline signed short*   getPointerUd_d()    { return &Ud_avr_d;        }
-  inline unsigned short* getPointerNch()     { return &N_ch;            }
+  inline signed short*   getPointerNch()     { return &N_ch;            }
 
   inline State*        getPointerSRl1()    { return &testRelAlarm1;   }
   inline State*        getPointerSRl2()    { return &testRelAlarm2;   }
@@ -62,8 +61,7 @@ public:
   void bsAlarm2(State state)  { UStatus.sAlarm2  = static_cast<unsigned char>(state); }
   void clr_bs()               { UStatus.all  = 0; }
   
-//  void set_test_mode();
-//  void clr_test_mode();
+  void start_test();
   void step();
   
   float R;
@@ -71,10 +69,10 @@ public:
   float R2;
   signed short Ud_avr_d;
   float Ud_avr_V;
-  unsigned short N_ch;
   
 private:
   unsigned int dTrsPhase;
+  signed short polarity;
   
   static inline void Negative_phase()     { LPC_GPIO2->CLR = (1UL << 28); Pause_us(2); LPC_GPIO2->SET = (1UL << 27); }
   static inline void Positive_phase()     { LPC_GPIO2->CLR = (1UL << 27); Pause_us(2); LPC_GPIO2->SET = (1UL << 28); }
@@ -133,6 +131,7 @@ private:
   float dIL1;   
   float dIL2;
   float dUd;
+  signed short N_ch;
   
   float UdP_avr;
   float UdN_avr;

@@ -46,7 +46,6 @@ void CFactory::control_set(CMenuNavigation& rMenu) {
     constexpr bool only_fn_enter = true;
     constexpr unsigned int LED_PAUSED  = 2000000;
     
-    CPROCESS::RelReadyOff();
     while(ESET::getInstance().save_status == State::OFF) {
       // Индикация
       dTrsPhase = LPC_TIM0->TC - prev_TC0;
@@ -66,6 +65,5 @@ void CFactory::control_set(CMenuNavigation& rMenu) {
       // Ожидание записи дефолтных уставок (Fn+Enter)
       rMenu.get_key(only_fn_enter);
     }     
-    CPROCESS::RelReadyOn();
   }  
 }

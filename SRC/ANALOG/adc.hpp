@@ -15,7 +15,12 @@ private:
   cN_CH - данные для запуска конвертации (формат - см. док.) 
   000m.0ccc.c000.0000 m - Manual mode, cccc - N channel (0...15)
   */
-  static constexpr unsigned short cN_CH[G_CONST::N_CHANNELS] = { 0x1000, 0x1080, 0x1100, 0x1180 };
+  
+  static constexpr unsigned short cN_CH[G_CONST::N_CHANNELS] = 
+  {
+    0x1000, 0x1080, 0x1100, 0x1180, 0x1200, 0x1280, 0x1300, 0x1380, 
+    0x1400, 0x1480, 0x1500, 0x1580, 0x1600, 0x1680, 0x1700, 0x1780
+  };
   
   signed short data[G_CONST::N_CHANNELS] = {};  // Обработанные данные полученные АЦП
   // --- Обработка и запись данных внешнего АЦП ---

@@ -8,7 +8,9 @@
 #include "controllerDMA.hpp"
 #include "bool_name.hpp"
 #include "mbUartDriver.hpp"
-#include "mb_slave.hpp" 
+#include "mb_slave.hpp"
+#include "out_4_20mA.hpp"
+#include "dac.hpp"
 #include "process.hpp"
 #include "terminalUartDriver.hpp"
 #include "menu_navigation.hpp"
@@ -17,7 +19,8 @@
 class CFactory {
 public:    
   static StatusRet load_settings();                 
-  static CMBSLAVE create_MBslave(); 
+  static COUT_4_20 create_OUT_4_20(); 
+  static CMBSLAVE create_MBslave();
   static CPROCESS create_Process();
   static CMenuNavigation create_MN(CPROCESS&);
   static void control_set(CMenuNavigation&);  

@@ -1,4 +1,5 @@
 #include "factory.hpp"
+#include "Ports_init.hpp"
 
 #pragma location = ".dma_buffers" 
 __root unsigned char CMBSLAVE::tx_mbs_buffer[CMBSLAVE::TRANSACTION_LENGTH];
@@ -21,10 +22,19 @@ CMBSLAVE CFactory::create_MBslave() {
 }
 extern "C" void UART2_IRQHandler(void) { CMBUartDriver::getInstance().irq_handler(); }      // Вызов обработчика UART-2
 
+
+
 // Основной класс
 CPROCESS CFactory::create_Process() {
+  
+  CSET_SPI::config(ESPI::SPI_2);
   static CADC adc(CSET_SPI::config(ESPI::SPI_1), ESET::getInstance()); 
-  return CPROCESS(adc, ESET::getInstance(), CModbusDataProxy::getInstance());
+  
+  static CDAC_PWM dac_pwm;
+  static COUT_4_20 out_4_20(dac_pwm);  // Out 4...20mA
+   
+  return CPROCESS(adc, ESET::getInstance(), CModbusDataProxy::getInstance(), out_4_20); 
+
 }
 
 // Пультовый терминал

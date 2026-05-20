@@ -5,15 +5,18 @@
 #include "adc.hpp"
 #include "mb_slave.hpp" 
 #include "mbDataProxy.hpp"
+#include "out_4_20mA.hpp"
 #include "pause_us.hpp"
 
 class CPROCESS {
   
 public:  
-  CPROCESS(CADC&, CEEPSettings&, CModbusDataProxy&);
+  CPROCESS(CADC&, CEEPSettings&, CModbusDataProxy&, COUT_4_20&);
   CModbusDataProxy& rModbusData;
+  COUT_4_20& rCOUT_4_20;
   CEEPSettings& rSet;
   CADC& rAdc;
+
   
   inline float*          getPointerR1()      { return &R1;              }
   inline float*          getPointerR2()      { return &R2;              }
@@ -71,6 +74,7 @@ public:
   float Ud_avr_V;
   
 private:
+
   unsigned int dTrsPhase;
   signed short polarity;
   
@@ -84,8 +88,7 @@ private:
   static inline void RelAlarm2Off()    { LPC_GPIO2->CLR = (1UL << 26); }
   
   static constexpr unsigned short MEAS_PAUSED  = 7000;    // 0.7ms - пауза между выборками
-  static constexpr unsigned short WAIT_NUMBER  = 4286;    // Время заряда - 0.7ms * 4286 = 3s в рабочем режиме
-  static constexpr unsigned short TEST_NUMBER  = 2134;    // Время заряда - 0.7ms * 2134  = 1.5s в тестовом режиме
+  static constexpr unsigned short WAIT_NUMBER  = 5000;    // Время заряда - 0.7ms * 5000 = 3.5s
   static constexpr unsigned short AVR_NUMBER   = 0x200;   // Количество выборок. 0.7ms * 512 примерно 358ms
   static constexpr unsigned short N_AVR        = 500;     // Кадр усреднения
   static constexpr unsigned short sh_avr       = 5;       // Сдвиг кадра

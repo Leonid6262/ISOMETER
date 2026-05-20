@@ -15,8 +15,8 @@ class CDMAcontroller {
     Ch3 = 3, 
     UART2_Tx_Channel = 4, 
     Ch5 = 5, 
-    Ch6 = 6,//SPI2_Tx_Channel = 6, 
-    Ch7 = 7,//SPI2_Rx_Channel = 7,
+    SPI2_Tx_Channel = 6, 
+    SPI2_Rx_Channel = 7,
   };
 
   // Типы каналов

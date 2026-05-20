@@ -1,12 +1,13 @@
 #include "main.hpp"
 
-void main(void) {
-  
+void UserStartInit() {     
   CSET_PORTS::initDOutputs();   // Инициализация дискретных выходов микроконтроллера (pins)
   CPROCESS::UserLedOn();        // Визуальный контроль светодиодов и начала инициализации 
-  CPROCESS::LampMeasOn();
-  CPROCESS::LampAlarm1On();
-  CPROCESS::LampAlarm2On();
+  CSET_EMC::initAndCheck();     // Инициализации ext RAM и шины расширения. Контроль ext RAM 
+}
+
+void main(void) {
+  
   Priorities::initPriorities(); // Распределение векторов по группам. см. в файле IntPriority.h
   CSET_TIMER::initTimers();     // Инициализация таймеров.  
   CFactory::load_settings();    // Загрузка уставок (RAM <- EEPROM)
@@ -18,10 +19,6 @@ void main(void) {
   CFactory::control_set(menu_navigation);                       // При ошибке КС требуется зпись дефолтных уставок  
   
   CPROCESS::UserLedOff();       // Визуальный контроль окончания инициализации
-  CPROCESS::LampMeasOff();
-  CPROCESS::LampAlarm1Off();
-  CPROCESS::LampAlarm2Off();
-  
   process.start_test();
 
   while (true) {       

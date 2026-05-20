@@ -16,7 +16,7 @@ class CSET_SPI {
 
  private:
   static constexpr unsigned int Hz_SPI0 = 800000;
-  static constexpr unsigned int Hz_SPI1 = 1000000;
+  static constexpr unsigned int Hz_SPI1 = 3000000;
   static constexpr unsigned int Hz_SPI2 = 1000000;
 
   static constexpr unsigned int IOCON_SPI0 = 0x02;

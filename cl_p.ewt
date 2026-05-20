@@ -2855,9 +2855,15 @@
             <file>
                 <name>$PROJ_DIR$\SRC\ANALOG\adc.cpp</name>
             </file>
+            <file>
+                <name>$PROJ_DIR$\SRC\ANALOG\dac.cpp</name>
+            </file>
         </group>
         <group>
             <name>INIT</name>
+            <file>
+                <name>$PROJ_DIR$\SRC\INIT\emc.hpp</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\SRC\INIT\Ports_init.hpp</name>
             </file>
@@ -2930,6 +2936,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\IntPriority.hpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\SRC\out_4_20mA.cpp</name>
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\pause_us.hpp</name>

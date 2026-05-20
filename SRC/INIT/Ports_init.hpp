@@ -3,6 +3,10 @@
 
 class CSET_PORTS {
 public:
+  
+  static constexpr LPC_GPIO_TypeDef* ULED_GPIO = LPC_GPIO0;  // Порт U-LED
+  static constexpr unsigned short BIT_ULED     = 9;          // Бит U-LED
+  
   static void initDOutputs() {
     // Дискретные выходы    
     LPC_GPIO0->SET = 0x00000200; 

@@ -1,9 +1,9 @@
 #include "process.hpp" 
-//#include "menu_factory.hpp" 
+
 #include <math.h>
 
-CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet,CModbusDataProxy& rModbusData) : 
-  rAdc(rAdc), rSet(rSet), rModbusData(rModbusData) {
+CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData, COUT_4_20& rCOUT_4_20) :   
+  rAdc(rAdc), rSet(rSet), rModbusData(rModbusData), rCOUT_4_20(rCOUT_4_20) {   
   prev_TC0_Phase = LPC_TIM0->TC; 
   phases = EPhases::PhaseP;
   wait_number = WAIT_NUMBER;
@@ -19,7 +19,9 @@ void CPROCESS::step() {
   switch (phases) {
   case EPhases::PhaseP:
     LampMeasOn();
-    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; wait(phases); } 
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; wait(phases);
+    
+    } 
     break;   
   case EPhases::MeasP:
     LampMeasOff();
@@ -27,7 +29,8 @@ void CPROCESS::step() {
     break; 
   case EPhases::PhaseN:
     LampMeasOn();
-    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; wait(phases); } 
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; wait(phases);
+    } 
     break;   
   case EPhases::MeasN:
     LampMeasOff();
@@ -35,7 +38,8 @@ void CPROCESS::step() {
     break;
   }
   
-  update_modbus_data(); //--- Обновление данных для MoBus (F03, F04), запись по F06 ---
+  update_modbus_data(); // Обновление данных для MoBus (F03, F04), запись по F06
+  rCOUT_4_20.update(static_cast<unsigned short>(R + 0.5f));  // Обновление 4...20мА
   
 }
 
@@ -139,6 +143,9 @@ void CPROCESS::calc_avr(EPhases ph) {
   
   if(abs(round(UdN_avr - UdP_avr)) > 2) dUd = 1000.0f * (UdN_avr - UdP_avr) * rSet.getSettings().k_Ud;
   else dUd = 0; 
+  
+  dUd = 0; 
+  
   
   if(!rSet.getSettings().comp_dUd) dUd = 0;
   

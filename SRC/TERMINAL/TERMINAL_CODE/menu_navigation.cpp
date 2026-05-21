@@ -3,8 +3,10 @@
 #include "menu_factory.hpp"
 #include "pause_us.hpp"
 
+
 CMenuNavigation::CMenuNavigation(CTerminalUartDriver& uartDrv, CEEPSettings& rSet, CPROCESS& rProcess ) :  
   uartDrv(uartDrv), rProcess(rProcess) { 
+  
   // очистка экрана
   unsigned char clr_data[] = {"                \r\n"};
   uartDrv.sendBuffer(clr_data, sizeof(clr_data));
@@ -25,12 +27,12 @@ CMenuNavigation::CMenuNavigation(CTerminalUartDriver& uartDrv, CEEPSettings& rSe
   d.delta_timer_ms = 0;
   
   // Создание дерева узлов меню
-  MENU = MENU_Factory(rProcess, CEEPSettings::getInstance());  
+  MENU = MENU_Factory(rProcess, CEEPSettings::getInstance(), rProcess.rRTC);  
   currentList = &MENU;
   render_menu();
 
   handleEnter(); // Переход в Индикацию
-
+  first_render();
 }
 
 // Конструктор узла
@@ -142,6 +144,7 @@ void CMenuNavigation::render_node(ETitleType title_type) {
 }
 
 void CMenuNavigation::first_render(){
+  rProcess.rRTC.update_for_set();
   render_menu();
 }
 
@@ -346,6 +349,11 @@ void CMenuNavigation::Key_Handler(EKey_code key) {
     static unsigned int elapsed_ms = 0;
     
     if (dTrs >= DISPLAY_PERIOD_TICKS) {
+      
+      if(rProcess.rRTC.set_date_time) {
+        rProcess.rRTC.set_date_time = false; 
+        rProcess.rRTC.setDateTime(rProcess.rRTC.DateTimeForSet);
+      }
            
       prev_TC0 = LPC_TIM0->TC;
       elapsed_ms += dTrs / 10000; // пересчёт в мс      

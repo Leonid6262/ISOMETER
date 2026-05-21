@@ -19,6 +19,7 @@ public:
   SDateTime DateTimeForSet;
   
   void update_now();                    // Обновление данных из RTC
+  void update_for_set();                // Обновление данных из RTC для установки
   const SDateTime& get_now() const;     // Доступ к актуальным данным  
   void setDateTime(const SDateTime&);   // Установка даты и времени
   void setDefault();                    // Установка дефолтных значений

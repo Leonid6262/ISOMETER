@@ -15,6 +15,8 @@ static const struct {
     const char* SETTINGS[G_CONST::Nlang]       = {"УСТАВКИ",         "SETPOINT",         "УСТАВКИ"     };
     const char* PARAMS[G_CONST::Nlang]         = {"ПАРАМЕТРЫ",       "PARAMETERS",       "ПАРАМЕТРИ"   };
     const char* SETTING_UP[G_CONST::Nlang]     = {"НАСТРОЙКА",       "SETTING UP",       "НАЛАШТУВАННЯ"};
+    const char* CLOCK_SETUP[G_CONST::Nlang]    = {"УСТАНОВКА ЧАСОВ", "CLOCK SETUP",      "ГОДИННИК"    };
+    const char* INFO[G_CONST::Nlang]           = {"ИНФОРМАЦИЯ",      "INFO",             "IНФОРМАЦIЯ"};
     const char* LANGUAGE[G_CONST::Nlang]       = {"ЯЗЫК",            "LANGUAGE",         "МОВА"        };  
 } Mn;
 
@@ -31,7 +33,7 @@ static const struct {
   vt - тип переменной
   nm - тип узла
 */
-inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings& rSet ) {
+inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings& rSet, CRTC& rRTC ) {
                                                    
   auto& set = rSet.getSettings();
   
@@ -43,8 +45,10 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
  
   std::vector<o> MENU = {
   o(Mn.INDICATION[l],{
-      o::Dual("Rinsul", &rProcess.R,              "kOhm", 1, p0, vt::vfloat,
-              "pN",     rProcess.getPointerNch(), "pN",   1, p0, vt::sshort, nm::In2V ),}),
+      //o::Dual("Rinsul", &rProcess.R,              "kOhm", 1, p0, vt::vfloat,
+      //        "pN",      rProcess.getPointerNch(),  "pN", 1, p0, vt::sshort, nm::In2V ),
+      o("Current data:", {}, rProcess.getPointerRi(), "", 1, p0, vt::text,   nm::In1V),
+      o("Date-Time",     {}, rProcess.getPointerDT(), "", 1, p0, vt::text,   nm::In1V),}),
   o(Mn.SETTINGS[l],{
       o(Mn.PARAMS[l],{
           o("Alarm1",  {}, &set.RAlarm1,   "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
@@ -63,9 +67,21 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
           o("comp dUd",{},   &set.comp_dUd,                 "b",      1, p0, vt::vbool,  nm::Ed1V, 0, 1   ),}),
       o("RS-485",{
           o("Slave address",    {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 247  ),
-          o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}),      
+          o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}), 
+      o(Mn.CLOCK_SETUP[l],{
+          o("Year:",        {}, &rRTC.DateTimeForSet.year,  "", 1, p0, vt::ushort, nm::Ed1V, 26, 99),
+          o("Month:",       {}, &rRTC.DateTimeForSet.month, "", 1, p0, vt::ushort, nm::Ed1V,  1, 12),
+          o("Day:",         {}, &rRTC.DateTimeForSet.day,   "", 1, p0, vt::ushort, nm::Ed1V,  1, 31),
+          o("Hour:",        {}, &rRTC.DateTimeForSet.hour,  "", 1, p0, vt::ushort, nm::Ed1V,  0, 23),
+          o("Minute:",      {}, &rRTC.DateTimeForSet.minute,"", 1, p0, vt::ushort, nm::Ed1V,  0, 60),
+          o("SET",          {}, &rRTC.set_date_time,        "", 1, p0, vt::vbool,  nm::Ed1V,  0, 1),}),
       o(Mn.LANGUAGE[l],{
-          o("Language:", {}, &set.Language,"", 1, p0, vt::ushort, nm::Ed1V, 1, G_CONST::Nlang),}),})};
+          o("Language:", {}, &set.Language,"", 1, p0, vt::ushort, nm::Ed1V, 1, G_CONST::Nlang),}),}),
+  o(Mn.INFO[l],{
+      o("Description:", {}, static_cast<void*>(const_cast<char*>(BuildInfo::Description)), "", 1, p0,vt::text, nm::In1V),      
+      o("Commit Date:", {}, static_cast<void*>(const_cast<char*>(BuildInfo::CommitDate)),  "", 1, p0,vt::text, nm::In1V),
+      o("Build Date:",  {}, static_cast<void*>(const_cast<char*>(BuildInfo::BuildDate)),   "", 1, p0,vt::text, nm::In1V),
+  })};
   
   return MENU;
 }

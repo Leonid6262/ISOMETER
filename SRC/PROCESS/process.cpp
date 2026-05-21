@@ -2,8 +2,8 @@
 
 #include <math.h>
 
-CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData, COUT_4_20& rCOUT_4_20) :   
-  rAdc(rAdc), rSet(rSet), rModbusData(rModbusData), rCOUT_4_20(rCOUT_4_20) {   
+CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData, COUT_4_20& rCOUT_4_20, CRTC& rRTC) :   
+  rAdc(rAdc), rSet(rSet), rModbusData(rModbusData), rCOUT_4_20(rCOUT_4_20), rRTC(rRTC) {   
   prev_TC0_Phase = LPC_TIM0->TC; 
   phases = EPhases::PhaseP;
   wait_number = WAIT_NUMBER;
@@ -34,6 +34,10 @@ void CPROCESS::step() {
     if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; conv(phases); }    
     break;
   }
+  
+  rRTC.update_now();                  // Обновление экземпляра структуы SDateTime данными из RTC
+  auto now = rRTC.get_now();    
+  snprintf(date_time, sizeof(date_time), "%02u.%02u.%02u %02u:%02u", now.day, now.month, now.year, now.hour, now.minute);   
   
   update_modbus_data(); // Обновление данных для MoBus (F03, F04), запись по F06
   rCOUT_4_20.update(static_cast<unsigned short>(R + 0.5f));  // Обновление 4...20мА
@@ -154,12 +158,15 @@ void CPROCESS::calc_avr(EPhases ph) {
     if((R > Rmax) || (R < 0)) { 
       R = Rmax;
       bsMoreMax(State::ON);
+      snprintf(Ri, sizeof(Ri), "R>%uk", Rmax);
     } else if((ILeak1N_avr >= d_max) || (ILeak1P_avr >= d_max)) { 
       R = 0;
       bsLessMin(State::ON);
+      snprintf(Ri, sizeof(Ri), "R<Rmin");
     } else {      
       bsMoreMax(State::OFF);
       bsLessMin(State::OFF);
+      snprintf(Ri, sizeof(Ri), "R=%uk", static_cast<unsigned short>(round(R)));
     }
     
     unsigned short gis = gis_const;

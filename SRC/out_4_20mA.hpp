@@ -7,7 +7,7 @@ class COUT_4_20 {
   
 public:
   
-  COUT_4_20(CDAC_PWM&, CEEPSettings&);
+  COUT_4_20(CDAC_PWM&, unsigned short, CEEPSettings&);
   
   CDAC_PWM& dac;
   
@@ -15,6 +15,6 @@ public:
   
 private: 
   CEEPSettings& rSet;
-  
+  unsigned short max_dac;
 };
 

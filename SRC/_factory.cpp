@@ -1,5 +1,4 @@
 #include "factory.hpp"
-#include "Ports_init.hpp"
 
 #pragma location = ".dma_buffers" 
 __root unsigned char CMBSLAVE::tx_mbs_buffer[CMBSLAVE::TRANSACTION_LENGTH];
@@ -22,24 +21,23 @@ CMBSLAVE CFactory::create_MBslave() {
 }
 extern "C" void UART2_IRQHandler(void) { CMBUartDriver::getInstance().irq_handler(); }      // Вызов обработчика UART-2
 
-
-
 // Основной класс
 CPROCESS CFactory::create_Process() {
   
   CSET_SPI::config(ESPI::SPI_2);
   static CADC adc(CSET_SPI::config(ESPI::SPI_1), ESET::getInstance()); 
   
-  static CDAC_PWM dac_pwm;
+  static CRTC rt_clock;
   
-  static COUT_4_20 out_4_20(dac_pwm, ESET::getInstance());  // Out 4...20mA
+  static CDAC_PWM dac_pwm;
+  static COUT_4_20 out_4_20(dac_pwm, CDAC_PWM::DAC_PWM_MAX_VAL, ESET::getInstance());  // Out 4...20mA
    
-  return CPROCESS(adc, ESET::getInstance(), CModbusDataProxy::getInstance(), out_4_20); 
+  return CPROCESS(adc, ESET::getInstance(), CModbusDataProxy::getInstance(), out_4_20, rt_clock); 
 
 }
 
 // Пультовый терминал
-CMenuNavigation CFactory::create_MN(CPROCESS& rProcess) {
+CMenuNavigation CFactory::create_MN(CPROCESS& rProcess) { 
   auto& udrv = CTerminalUartDriver::getInstance();                                          // Конфигурация и инициализация UART-0 
   udrv.init(CSET_UART::configure(EUART::UART_0, ESET::getInstance()), UART0_IRQn); 
   static CMenuNavigation menu_navigation(udrv, ESET::getInstance(), rProcess);

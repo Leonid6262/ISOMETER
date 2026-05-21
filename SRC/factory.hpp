@@ -15,6 +15,7 @@
 #include "terminalUartDriver.hpp"
 #include "menu_navigation.hpp"
 #include "mbDataProxy.hpp"
+#include "rtc.hpp"
 
 class CFactory {
 public:    

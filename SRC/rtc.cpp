@@ -32,13 +32,19 @@ void CRTC::update_now() {
   date_now.hour = static_cast<unsigned char>((t >> 16) & 0x1F);   // HOUR
   date_now.minute = static_cast<unsigned char>((t >> 8) & 0x3F);  // MIN
   date_now.second = static_cast<unsigned char>(t & 0x3F);         // SEC
-  
-  DateTimeForSet.year = date_now.year;
-  DateTimeForSet.month = date_now.month;
-  DateTimeForSet.day = date_now.day;
-  DateTimeForSet.hour = date_now.hour;
-  DateTimeForSet.minute = date_now.minute;
-  DateTimeForSet.second = 0;  
+
+}
+
+void CRTC::update_for_set() {
+  unsigned int t = LPC_RTC->CTIME0;
+  unsigned int d = LPC_RTC->CTIME1;
+
+  DateTimeForSet.year = static_cast<unsigned char>((d >> 16) & 0x7F);   // YEAR
+  DateTimeForSet.month = static_cast<unsigned char>((d >> 8) & 0x0F);   // MONTH
+  DateTimeForSet.day = static_cast<unsigned char>(d & 0x1F);            // DAY
+  DateTimeForSet.hour = static_cast<unsigned char>((t >> 16) & 0x1F);   // HOUR
+  DateTimeForSet.minute = static_cast<unsigned char>((t >> 8) & 0x3F);  // MIN
+  DateTimeForSet.second = 0; 
 
 }
 

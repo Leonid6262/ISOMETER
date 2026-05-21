@@ -7,15 +7,17 @@
 #include "mbDataProxy.hpp"
 #include "out_4_20mA.hpp"
 #include "pause_us.hpp"
+#include "rtc.hpp"
 
 class CPROCESS {
   
 public:  
-  CPROCESS(CADC&, CEEPSettings&, CModbusDataProxy&, COUT_4_20&);
+  CPROCESS(CADC&, CEEPSettings&, CModbusDataProxy&, COUT_4_20&, CRTC&);
   CModbusDataProxy& rModbusData;
   COUT_4_20& rCOUT_4_20;
   CEEPSettings& rSet;
   CADC& rAdc;
+  CRTC& rRTC;
 
   
   inline float*          getPointerR1()      { return &R1;              }
@@ -23,6 +25,8 @@ public:
   inline float*          getPointerUd_V()    { return &Ud_avr_V;        }
   inline signed short*   getPointerUd_d()    { return &Ud_avr_d;        }
   inline signed short*   getPointerNch()     { return &N_ch;            }
+  inline char*           getPointerDT()      { return date_time;        }
+  inline char*           getPointerRi()      { return Ri;               }
 
   inline State*        getPointerSRl1()    { return &testRelAlarm1;   }
   inline State*        getPointerSRl2()    { return &testRelAlarm2;   }
@@ -114,6 +118,8 @@ private:
   
   unsigned short pause_counter;
   unsigned short wait_number;
+  char date_time[G_CONST::disp_l];
+  char Ri[G_CONST::disp_l];
 
   State testRelAlarm1 = State::OFF;
   State testRelAlarm2 = State::OFF;

@@ -9,6 +9,7 @@
 namespace G_CONST {
   constexpr unsigned short N_CHANNELS = 16;   // Количество каналов внешнего АЦП
   constexpr unsigned short Nlang = 3;         // Количество языков
+  constexpr unsigned char disp_l = 16;        // Знакомест ПТ
 }
 
 class CEEPSettings {

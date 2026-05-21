@@ -9,6 +9,7 @@
 #include "bool_name.hpp"
 #include "process.hpp"
 #include "adc.hpp"
+#include "rtc.hpp"
 
 class CMenuNavigation {
 public:

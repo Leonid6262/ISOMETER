@@ -39,6 +39,8 @@ public:
   
   static inline void RelReadyOn()     { LPC_GPIO1->SET = (1UL << 21); }
   static inline void RelReadyOff()    { LPC_GPIO1->CLR = (1UL << 21); }
+  
+  static constexpr unsigned short Rmax         = 2000;
 
   unsigned int prev_TC0_Phase;
   
@@ -96,7 +98,7 @@ private:
   static constexpr unsigned short gis_const    = 2;       // 2kOhm - гитерезис 1-го диапазона 
   static constexpr unsigned short range        = 50;      // 50kOhm - 1-й диапазон от 0 до range
   static constexpr unsigned short gis_percent  = 15;      // 15% - гитерезис 2-го диапазона (от range_1 и выше) 
-  static constexpr unsigned short Rmax         = 2500;
+
   static constexpr unsigned short d_max        = 4070;    // дискрет считающихся насыщеним
   
   static constexpr float u      = 40000.0f;               // u [mV]

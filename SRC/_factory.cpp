@@ -31,7 +31,8 @@ CPROCESS CFactory::create_Process() {
   static CADC adc(CSET_SPI::config(ESPI::SPI_1), ESET::getInstance()); 
   
   static CDAC_PWM dac_pwm;
-  static COUT_4_20 out_4_20(dac_pwm);  // Out 4...20mA
+  
+  static COUT_4_20 out_4_20(dac_pwm, ESET::getInstance());  // Out 4...20mA
    
   return CPROCESS(adc, ESET::getInstance(), CModbusDataProxy::getInstance(), out_4_20); 
 

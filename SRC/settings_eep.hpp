@@ -26,8 +26,9 @@ class CEEPSettings {
     unsigned short RAlarm2;                             // 7 RAlarm2
     float RTadd;                                        // 8 RLadd
     bool comp_dUd;                                      // 9 Компенсация dUd On/Off
-    unsigned char  Address;                             // 10 Адрес Slave
-    unsigned short Baud_rate;                           // 11 Скорость
+    unsigned short Rmax_20mA;                           // 10 Max R для индикации по 4...20mA
+    unsigned char  Address;                             // 11 Адрес Slave
+    unsigned short Baud_rate;                           // 12 Скорость
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -36,12 +37,13 @@ class CEEPSettings {
     .Language = 1,
     .k_ch1 =   0.7,
     .k_ch2 =   4.8,
-    .k_Ud  =   0.05,
+    .k_Ud  =   0.055,
     .shift_Ud = 0,
     .RAlarm1 = 40,
     .RAlarm2 = 20,
     .RTadd = 100,
     .comp_dUd = true,
+    .Rmax_20mA = 500,
     .Address = 3,
     .Baud_rate = 5
   };

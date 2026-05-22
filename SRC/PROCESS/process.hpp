@@ -8,6 +8,7 @@
 #include "out_4_20mA.hpp"
 #include "pause_us.hpp"
 #include "rtc.hpp"
+#include "Peripherals.hpp"
 
 class CPROCESS {
   
@@ -18,31 +19,29 @@ public:
   CEEPSettings& rSet;
   CADC& rAdc;
   CRTC& rRTC;
-
   
   inline float*          getPointerR1()      { return &R1;              }
   inline float*          getPointerR2()      { return &R2;              }
   inline float*          getPointerUd_V()    { return &Ud_avr_V;        }
   inline signed short*   getPointerUd_d()    { return &Ud_avr_d;        }
-  inline signed short*   getPointerNch()     { return &N_ch;            }
   inline char*           getPointerDT()      { return date_time;        }
   inline char*           getPointerRi()      { return Ri;               }
 
   inline State*        getPointerSRl1()    { return &testRelAlarm1;   }
   inline State*        getPointerSRl2()    { return &testRelAlarm2;   }
    
-  static inline void UserLedOn()  { LPC_GPIO0->CLR  = (1UL << 9); } 
-  static inline void UserLedOff() { LPC_GPIO0->SET  = (1UL << 9); }
+  static inline void UserLedOn()  { P::G0->CLR  = (1UL << bg::B_ULED); } 
+  static inline void UserLedOff() { P::G0->SET  = (1UL << bg::B_ULED); }
   
-  static inline void LampMeasOn()     { LPC_GPIO2->CLR = (1UL << 31); }
-  static inline void LampMeasOff()    { LPC_GPIO2->SET = (1UL << 31); }
-  static inline void LampAlarm1On()   { LPC_GPIO2->CLR = (1UL << 30); }
-  static inline void LampAlarm1Off()  { LPC_GPIO2->SET = (1UL << 30); }
-  static inline void LampAlarm2On()   { LPC_GPIO2->CLR = (1UL << 29); }
-  static inline void LampAlarm2Off()  { LPC_GPIO2->SET = (1UL << 29); }
+  static inline void LampMeasOn()     { P::G2->CLR = (1UL << bg::B_LampMeas); }
+  static inline void LampMeasOff()    { P::G2->SET = (1UL << bg::B_LampMeas); }
+  static inline void LampAlarm1On()   { P::G2->CLR = (1UL << bg::B_LampAlarm1); }
+  static inline void LampAlarm1Off()  { P::G2->SET = (1UL << bg::B_LampAlarm1); }
+  static inline void LampAlarm2On()   { P::G2->CLR = (1UL << bg::B_LampAlarm2); }
+  static inline void LampAlarm2Off()  { P::G2->SET = (1UL << bg::B_LampAlarm2); }
   
-  static inline void RelReadyOn()     { LPC_GPIO1->SET = (1UL << 21); }
-  static inline void RelReadyOff()    { LPC_GPIO1->CLR = (1UL << 21); }
+  static inline void RelReadyOn()     { P::G1->SET = (1UL << bg::B_RelReady); }
+  static inline void RelReadyOff()    { P::G1->CLR = (1UL << bg::B_RelReady); }
   
   static constexpr unsigned short Rmax         = 2000;
 
@@ -82,16 +81,15 @@ public:
 private:
 
   unsigned int dTrsPhase;
-  signed short polarity;
   
-  static inline void Negative_phase()     { LPC_GPIO2->CLR = (1UL << 28); Pause_us(2); LPC_GPIO2->SET = (1UL << 27); }
-  static inline void Positive_phase()     { LPC_GPIO2->CLR = (1UL << 27); Pause_us(2); LPC_GPIO2->SET = (1UL << 28); }
-  static inline void phase_Off()          { LPC_GPIO2->CLR = (1UL << 27); LPC_GPIO2->CLR = (1UL << 28); }
+  static inline void Negative_phase()     { P::G2->CLR = (1UL << bg::B_TP); Pause_us(2); P::G2->SET = (1UL << bg::B_TN); }
+  static inline void Positive_phase()     { P::G2->CLR = (1UL << bg::B_TN); Pause_us(2); P::G2->SET = (1UL << bg::B_TP); }
+  static inline void phase_Off()          { P::G2->CLR = (1UL << bg::B_TN); P::G2->CLR = (1UL << bg::B_TP); }
   
-  static inline void RelAlarm1On()     { LPC_GPIO2->SET = (1UL << 25); }
-  static inline void RelAlarm1Off()    { LPC_GPIO2->CLR = (1UL << 25); }
-  static inline void RelAlarm2On()     { LPC_GPIO2->SET = (1UL << 26); }
-  static inline void RelAlarm2Off()    { LPC_GPIO2->CLR = (1UL << 26); }
+  static inline void RelAlarm1On()     { P::G2->SET = (1UL << bg::B_RelAlarm1); }
+  static inline void RelAlarm1Off()    { P::G2->CLR = (1UL << bg::B_RelAlarm1); }
+  static inline void RelAlarm2On()     { P::G2->SET = (1UL << bg::B_RelAlarm2); }
+  static inline void RelAlarm2Off()    { P::G2->CLR = (1UL << bg::B_RelAlarm2); }
   
   static constexpr unsigned short MEAS_PAUSED  = 7000;    // 0.7ms - пауза между выборками
   static constexpr unsigned short WAIT_NUMBER  = 5000;    // Время заряда - 0.7ms * 5000 = 3.5s
@@ -118,8 +116,10 @@ private:
   
   unsigned short pause_counter;
   unsigned short wait_number;
-  char date_time[G_CONST::disp_l];
-  char Ri[G_CONST::disp_l];
+  char date_time[G_CONST::disp_l + 1];
+  char Ri[G_CONST::disp_l + 1];
+  char polarity;
+  char N_ch;
 
   State testRelAlarm1 = State::OFF;
   State testRelAlarm2 = State::OFF;
@@ -142,7 +142,6 @@ private:
   float dIL1;   
   float dIL2;
   float dUd;
-  signed short N_ch;
   
   float UdP_avr;
   float UdN_avr;

@@ -1,31 +1,17 @@
 #pragma once
 
-#include "LPC407x_8x_177x_8x.h"
 #include "spi_init.hpp"
 #include "system_LPC177x.h"
+#include "Peripherals.hpp"
 
 class CSET_SPI {
- public:
-  enum class ESPIInstance {
-    SPI_0,
-    SPI_1,
-    SPI_2
-  };
-
-  static LPC_SSP_TypeDef* config(ESPIInstance);
-
- private:
-  static constexpr unsigned int Hz_SPI0 = 800000;
-  static constexpr unsigned int Hz_SPI1 = 3000000;
-  static constexpr unsigned int Hz_SPI2 = 1000000;
-
-  static constexpr unsigned int IOCON_SPI0 = 0x02;
-  static constexpr unsigned int IOCON_SPI1 = 0x03;
-  static constexpr unsigned int IOCON_SPI2 = 0x02;
-  static constexpr unsigned int D_MODE_PULLUP = 0x02 << 3;
-
-  static constexpr unsigned int RXDMAE = 1UL << 0;
-  static constexpr unsigned int TXDMAE = 1UL << 1;
-
-  LPC_SSP_TypeDef* SSP;
+public:
+  static LPC_SSP_TypeDef* config(LPC_SSP_TypeDef* SSP, unsigned int Hz_SPI, unsigned short bits) {
+    SSP->CR0 = 0;
+    SSP->CR0 = bits - 1;  // (16 - 1) -> 16 bits
+    SSP->CR1 = 0;
+    SPI_Config::set_spi_clock(SSP, Hz_SPI, PeripheralClock);
+    SSP->CR1 |= SPI_Config::CR1_SSP_EN;
+    return SSP;
+  }
 };

@@ -2860,18 +2860,6 @@
             </file>
         </group>
         <group>
-            <name>INIT</name>
-            <file>
-                <name>$PROJ_DIR$\SRC\INIT\emc.hpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\INIT\Ports_init.hpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\INIT\Timers_init.hpp</name>
-            </file>
-        </group>
-        <group>
             <name>MB_SLAVE</name>
             <file>
                 <name>$PROJ_DIR$\SRC\MB_SLAVE\mb_slave.cpp</name>
@@ -2884,6 +2872,21 @@
             </file>
         </group>
         <group>
+            <name>PERIPHERIALS</name>
+            <file>
+                <name>$PROJ_DIR$\SRC\PERIPHERIALS\ControlBits.hpp</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\SRC\PERIPHERIALS\emc.hpp</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\SRC\PERIPHERIALS\Peripherals.hpp</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\SRC\PERIPHERIALS\PeripheralsInit.hpp</name>
+            </file>
+        </group>
+        <group>
             <name>PROCESS</name>
             <file>
                 <name>$PROJ_DIR$\SRC\PROCESS\process.cpp</name>
@@ -2892,7 +2895,7 @@
         <group>
             <name>SERIAL</name>
             <file>
-                <name>$PROJ_DIR$\SRC\SERIAL\set_spi.cpp</name>
+                <name>$PROJ_DIR$\SRC\SERIAL\set_spi.hpp</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\SRC\SERIAL\set_uart.cpp</name>

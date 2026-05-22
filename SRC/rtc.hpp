@@ -1,4 +1,6 @@
 #pragma once
+#include "Peripherals.hpp"
+#include "LPC407x_8x_177x_8x.h"
 
 class CRTC
 { 
@@ -27,10 +29,6 @@ public:
   bool set_date_time = false;
   
 private: 
-  
-  static constexpr unsigned int RTC_OSCF = 1<<4; // RTC Oscillator Fail detect flag 
-  static constexpr unsigned int CLKEN    = 1<<0; // Clock Enable.
-  static constexpr unsigned int CCALDS   = 1<<4; // Calibration counter disable.
   
   bool isDateTimeValid();               // Проверка корректности данных при включеии питания
   

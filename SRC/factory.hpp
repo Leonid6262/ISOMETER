@@ -16,9 +16,13 @@
 #include "menu_navigation.hpp"
 #include "mbDataProxy.hpp"
 #include "rtc.hpp"
+#include "PeripheralsInit.hpp"
 
 class CFactory {
 public:    
+  
+  static void Peripherals_init();
+  
   static StatusRet load_settings();                 
   static COUT_4_20 create_OUT_4_20(); 
   static CMBSLAVE create_MBslave();

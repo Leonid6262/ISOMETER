@@ -3,6 +3,7 @@
 #include "mbUartDriver.hpp"
 #include "mbDataProxy.hpp"
 #include "crc16.hpp"
+#include "Peripherals.hpp"
 
 class CPROCESS;
 

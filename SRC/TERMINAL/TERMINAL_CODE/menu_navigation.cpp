@@ -100,16 +100,16 @@ void CMenuNavigation::get_key(bool only_fn_enter) {
         Key_Handler(static_cast<EKey_code>(input_key));
       }
     } else {     
-      unsigned int dTrs = LPC_TIM0->TC - prev_TC0;
+      unsigned int dTrs = SysT::TC() - prev_TC0;
       if (dTrs >= DISPLAY_PERIOD_TICKS * 8) {           
-        prev_TC0 = LPC_TIM0->TC;
+        prev_TC0 = SysT::TC();
         const unsigned char* text1 = reinterpret_cast<const unsigned char*>("Default settings\r\n");
         uartDrv.sendBuffer(text1, 19);
         const unsigned char* text2 = reinterpret_cast<const unsigned char*>("Press Fn+Enter  \r");
         uartDrv.sendBuffer(text2, 18);
       }
     }
-    rProcess.prev_TC0_Phase = LPC_TIM0->TC;
+    rProcess.prev_TC0_Phase = SysT::TC();
     return;
   }
   
@@ -343,7 +343,7 @@ void CMenuNavigation::Key_Handler(EKey_code key) {
     
   case EKey_code::NONE:
   default: {
-    unsigned int dTrs = LPC_TIM0->TC - prev_TC0;
+    unsigned int dTrs = SysT::TC() - prev_TC0;
     
     static ETitleType currentTitle = ETitleType::TitleName;
     static unsigned int elapsed_ms = 0;
@@ -355,7 +355,7 @@ void CMenuNavigation::Key_Handler(EKey_code key) {
         rProcess.rRTC.setDateTime(rProcess.rRTC.DateTimeForSet);
       }
            
-      prev_TC0 = LPC_TIM0->TC;
+      prev_TC0 = SysT::TC();
       elapsed_ms += dTrs / 10000; // пересчёт в мс      
       d.delta_timer_ms += dTrs / 10000;
       

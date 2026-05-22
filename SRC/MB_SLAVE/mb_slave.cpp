@@ -7,7 +7,7 @@ CMBSLAVE::StatusTO CMBSLAVE::TimeoutStatus() {
   if (rUartDrv.rx_idx == 0) { 
     return StatusTO::NO_RECEPTION;
   }
-  unsigned int delta = LPC_TIM0->TC - rUartDrv.last_byte_time;
+  unsigned int delta = SysT::TC() - rUartDrv.last_byte_time; 
   if (delta > MODBUS_SILENCE_TICKS) {
     return StatusTO::EXPIRED;
   } 

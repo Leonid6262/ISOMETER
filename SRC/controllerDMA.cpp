@@ -3,12 +3,11 @@
 #include "IntPriority.hpp"
 
 CDMAcontroller::CDMAcontroller() {
-  LPC_SC->PCONP |= CLKPWR_PCONP_PCGPDMA;
   for (unsigned char i = 0; i < MaxChannels; ++i) {
     DmaChannels[i]->CConfig = 0;
   }
-  LPC_GPDMA->IntTCClear = 0xFF;
-  LPC_GPDMA->IntErrClr = 0xFF;
+  P::GPDMA->IntTCClear = 0xFF; 
+  P::GPDMA->IntErrClr = 0xFF;
 }
 
 /*
@@ -34,8 +33,8 @@ void CDMAcontroller::init_M2P2M_Channel(const SChannelConfig* cfg) {
   LPC_GPDMACH_TypeDef* ch = DmaChannels[static_cast<unsigned char>(cfg->channelNum)];
 
   // В любом случае сбрасывается Interrupt status
-  LPC_GPDMA->IntTCClear = (1UL << static_cast<unsigned char>(cfg->channelNum));
-  LPC_GPDMA->IntErrClr = (1UL << static_cast<unsigned char>(cfg->channelNum));
+  P::GPDMA->IntTCClear = (1UL << static_cast<unsigned char>(cfg->channelNum));
+  P::GPDMA->IntErrClr = (1UL << static_cast<unsigned char>(cfg->channelNum));
 
   ch->CControl = 0;
   ch->CConfig = 0;
@@ -53,8 +52,8 @@ void CDMAcontroller::init_M2P2M_Channel(const SChannelConfig* cfg) {
       ch->CControl |= bSI;  // Control_SI
 
       /* Enable DMA channels, little endian */
-      LPC_GPDMA->Config = DMACConfig_E;
-      while (!(LPC_GPDMA->Config & DMACConfig_E)) {
+      P::GPDMA->Config = DMACConfig_E;
+      while (!(P::GPDMA->Config & DMACConfig_E)) {
       };
 
       ch->CConfig = ((static_cast<unsigned int>(cfg->transferType) & 0x07) << bTransferType) |
@@ -66,8 +65,8 @@ void CDMAcontroller::init_M2P2M_Channel(const SChannelConfig* cfg) {
       ch->CControl |= bDI;  // Control_DI
 
       /* Enable DMA channels, little endian */
-      LPC_GPDMA->Config = DMACConfig_E;
-      while (!(LPC_GPDMA->Config & DMACConfig_E)) {
+      P::GPDMA->Config = DMACConfig_E;
+      while (!(P::GPDMA->Config & DMACConfig_E)) {
       };
 
       ch->CConfig = ((static_cast<unsigned int>(cfg->transferType) & 0x07) << bTransferType) |

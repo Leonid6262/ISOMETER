@@ -4,7 +4,7 @@
 
 CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData, COUT_4_20& rCOUT_4_20, CRTC& rRTC) :   
   rAdc(rAdc), rSet(rSet), rModbusData(rModbusData), rCOUT_4_20(rCOUT_4_20), rRTC(rRTC) {   
-  prev_TC0_Phase = LPC_TIM0->TC; 
+  prev_TC0_Phase = SysT::TC(); 
   phases = EPhases::PhaseP;
   wait_number = WAIT_NUMBER;
   pause_counter = 0;
@@ -14,24 +14,25 @@ CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData
 
 void CPROCESS::step() {
   
-  dTrsPhase = LPC_TIM0->TC - prev_TC0_Phase;
+  dTrsPhase = SysT::TC() - prev_TC0_Phase; 
+  
   
   switch (phases) {
   case EPhases::PhaseP:
     LampMeasOn();
-    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; wait(phases); } 
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); wait(phases); } 
     break;   
   case EPhases::MeasP:
     LampMeasOff();
-    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; conv(phases); }    
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); conv(phases); }    
     break; 
   case EPhases::PhaseN:
     LampMeasOn();
-    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; wait(phases); } 
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); wait(phases); } 
     break;   
   case EPhases::MeasN:
     LampMeasOff();
-    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = LPC_TIM0->TC; conv(phases); }    
+    if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); conv(phases); }    
     break;
   }
   
@@ -110,7 +111,7 @@ void CPROCESS::calc_avr(EPhases ph) {
   signed int ileak2 = 0;
   switch (ph) {
   case EPhases::MeasP:
-    polarity = -1;
+    polarity = 'U';
     for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
       ud += Ud_P[n];
       ileak1 += ILeak1_P[n];
@@ -121,7 +122,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     ILeak2P_avr = static_cast<float>(ileak2) / N_AVR;
     break; 
   case EPhases::MeasN:
-    polarity = 1;
+    polarity = 0xCF; //'П';
     for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
       ud += Ud_N[n];
       ileak1 += ILeak1_N[n];
@@ -152,22 +153,32 @@ void CPROCESS::calc_avr(EPhases ph) {
     R1 = (((rSet.getSettings().k_ch1 * ((2 * u) + (dUd / 2.0f))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
     R2 = (((rSet.getSettings().k_ch2 * ((2 * u) + (dUd / 2.0f))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
  
-    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ R = R1; N_ch  = 1 * polarity; } 
-    else { R = R2; N_ch = 2 * polarity; }
+    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ R = R1; N_ch  = '1'; }  
+    else { R = R2; N_ch = '2'; }
     
+    char r_buf[10];
     if((R > Rmax) || (R < 0)) { 
       R = Rmax;
       bsMoreMax(State::ON);
-      snprintf(Ri, sizeof(Ri), "R>%uk", Rmax);
+      snprintf(r_buf, sizeof(r_buf), "R>%uk", Rmax);
     } else if((ILeak1N_avr >= d_max) || (ILeak1P_avr >= d_max)) { 
       R = 0;
       bsLessMin(State::ON);
-      snprintf(Ri, sizeof(Ri), "R<Rmin");
+      snprintf(r_buf, sizeof(r_buf), "R<Rmin");
     } else {      
       bsMoreMax(State::OFF);
       bsLessMin(State::OFF);
-      snprintf(Ri, sizeof(Ri), "R=%uk", static_cast<unsigned short>(round(R)));
+      snprintf(r_buf, sizeof(r_buf), "R=%uk", static_cast<unsigned short>(round(R)));
     }
+    
+    rRTC.update_now();
+    auto now = rRTC.get_now();
+    snprintf(Ri, sizeof(Ri), "%-7s %c%c %02u:%02u", 
+         r_buf, 
+         N_ch, 
+         polarity, 
+         now.hour, 
+         now.minute);    
     
     unsigned short gis = gis_const;
     if(R > range) gis = static_cast<unsigned short>(((gis_percent * R) / 100.0f) + 0.5f);

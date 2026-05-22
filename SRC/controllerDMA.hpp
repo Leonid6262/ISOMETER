@@ -2,6 +2,7 @@
 
 #include "lpc177x_8x_clkpwr.h"
 #include "lpc407x_8x_177x_8x.h"
+#include "Peripherals.hpp"
 
 class CDMAcontroller {
  public:

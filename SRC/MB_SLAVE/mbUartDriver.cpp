@@ -21,7 +21,7 @@ void CMBUartDriver::irq_handler() {
   
   while (UART->LSR & RDR) { 
     unsigned char byte = UART->RBR; // Чтение RBR сбрасывает прерывание в IIR
-    last_byte_time = LPC_TIM0->TC;  // Фиксируем время КАЖДОГО байта
+    last_byte_time = SysT::TC();    // Фиксируем время КАЖДОГО байта
     
     if (rx_idx < CMBSLAVE::TRANSACTION_LENGTH) {
       CMBSLAVE::rx_mbs_buffer[rx_idx++] = byte;

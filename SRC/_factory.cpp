@@ -8,7 +8,15 @@ __root unsigned char CMBSLAVE::rx_mbs_buffer[CMBSLAVE::TRANSACTION_LENGTH];
 
 using ESET  = CEEPSettings;
 using EUART = CSET_UART::EUartInstance;
-using ESPI  = CSET_SPI::ESPIInstance;
+
+void CFactory::Peripherals_init() {  
+    CPERIPHERIALS_INIT cpi; 
+    cpi.initDOutputs();
+    cpi.powerON();
+    cpi.initIOCON();
+    cpi.initTimers();
+}
+
  
 StatusRet CFactory::load_settings()   { return ESET::getInstance().loadSettings(); }        // Загрузка уставок
 
@@ -24,14 +32,10 @@ extern "C" void UART2_IRQHandler(void) { CMBUartDriver::getInstance().irq_handle
 // Основной класс
 CPROCESS CFactory::create_Process() {
   
-  CSET_SPI::config(ESPI::SPI_2);
-  static CADC adc(CSET_SPI::config(ESPI::SPI_1), ESET::getInstance()); 
-  
-  static CRTC rt_clock;
-  
-  static CDAC_PWM dac_pwm;
-  static COUT_4_20 out_4_20(dac_pwm, CDAC_PWM::DAC_PWM_MAX_VAL, ESET::getInstance());  // Out 4...20mA
-   
+  static CADC adc(CSET_SPI::config(P::SPI1, 3000000, 16), ESET::getInstance());
+  static CRTC rt_clock;  
+  static CDAC_PWM dac_pwm(P::PWM_DAC);
+  static COUT_4_20 out_4_20(dac_pwm, CDAC_PWM::DAC_PWM_MAX_VAL, ESET::getInstance());  // Out 4...20mA   
   return CPROCESS(adc, ESET::getInstance(), CModbusDataProxy::getInstance(), out_4_20, rt_clock); 
 
 }
@@ -49,7 +53,7 @@ extern "C" void UART0_IRQHandler(void) { CTerminalUartDriver::getInstance().irq_
 void CFactory::control_set(CMenuNavigation& rMenu) {
   if(ESET::getInstance().err_load == StatusRet::ERROR) {
     
-    unsigned int prev_TC0 = LPC_TIM0->TC;
+    unsigned int prev_TC0 = SysT::TC();
     bool led_on = false; 
     unsigned int dTrsPhase = 0; 
     constexpr bool only_fn_enter = true;
@@ -57,9 +61,9 @@ void CFactory::control_set(CMenuNavigation& rMenu) {
     
     while(ESET::getInstance().save_status == State::OFF) {
       // Индикация
-      dTrsPhase = LPC_TIM0->TC - prev_TC0;
+      dTrsPhase = SysT::TC() - prev_TC0;
       if(dTrsPhase > LED_PAUSED) {
-        prev_TC0 = LPC_TIM0->TC;
+        prev_TC0 = SysT::TC();
         led_on = !led_on;
         if(led_on) {
           CPROCESS::LampMeasOff();

@@ -1,15 +1,14 @@
 #include "main.hpp"
 
 void UserStartInit() {     
-  CSET_PORTS::initDOutputs();   // Инициализация дискретных выходов микроконтроллера (pins)
-  CPROCESS::UserLedOn();        // Визуальный контроль светодиодов и начала инициализации 
   CSET_EMC::initAndCheck();     // Инициализации ext RAM и шины расширения. Контроль ext RAM 
 }
 
 void main(void) {
+  CFactory::Peripherals_init(); // Инициализация периферии
+  CPROCESS::UserLedOn();        // Визуальный контроль начала инициализации 
   
-  Priorities::initPriorities(); // Распределение векторов по группам. см. в файле IntPriority.h
-  CSET_TIMER::initTimers();     // Инициализация таймеров.  
+  Priorities::initPriorities(); // Распределение векторов по группам. см. в файле IntPriority.h  
   CFactory::load_settings();    // Загрузка уставок (RAM <- EEPROM)
 
   static auto process = CFactory::create_Process();             // Основной объект измерений

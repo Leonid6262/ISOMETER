@@ -9,7 +9,7 @@ CRTC::CRTC() {
 }
 
 bool CRTC::isDateTimeValid() {
-  unsigned int t = P::RTC->CTIME0;
+  unsigned int t = P::RTC->CTIME0; 
   unsigned int d = P::RTC->CTIME1;
 
   unsigned char month = static_cast<unsigned char>((d >> 8) & 0x0F);  // MONTH

@@ -1,12 +1,11 @@
 #include "controllerDMA.hpp"
-
 #include "IntPriority.hpp"
 
 CDMAcontroller::CDMAcontroller() {
   for (unsigned char i = 0; i < MaxChannels; ++i) {
     DmaChannels[i]->CConfig = 0;
   }
-  P::GPDMA->IntTCClear = 0xFF; 
+  P::GPDMA->IntTCClear = 0xFF;  
   P::GPDMA->IntErrClr = 0xFF;
 }
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "Peripherals.hpp"
+#include "PeripheralsInit.hpp"
 #include "LPC407x_8x_177x_8x.h"
 
 class CRTC

@@ -2,7 +2,6 @@
 
 #include "spi_init.hpp"
 #include "system_LPC177x.h"
-#include "Peripherals.hpp"
 
 class CSET_SPI {
 public:

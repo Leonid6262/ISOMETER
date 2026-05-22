@@ -1,47 +1,73 @@
 #pragma once
 #include "LPC407x_8x_177x_8x.h"
 #include "lpc177x_8x_clkpwr.h"
-#include "Peripherals.hpp"
 #include "ControlBits.hpp"
 
-class CPERIPHERIALS_INIT {
-private:
-  CGPIO gpio0;
-  CGPIO gpio1;
-  CGPIO gpio2;
-  CGPIO gpio3;
-  CGPIO gpio4;
-  CGPIO gpio5;
+namespace P { 
+  constexpr LPC_GPIO_TypeDef* G0 = LPC_GPIO0;
+  constexpr LPC_GPIO_TypeDef* G1 = LPC_GPIO1;
+  constexpr LPC_GPIO_TypeDef* G2 = LPC_GPIO2;
+  constexpr LPC_GPIO_TypeDef* G3 = LPC_GPIO3;
+  constexpr LPC_GPIO_TypeDef* G4 = LPC_GPIO4;
+  constexpr LPC_GPIO_TypeDef* G5 = LPC_GPIO5;
   
-  CPCONP pconp;
-  CIOCON iocon;
-  CTIMER timer;
+  constexpr LPC_TIM_TypeDef* SYST = LPC_TIM0;
+  constexpr LPC_TIM_TypeDef* TIM1 = LPC_TIM1;
+  constexpr LPC_TIM_TypeDef* TIM2 = LPC_TIM2;
+  constexpr LPC_TIM_TypeDef* TIM3 = LPC_TIM3;
   
-  CEXTINT extint;
+  constexpr LPC_UART_TypeDef* UART0 = LPC_UART0;
+  constexpr LPC_UART_TypeDef* UART2 = LPC_UART2;
+  constexpr LPC_UART_TypeDef* UART3 = LPC_UART3;
   
-public:
-  CPERIPHERIALS_INIT() : 
-    gpio0(P::G0), gpio1(P::G1), gpio2(P::G2), gpio3(P::G3), 
-    gpio4(P::G4), gpio5(P::G5), iocon(P::IOCON), pconp(P::SC),
-    timer(P::SYST, P::TIM1, P::TIM2, P::TIM3), extint(P::SC) {}
+  constexpr LPC_SSP_TypeDef* SPI0 = LPC_SSP0;
+  constexpr LPC_SSP_TypeDef* SPI1 = LPC_SSP1;
+  constexpr LPC_SSP_TypeDef* SPI2 = LPC_SSP2;
+  
+  constexpr LPC_GPDMA_TypeDef*  GPDMA = LPC_GPDMA;
+  
+  constexpr LPC_CAN_TypeDef* CAN1 = LPC_CAN1;
+  constexpr LPC_CAN_TypeDef* CAN2 = LPC_CAN2;
+  constexpr LPC_CANAF_TypeDef* CANAF = LPC_CANAF;
+  constexpr LPC_CANAF_RAM_TypeDef* CANAF_RAM = LPC_CANAF_RAM;
     
-    void initDOutputs() {      
-      
-      // Дискретные выходы
-      gpio0.set(1UL << bg::B_ULED);     
-      gpio0.clr(!(1UL << bg::B_ULED));  
-      
-      gpio1.clr(0xFFFFFFFF);
-      
-      gpio2.clr(0xFFFFFFFF);
-      gpio3.clr(0xFFFFFFFF);     
-      gpio4.clr(0xFFFFFFFF);
-      gpio5.clr(0xFFFFFFFF);
-      
-      // Настройка направления
-      gpio0.dirOut(1UL << bg::B_ULED);          
-      gpio1.dirOut(1UL << bg::B_RelReady);   
-      gpio2.dirOut(
+  constexpr LPC_IOCON_TypeDef* IOCON = LPC_IOCON;  // IOCON 
+  constexpr LPC_SC_TypeDef* SC = LPC_SC;           // System Control
+  constexpr LPC_EMC_TypeDef* EMC = LPC_EMC;        // EMC
+  
+  constexpr LPC_ADC_TypeDef* IADC = LPC_ADC;       // Внутреннее АЦП
+  
+  constexpr LPC_DAC_TypeDef* DAC = LPC_DAC;        // DAC0
+  constexpr LPC_PWM_TypeDef* PWM_DAC = LPC_PWM1;   // PWM1 DAC_PWM
+  
+  constexpr LPC_PWM_TypeDef* PULS_PWM = LPC_PWM0;  // PWM ИУ
+  
+  constexpr LPC_RTC_TypeDef* RTC = LPC_RTC;
+  constexpr LPC_EEPROM_TypeDef* EEPROM = LPC_EEPROM;
+
+}
+
+
+class CPERIPHERIALS_INIT {
+
+public:
+  
+  void initDOutputs() {      
+    
+    // Дискретные выходы
+    P::G0->SET = (1UL << bg::B_ULED);
+    P::G0->CLR = (!(1UL << bg::B_ULED));
+    
+    P::G1->CLR = 0xFFFFFFFF;
+    P::G2->CLR = 0xFFFFFFFF;
+    P::G3->CLR = 0xFFFFFFFF;
+    P::G4->CLR = 0xFFFFFFFF;
+    P::G5->CLR = 0xFFFFFFFF;
+    
+    // Настройка направления
+    P::G0->DIR |= (1UL << bg::B_ULED);
+    P::G1->DIR |= (1UL << bg::B_RelReady);
+    P::G2->DIR |= (
                    1UL << bg::B_LampMeas | 
                    1UL << bg::B_LampAlarm1 | 
                    1UL << bg::B_LampAlarm2 | 
@@ -49,49 +75,46 @@ public:
                    1UL << bg::B_TN |
                    1UL << bg::B_RelAlarm2 |
                    1UL << bg::B_RelAlarm1
-                     );
-      gpio3.dirOut(0x00000000);
-      gpio4.dirOut(0x00000000);
-      gpio5.dirOut(0x00000008);
-    }
+                                 );
+    P::G3->DIR = 0x00000000;
+    P::G4->DIR = 0x00000000;
+    P::G5->DIR = 0x00000000;
+  }
+  
+  
+  void powerON() {
+    P::SC->PCONP |= CLKPWR_PCONP_PCPWM1;      
+    P::SC->PCONP |= CLKPWR_PCONP_PCTIM0;      
+    P::SC->PCONP |= CLKPWR_PCONP_PCUART0;  
+    P::SC->PCONP |= CLKPWR_PCONP_PCUART2;        
+    P::SC->PCONP |= CLKPWR_PCONP_PCSSP1;          
+    P::SC->PCONP |= CLKPWR_PCONP_PCGPDMA;      
+  }
+  
+  void initIOCON() {
     
+    P::IOCON->P2_4  = bf::IOCON_PORT_PWM;                   // P2_4 -> PWM1:5 PWM_DAC1
     
-    void powerON() {
-      pconp.sc->PCONP |= CLKPWR_PCONP_PCPWM1;      
-      pconp.sc->PCONP |= CLKPWR_PCONP_PCTIM0;      
-      pconp.sc->PCONP |= CLKPWR_PCONP_PCUART0;  
-      pconp.sc->PCONP |= CLKPWR_PCONP_PCUART2;        
-      pconp.sc->PCONP |= CLKPWR_PCONP_PCSSP1;          
-      pconp.sc->PCONP |= CLKPWR_PCONP_PCGPDMA;      
-    }
+    P::IOCON->P4_20 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SCK1
+    P::IOCON->P4_21 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SSEL1
+    P::IOCON->P4_22 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // MISO1
+    P::IOCON->P4_23 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // MOSI1
     
-    void initIOCON() {
-
-      iocon.base->P2_4  = bf::IOCON_PORT_PWM;                   // P2_4 -> PWM1:5 PWM_DAC1
-
-      iocon.base->P4_20 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SCK1
-      iocon.base->P4_21 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SSEL1
-      iocon.base->P4_22 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // MISO1
-      iocon.base->P4_23 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // MOSI1
-      
-      iocon.base->P0_2 = bf::IOCON_U0_TXD;         // U0_TXD
-      iocon.base->P0_3 = bf::IOCON_U0_RXD;         // U0_RXD
-      
-      iocon.base->P2_6 = bf::IOCON_U2_OE;          // U2_OE
-      iocon.base->P2_8 = bf::IOCON_U2_TXD;         // U2_TXD
-      iocon.base->P2_9 = bf::IOCON_U2_RXD;         // U2_RXD
-      
-    }
+    P::IOCON->P0_2 = bf::IOCON_U0_TXD;         // U0_TXD
+    P::IOCON->P0_3 = bf::IOCON_U0_RXD;         // U0_RXD
     
-    void initTimers() {     
-      timer.syst->PR =  6 - 1;  // 10 МГц, 1 тик = 0.1 мкс
-      //timer.tim1->PR = 60 - 1;  // 1 МГц, 1 тик = 1.0 мкс
-      //timer.tim2->PR = 60 - 1;  // 1 МГц
-      //timer.tim3->PR = 60 - 1;  // 1 МГц   
-      
-      // Включение системного таймера (TIM0)
-      timer.syst->TCR |= 0x1;
-    }
+    P::IOCON->P2_6 = bf::IOCON_U2_OE;          // U2_OE
+    P::IOCON->P2_8 = bf::IOCON_U2_TXD;         // U2_TXD
+    P::IOCON->P2_9 = bf::IOCON_U2_RXD;         // U2_RXD
     
+  }
+  
+  void initTimers() {     
+    P::SYST->PR =  6 - 1;  // 10 МГц, 1 тик = 0.1 мкс
+    P::SYST->TCR |= 0x1;   // Включение системного таймера (TIM0)
+  }
+  
 };
 
+// Системный таймер
+class SysT { public: inline static unsigned int TC() { return P::SYST->TC; } };

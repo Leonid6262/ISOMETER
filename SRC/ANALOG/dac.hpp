@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LPC407x_8x_177x_8x.h"
-#include "Peripherals.hpp"
+#include "PeripheralsInit.hpp"
 
 // DAC на бпзе PWM
 class CDAC_PWM {

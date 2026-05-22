@@ -3,7 +3,7 @@
 #include "LPC407x_8x_177x_8x.h"
 #include "system_LPC177x.h"
 #include "settings_eep.hpp"
-#include "Peripherals.hpp"
+#include "PeripheralsInit.hpp"
 
 class CSET_UART{
 public:    

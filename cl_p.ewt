@@ -2880,9 +2880,6 @@
                 <name>$PROJ_DIR$\SRC\PERIPHERIALS\emc.hpp</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\SRC\PERIPHERIALS\Peripherals.hpp</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\SRC\PERIPHERIALS\PeripheralsInit.hpp</name>
             </file>
         </group>

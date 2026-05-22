@@ -1,7 +1,6 @@
 #pragma once
 
 #include "LPC407x_8x_177x_8x.h"
-#include "Peripherals.hpp"
 
 //Пауза испульзует SysT (настройка таймера: 1-тик - 0.1мкс)
 

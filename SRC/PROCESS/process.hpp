@@ -8,7 +8,7 @@
 #include "out_4_20mA.hpp"
 #include "pause_us.hpp"
 #include "rtc.hpp"
-#include "Peripherals.hpp"
+#include "PeripheralsInit.hpp"
 
 class CPROCESS {
   

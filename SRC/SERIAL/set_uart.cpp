@@ -14,7 +14,7 @@ LPC_UART_TypeDef* CSET_UART::configure(EUartInstance UN, CEEPSettings& rSet) {
       UART->FDR = baud_19200.FDR;
       break;
     case EUartInstance::UART_2:
-      UART = P::UART2;
+      UART = P::UART2; 
       UART->RS485CTRL = bUART::DCTRL;           // Автоматическое переключение OE
       UART->RS485CTRL |= bUART::OINV;           // Инверсия OE
       /* Настройка частоты */

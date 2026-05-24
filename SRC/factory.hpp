@@ -17,6 +17,7 @@
 #include "mbDataProxy.hpp"
 #include "rtc.hpp"
 #include "PeripheralsInit.hpp"
+#include "event_log.hpp"
 
 class CFactory {
 public:    
@@ -26,7 +27,7 @@ public:
   static StatusRet load_settings();                 
   static COUT_4_20 create_OUT_4_20(); 
   static CMBSLAVE create_MBslave();
-  static CPROCESS create_Process();
+  static CPROCESS& create_Process();
   static CMenuNavigation create_MN(CPROCESS&);
   static void control_set(CMenuNavigation&);  
 };

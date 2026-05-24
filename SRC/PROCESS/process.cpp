@@ -2,14 +2,16 @@
 
 #include <math.h>
 
-CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData, COUT_4_20& rCOUT_4_20, CRTC& rRTC) :   
-  rAdc(rAdc), rSet(rSet), rModbusData(rModbusData), rCOUT_4_20(rCOUT_4_20), rRTC(rRTC) {   
+CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData, COUT_4_20& rCOUT_4_20, CRTC& rRTC, CEVENT_LOG& rEventLog) :   
+  rAdc(rAdc), rSet(rSet), rModbusData(rModbusData), rCOUT_4_20(rCOUT_4_20), rRTC(rRTC), rEventLog(rEventLog) {   
   prev_TC0_Phase = SysT::TC(); 
   phases = EPhases::PhaseP;
   wait_number = WAIT_NUMBER;
   pause_counter = 0;
   clr_bs();
   bsWork(State::ON);
+  rEventLog.clear_log(); 
+  rEventLog.save_event(CEVENT_LOG::EEvent::Start_Log, 0);
 }
 
 void CPROCESS::step() {

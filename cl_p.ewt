@@ -2886,6 +2886,9 @@
         <group>
             <name>PROCESS</name>
             <file>
+                <name>$PROJ_DIR$\SRC\PROCESS\event_log.cpp</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\SRC\PROCESS\process.cpp</name>
             </file>
         </group>

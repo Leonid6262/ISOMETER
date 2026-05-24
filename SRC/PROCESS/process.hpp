@@ -9,16 +9,18 @@
 #include "pause_us.hpp"
 #include "rtc.hpp"
 #include "PeripheralsInit.hpp"
+#include "event_log.hpp"
 
 class CPROCESS {
   
 public:  
-  CPROCESS(CADC&, CEEPSettings&, CModbusDataProxy&, COUT_4_20&, CRTC&);
+  CPROCESS(CADC&, CEEPSettings&, CModbusDataProxy&, COUT_4_20&, CRTC&, CEVENT_LOG&);
   CModbusDataProxy& rModbusData;
   COUT_4_20& rCOUT_4_20;
   CEEPSettings& rSet;
   CADC& rAdc;
   CRTC& rRTC;
+  CEVENT_LOG& rEventLog;
   
   inline float*          getPointerR1()      { return &R1;              }
   inline float*          getPointerR2()      { return &R2;              }

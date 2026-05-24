@@ -30,13 +30,16 @@ CMBSLAVE CFactory::create_MBslave() {
 extern "C" void UART2_IRQHandler(void) { CMBUartDriver::getInstance().irq_handler(); }      // Вызов обработчика UART-2
 
 // Основной класс
-CPROCESS CFactory::create_Process() {
+CPROCESS& CFactory::create_Process() {
   
   static CADC adc(CSET_SPI::config(P::SPI1, 3000000, 16), ESET::getInstance());
   static CRTC rt_clock;  
   static CDAC_PWM dac_pwm(P::PWM_DAC);
+  static CEVENT_LOG event_log; 
   static COUT_4_20 out_4_20(dac_pwm, CDAC_PWM::DAC_PWM_MAX_VAL, ESET::getInstance());  // Out 4...20mA   
-  return CPROCESS(adc, ESET::getInstance(), CModbusDataProxy::getInstance(), out_4_20, rt_clock); 
+  static CPROCESS process(adc, ESET::getInstance(), CModbusDataProxy::getInstance(), out_4_20, rt_clock, event_log);
+  event_log.get_pProcess(&process);
+  return process; 
 
 }
 

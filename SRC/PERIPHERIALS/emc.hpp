@@ -6,6 +6,9 @@ class CSET_EMC {
   
 public:  
   static void initAndCheck() {
+    
+    P::G0->DIR |= (1UL << bg::B_ULED);
+    P::G0->CLR  = (1UL << bg::B_ULED);
         
     constexpr unsigned short* RAM_BEGIN   = reinterpret_cast<unsigned short*>(0x80000000);
     constexpr unsigned short* RAM_END     = reinterpret_cast<unsigned short*>(0x800FFFFF);

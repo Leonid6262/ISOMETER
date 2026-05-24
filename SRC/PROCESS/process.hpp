@@ -27,7 +27,7 @@ public:
   inline float*          getPointerUd_V()    { return &Ud_avr_V;        }
   inline signed short*   getPointerUd_d()    { return &Ud_avr_d;        }
   inline char*           getPointerDT()      { return date_time;        }
-  inline char*           getPointerRi()      { return Ri;               }
+  inline char*           getPointerRES()     { return RES;              }
 
   inline State*        getPointerSRl1()    { return &testRelAlarm1;   }
   inline State*        getPointerSRl2()    { return &testRelAlarm2;   }
@@ -74,7 +74,7 @@ public:
   void start_test();
   void step();
   
-  float R;
+  unsigned short R;
   float R1;
   float R2;
   signed short Ud_avr_d;
@@ -119,7 +119,7 @@ private:
   unsigned short pause_counter;
   unsigned short wait_number;
   char date_time[G_CONST::disp_l + 1];
-  char Ri[G_CONST::disp_l + 1];
+  char RES[G_CONST::disp_l + 1];
   char polarity;
   char N_ch;
 

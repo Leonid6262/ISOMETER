@@ -11,7 +11,7 @@ CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData
   clr_bs();
   bsWork(State::ON);
   rEventLog.clear_log(); 
-  rEventLog.save_event(CEVENT_LOG::EEvent::Start_Log, 0);
+  rEventLog.save_event(CEVENT_LOG::EEvent::Start_Log); 
 }
 
 void CPROCESS::step() {
@@ -155,8 +155,8 @@ void CPROCESS::calc_avr(EPhases ph) {
     R1 = (((rSet.getSettings().k_ch1 * ((2 * u) + (dUd / 2.0f))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
     R2 = (((rSet.getSettings().k_ch2 * ((2 * u) + (dUd / 2.0f))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
  
-    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ R = R1; N_ch  = '1'; }  
-    else { R = R2; N_ch = '2'; }
+    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ R = round(R1); N_ch  = '1'; }  
+    else { R = round(R2); N_ch = '2'; }
     
     char r_buf[10];
     if((R > Rmax) || (R < 0)) { 
@@ -170,12 +170,12 @@ void CPROCESS::calc_avr(EPhases ph) {
     } else {      
       bsMoreMax(State::OFF);
       bsLessMin(State::OFF);
-      snprintf(r_buf, sizeof(r_buf), "R=%uk", static_cast<unsigned short>(round(R)));
+      snprintf(r_buf, sizeof(r_buf), "R=%uk", R);
     }
     
     rRTC.update_now();
     auto now = rRTC.get_now();
-    snprintf(Ri, sizeof(Ri), "%-7s %c%c %02u:%02u", 
+    snprintf(RES, sizeof(RES), "%-7s %c%c %02u:%02u", 
          r_buf, 
          N_ch, 
          polarity, 

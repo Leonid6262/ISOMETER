@@ -45,10 +45,8 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
  
   std::vector<o> MENU = {
   o(Mn.INDICATION[l],{
-      //o::Dual("Rinsul", &rProcess.R,              "kOhm", 1, p0, vt::vfloat,
-      //        "pN",      rProcess.getPointerNch(),  "pN", 1, p0, vt::sshort, nm::In2V ),
-      o("Current data:", {}, rProcess.getPointerRi(), "", 1, p0, vt::text,   nm::In1V),
-      o("Date-Time",     {}, rProcess.getPointerDT(), "", 1, p0, vt::text,   nm::In1V),}),
+      o("Current data:", {}, rProcess.getPointerRES(), "", 1, p0, vt::text,   nm::In1V),
+      o("Date-Time",     {}, rProcess.getPointerDT(),  "", 1, p0, vt::text,   nm::In1V),}),
   o(Mn.SETTINGS[l],{
       o(Mn.PARAMS[l],{
           o("Alarm1",  {}, &set.RAlarm1,   "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),

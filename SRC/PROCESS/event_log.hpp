@@ -11,11 +11,17 @@ public:
   CPROCESS* pProcess;
   
   enum class EEvent {
-    Start_Log,
-    Alarm1_On,              
-    Alarm1_Off,
-    Alarm2_On,              
-    Alarm2_Off,
+    NoEvents,           // Нет событий
+    Start_Log,          // Старт логирования
+    LessMin,            // Rmin
+    MoreMax,            // Rmax
+    NormRange,          // R в пределах диапозона
+    Alarm1_On,          // 1-е предупреждение          
+    Alarm1_Off,         // Снято 1-е предупреждение 
+    Alarm2_On,          // 2-е предупреждение             
+    Alarm2_Off,         // Снято 2-е предупреждение
+    Fault_On,           // Неисправность
+    Fault_Off,          // Неисправность снята
   };
   
   struct LogEntry {

@@ -28,9 +28,6 @@ public:
   inline signed short*   getPointerUd_d()    { return &Ud_avr_d;        }
   inline char*           getPointerDT()      { return date_time;        }
   inline char*           getPointerRES()     { return RES;              }
-
-  inline State*        getPointerSRl1()    { return &testRelAlarm1;   }
-  inline State*        getPointerSRl2()    { return &testRelAlarm2;   }
    
   static inline void UserLedOn()  { P::G0->CLR  = (1UL << bg::B_ULED); } 
   static inline void UserLedOff() { P::G0->SET  = (1UL << bg::B_ULED); }
@@ -57,19 +54,23 @@ public:
       unsigned char sFault     : 1; // Неисправность
       unsigned char sLessMin   : 1; // R менише Rmin
       unsigned char sMoreMax   : 1; // R больше Rmax
+      unsigned char sNormRange : 1; // R в диапазоне измерений
       unsigned char sAlarm1    : 1; // Alarm1
       unsigned char sAlarm2    : 1; // Alarm2
     };
   } UStatus;
   
+  unsigned short prevUStatus;
+  
   // Установка/сброс битов статуса
-  void bsWork(State state)    { UStatus.sWork    = static_cast<unsigned char>(state); }
-  void bsFault(State state)   { UStatus.sFault   = static_cast<unsigned char>(state); }
-  void bsLessMin(State state) { UStatus.sLessMin = static_cast<unsigned char>(state); }
-  void bsMoreMax(State state) { UStatus.sMoreMax = static_cast<unsigned char>(state); }
-  void bsAlarm1(State state)  { UStatus.sAlarm1  = static_cast<unsigned char>(state); }
-  void bsAlarm2(State state)  { UStatus.sAlarm2  = static_cast<unsigned char>(state); }
-  void clr_bs()               { UStatus.all  = 0; }
+  void bsWork(State state)      { UStatus.sWork    = static_cast<unsigned char>(state); }
+  void bsFault(State state)     { UStatus.sFault   = static_cast<unsigned char>(state); }
+  void bsLessMin(State state)   { UStatus.sLessMin = static_cast<unsigned char>(state); }
+  void bsMoreMax(State state)   { UStatus.sMoreMax = static_cast<unsigned char>(state); }
+  void bsNormRange(State state) { UStatus.sNormRange = static_cast<unsigned char>(state); }
+  void bsAlarm1(State state)    { UStatus.sAlarm1  = static_cast<unsigned char>(state); }
+  void bsAlarm2(State state)    { UStatus.sAlarm2  = static_cast<unsigned char>(state); }
+  void clr_bs()                 { UStatus.all  = 0; }
   
   void start_test();
   void step();
@@ -83,6 +84,8 @@ public:
 private:
 
   unsigned int dTrsPhase;
+  unsigned short N_MeasP = 0;
+  bool start_log = false;
   
   static inline void Negative_phase()     { P::G2->CLR = (1UL << bg::B_TP); Pause_us(2); P::G2->SET = (1UL << bg::B_TN); }
   static inline void Positive_phase()     { P::G2->CLR = (1UL << bg::B_TN); Pause_us(2); P::G2->SET = (1UL << bg::B_TP); }
@@ -122,9 +125,6 @@ private:
   char RES[G_CONST::disp_l + 1];
   char polarity;
   char N_ch;
-
-  State testRelAlarm1 = State::OFF;
-  State testRelAlarm2 = State::OFF;
    
   enum class EPhases {
     PhaseP,
@@ -140,6 +140,7 @@ private:
   void conv(EPhases);
   void calc_avr(EPhases);
   void update_modbus_data();
+  void SaveEvent(CEVENT_LOG::EEvent);
   
   float dIL1;   
   float dIL2;

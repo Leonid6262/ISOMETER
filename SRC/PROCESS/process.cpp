@@ -10,8 +10,7 @@ CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData
   pause_counter = 0;
   clr_bs();
   bsWork(State::ON);
-  rEventLog.clear_log(); 
-  rEventLog.save_event(CEVENT_LOG::EEvent::Start_Log); 
+  prevUStatus = UStatus.all;
 }
 
 void CPROCESS::step() {
@@ -99,6 +98,12 @@ void CPROCESS::conv(EPhases ph) {
       calc_avr(ph);
       phases = EPhases::PhaseP;
       if(UStatus.sFault) { LampAlarm1Off(); LampAlarm2Off(); }
+      N_MeasP++;
+      if((N_MeasP > 2) && !start_log) { 
+        start_log = true; 
+        rEventLog.clear_log(); 
+        rEventLog.save_event(CEVENT_LOG::EEvent::Start_Log); 
+      }
     }
     break; 
   case EPhases::PhaseP:
@@ -163,14 +168,18 @@ void CPROCESS::calc_avr(EPhases ph) {
       R = Rmax;
       bsMoreMax(State::ON);
       snprintf(r_buf, sizeof(r_buf), "R>%uk", Rmax);
+      SaveEvent(CEVENT_LOG::EEvent::MoreMax);
     } else if((ILeak1N_avr >= d_max) || (ILeak1P_avr >= d_max)) { 
       R = 0;
       bsLessMin(State::ON);
       snprintf(r_buf, sizeof(r_buf), "R<Rmin");
+      SaveEvent(CEVENT_LOG::EEvent::LessMin);
     } else {      
       bsMoreMax(State::OFF);
       bsLessMin(State::OFF);
-      snprintf(r_buf, sizeof(r_buf), "R=%uk", R);
+      bsNormRange(State::ON);
+      snprintf(r_buf, sizeof(r_buf), "R=%uk", R);     
+      SaveEvent(CEVENT_LOG::EEvent::NormRange);
     }
     
     rRTC.update_now();
@@ -188,36 +197,45 @@ void CPROCESS::calc_avr(EPhases ph) {
     if( R < rSet.getSettings().RAlarm1) {
       LampAlarm1On();
       RelAlarm1On();
-      bsAlarm1(State::ON);      
+      bsAlarm1(State::ON);    
+      SaveEvent(CEVENT_LOG::EEvent::Alarm1_On);
     } else if(R > (rSet.getSettings().RAlarm1 + gis)) {
       LampAlarm1Off();
       RelAlarm1Off();
       bsAlarm1(State::OFF);
+      SaveEvent(CEVENT_LOG::EEvent::Alarm1_Off);
     }
     if( R < rSet.getSettings().RAlarm2) {
       LampAlarm2On();
       RelAlarm2On();
       bsAlarm2(State::ON);
+      SaveEvent(CEVENT_LOG::EEvent::Alarm2_On);
     } else if(R > (rSet.getSettings().RAlarm2 + gis)) {
       LampAlarm2Off();
       RelAlarm2Off();
       bsAlarm2(State::OFF);
+      SaveEvent(CEVENT_LOG::EEvent::Alarm2_Off);
     }
     
-  } else if(UStatus.sFault) { 
+  } 
+  
+  if(UStatus.sFault) { 
     R = 0;
-    if(testRelAlarm1 == State::ON) {
-      RelAlarm1On();
-    } else {
-      RelAlarm1Off();
-    }
-    if(testRelAlarm2 == State::ON) {
-      RelAlarm2On();
-    } else {
-      RelAlarm2Off();
-    }
+    RelAlarm1Off();
+    RelAlarm2Off();
+    RelReadyOff();
+    SaveEvent(CEVENT_LOG::EEvent::Fault_On);
+  } else {
+    SaveEvent(CEVENT_LOG::EEvent::Fault_Off);
   }
   
+}
+
+void CPROCESS::SaveEvent(CEVENT_LOG::EEvent event) {
+  if(prevUStatus != UStatus.all) {
+    prevUStatus = UStatus.all;
+    rEventLog.save_event(event);
+  }  
 }
 
 void CPROCESS::conv_adc() {

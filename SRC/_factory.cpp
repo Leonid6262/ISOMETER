@@ -17,7 +17,6 @@ void CFactory::Peripherals_init() {
     cpi.initTimers();
 }
 
- 
 StatusRet CFactory::load_settings()   { return ESET::getInstance().loadSettings(); }        // Загрузка уставок
 
 // ModBus slave
@@ -41,17 +40,24 @@ CPROCESS& CFactory::create_Process() {
   return process; 
 }
 
-// Пультовый терминал
-CMenuNavigation CFactory::create_MN(CPROCESS& rProcess) { 
+// Инициализация драйвера ПТ, создание объектов ПТ и его окружения
+CTerminalManager& CFactory::createTM(CPROCESS& rProcess) {  
   auto& udrv = CTerminalUartDriver::getInstance();                                          // Конфигурация и инициализация UART-0 
   udrv.init(CSET_UART::configure(EUART::UART_0, ESET::getInstance()), UART0_IRQn); 
-  static CMenuNavigation menu_navigation(udrv, ESET::getInstance(), rProcess);
-  return menu_navigation;
+  
+  static CLogDisplay log_display(udrv);                                                     // Пультовый терминал (просмотр журнала).
+  static CMenuNavigation menu_navigation(udrv, ESET::getInstance(), rProcess);              // Пультовый терминал (индикация и навигация по меню).
+  
+  static CTerminalManager terminal_manager(menu_navigation, log_display);                   // Управление режимами пультового терминал
+  menu_navigation.set_pTerminal(&terminal_manager);                                         // Создание циклической зависимости menu  
+  log_display.set_pTerminal(&terminal_manager);                                             // Создание циклической зависимости log
+  return terminal_manager;
 }
+
 extern "C" void UART0_IRQHandler(void) { CTerminalUartDriver::getInstance().irq_handler(); }  // Вызов обработчика UART-0
 
 // Контроль загрузки. При ошибке КС требуется зпись дефолтных уставок 
-void CFactory::control_set(CMenuNavigation& rMenu) {
+void CFactory::control_set(CTerminalManager& rTM) { 
   if(ESET::getInstance().err_load == StatusRet::ERROR) {
     
     unsigned int prev_TC0 = SysT::TC();
@@ -77,7 +83,7 @@ void CFactory::control_set(CMenuNavigation& rMenu) {
         }
       } 
       // Ожидание записи дефолтных уставок (Fn+Enter)
-      rMenu.get_key(only_fn_enter);
+      rTM.rMenuNavigation.get_key(only_fn_enter);
     }     
   }  
 }

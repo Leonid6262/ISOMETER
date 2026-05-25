@@ -10,13 +10,17 @@
 #include "process.hpp"
 #include "adc.hpp"
 #include "rtc.hpp"
+#include "log_display.hpp"
+
+class CTerminalManager;
 
 class CMenuNavigation {
 public:
   CMenuNavigation(CTerminalUartDriver&, CEEPSettings&, CPROCESS&);
   CPROCESS& rProcess;
-  
+
   void get_key(bool only_ctr_enter = false);
+  void set_pTerminal(CTerminalManager*);
   void first_render();
   
   unsigned int prev_TC0;
@@ -79,6 +83,7 @@ public:
   
 private:
   CTerminalUartDriver& uartDrv;
+  CTerminalManager* pTerminal_manager;
   
   enum class ELED { 
     LED_GREEN  = 0x02, 

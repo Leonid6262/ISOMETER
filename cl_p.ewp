@@ -2191,10 +2191,16 @@
             <group>
                 <name>TERMINAL_CODE</name>
                 <file>
+                    <name>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_CODE\log_display.cpp</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_CODE\menu_navigation.cpp</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_CODE\string_utils.cpp</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_CODE\terminal_manager.cpp</name>
                 </file>
                 <file>
                     <name>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_CODE\terminalUartDriver.cpp</name>

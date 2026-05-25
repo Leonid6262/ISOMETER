@@ -2,10 +2,11 @@
 #include "string_utils.hpp"
 #include "menu_factory.hpp"
 #include "pause_us.hpp"
+#include "terminal_manager.hpp"
 
 
-CMenuNavigation::CMenuNavigation(CTerminalUartDriver& uartDrv, CEEPSettings& rSet, CPROCESS& rProcess ) :  
-  uartDrv(uartDrv), rProcess(rProcess) { 
+CMenuNavigation::CMenuNavigation(CTerminalUartDriver& uartDrv, CEEPSettings& rSet, CPROCESS& rProcess) :  
+  uartDrv(uartDrv), rProcess(rProcess) {  
   
   // очистка экрана
   unsigned char clr_data[] = {"                \r\n"};
@@ -141,6 +142,10 @@ void CMenuNavigation::render_node(ETitleType title_type) {
   default:
     break;
   }
+}
+
+void CMenuNavigation::set_pTerminal(CTerminalManager* pTerminal_manager){
+  this->pTerminal_manager = pTerminal_manager;
 }
 
 void CMenuNavigation::first_render(){
@@ -551,7 +556,7 @@ void CMenuNavigation::handleEscape() {
 
     render_menu();
   } else {
-    //pTerminal_manager->switchToMessages(); // переключаемся в меню
+    pTerminal_manager->switchToLog(); // переключаемся в режим отображения журнала
   }
 }
 

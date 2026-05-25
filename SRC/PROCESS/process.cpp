@@ -11,6 +11,7 @@ CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData
   clr_bs();
   bsWork(State::ON);
   prevUStatus = UStatus.all;
+  start_test();
 }
 
 void CPROCESS::step() {
@@ -82,6 +83,11 @@ void CPROCESS::conv(EPhases ph) {
       calc_avr(ph);
       phases = EPhases::PhaseN;
       if(UStatus.sFault) { LampAlarm1Off(); LampAlarm2Off(); }
+      if(!start_log) { 
+        start_log = true; 
+        rEventLog.clear_log(); 
+        rEventLog.save_event(CEVENT_LOG::EEvent::Start_Log); 
+      }
     }
     break; 
   case EPhases::MeasN:  
@@ -98,12 +104,6 @@ void CPROCESS::conv(EPhases ph) {
       calc_avr(ph);
       phases = EPhases::PhaseP;
       if(UStatus.sFault) { LampAlarm1Off(); LampAlarm2Off(); }
-      N_MeasP++;
-      if((N_MeasP > 2) && !start_log) { 
-        start_log = true; 
-        rEventLog.clear_log(); 
-        rEventLog.save_event(CEVENT_LOG::EEvent::Start_Log); 
-      }
     }
     break; 
   case EPhases::PhaseP:
@@ -160,11 +160,12 @@ void CPROCESS::calc_avr(EPhases ph) {
     R1 = (((rSet.getSettings().k_ch1 * ((2 * u) + (dUd / 2.0f))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
     R2 = (((rSet.getSettings().k_ch2 * ((2 * u) + (dUd / 2.0f))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
  
-    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ R = round(R1); N_ch  = '1'; }  
-    else { R = round(R2); N_ch = '2'; }
+    float r;
+    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ r = R1; N_ch  = '1'; }  
+    else { r = R2; N_ch = '2'; }
     
     char r_buf[10];
-    if((R > Rmax) || (R < 0)) { 
+    if((r > Rmax) || (r < 0)) { 
       R = Rmax;
       bsMoreMax(State::ON);
       snprintf(r_buf, sizeof(r_buf), "R>%uk", Rmax);
@@ -175,6 +176,7 @@ void CPROCESS::calc_avr(EPhases ph) {
       snprintf(r_buf, sizeof(r_buf), "R<Rmin");
       SaveEvent(CEVENT_LOG::EEvent::LessMin);
     } else {      
+      R = round(r);
       bsMoreMax(State::OFF);
       bsLessMin(State::OFF);
       bsNormRange(State::ON);
@@ -232,7 +234,7 @@ void CPROCESS::calc_avr(EPhases ph) {
 }
 
 void CPROCESS::SaveEvent(CEVENT_LOG::EEvent event) {
-  if(prevUStatus != UStatus.all) {
+  if((prevUStatus != UStatus.all) & start_log) {
     prevUStatus = UStatus.all;
     rEventLog.save_event(event);
   }  

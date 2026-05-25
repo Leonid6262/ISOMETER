@@ -14,21 +14,21 @@
 #include "process.hpp"
 #include "terminalUartDriver.hpp"
 #include "menu_navigation.hpp"
+#include "log_display.hpp"
 #include "mbDataProxy.hpp"
 #include "rtc.hpp"
 #include "PeripheralsInit.hpp"
 #include "event_log.hpp"
+#include "terminal_manager.hpp"
 
 class CFactory {
-public:    
-  
-  static void Peripherals_init();
-  
+public:     
+  static void Peripherals_init(); 
   static StatusRet load_settings();                 
   static COUT_4_20 create_OUT_4_20(); 
   static CMBSLAVE create_MBslave();
-  static CPROCESS& create_Process();
-  static CMenuNavigation create_MN(CPROCESS&);
-  static void control_set(CMenuNavigation&);  
+  static CPROCESS& create_Process(); 
+  static CTerminalManager& createTM(CPROCESS&);  
+  static void control_set(CTerminalManager&);  
 };
 

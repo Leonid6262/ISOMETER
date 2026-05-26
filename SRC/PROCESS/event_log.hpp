@@ -9,10 +9,12 @@ class CEVENT_LOG {
   
 public:
   CPROCESS* pProcess;
+  unsigned short current_index = 0;
+  bool log_wrapped = false; // Флаг того, что буфер заполнился и пошел на второй круг
+  static constexpr unsigned short Log_Length  = 200;
   
   enum class EEvent {
     NoEvents,           // Нет событий
-    Start_Log,          // Старт логирования
     LessMin,            // Rmin
     MoreMax,            // Rmax
     NormRange,          // R в пределах диапозона
@@ -41,14 +43,11 @@ public:
   
   CEVENT_LOG();
   
+  LogEntry log_buffer[Log_Length];
+  
 private: 
   
-  static constexpr unsigned short Log_Length  = 200;
-  
-  LogEntry log_buffer[Log_Length];
-    
-  unsigned short current_index = 0; 
-  bool log_wrapped = false; // Флаг того, что буфер заполнился и пошел на второй круг
+
   
 };
 

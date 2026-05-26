@@ -2906,6 +2906,9 @@
             <group>
                 <name>TERMINAL_CODE</name>
                 <file>
+                    <name>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_CODE\key_kodes.hpp</name>
+                </file>
+                <file>
                     <name>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_CODE\log_display.cpp</name>
                 </file>
                 <file>

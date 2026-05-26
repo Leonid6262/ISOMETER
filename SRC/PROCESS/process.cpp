@@ -10,6 +10,7 @@ CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData
   pause_counter = 0;
   clr_bs();
   bsWork(State::ON);
+  bsNormRange(State::ON);
   prevUStatus = UStatus.all;
   start_test();
 }
@@ -86,7 +87,6 @@ void CPROCESS::conv(EPhases ph) {
       if(!start_log) { 
         start_log = true; 
         rEventLog.clear_log(); 
-        rEventLog.save_event(CEVENT_LOG::EEvent::Start_Log); 
       }
     }
     break; 

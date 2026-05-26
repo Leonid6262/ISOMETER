@@ -45,7 +45,7 @@ CTerminalManager& CFactory::createTM(CPROCESS& rProcess) {
   auto& udrv = CTerminalUartDriver::getInstance();                                          // Конфигурация и инициализация UART-0 
   udrv.init(CSET_UART::configure(EUART::UART_0, ESET::getInstance()), UART0_IRQn); 
   
-  static CLogDisplay log_display(udrv);                                                     // Пультовый терминал (просмотр журнала).
+  static CLogDisplay log_display(udrv, rProcess.rEventLog);                                                     // Пультовый терминал (просмотр журнала).
   static CMenuNavigation menu_navigation(udrv, ESET::getInstance(), rProcess);              // Пультовый терминал (индикация и навигация по меню).
   
   static CTerminalManager terminal_manager(menu_navigation, log_display);                   // Управление режимами пультового терминал

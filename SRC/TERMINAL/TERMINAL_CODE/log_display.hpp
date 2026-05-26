@@ -1,39 +1,38 @@
 #pragma once
 #include "terminalUartDriver.hpp"
-#include <string>
 #include "pause_us.hpp"
+#include "key_kodes.hpp"
+#include "event_log.hpp"
+#include <string>
 
 class CTerminalManager;
 
 class CLogDisplay { 
  
 public: 
-  CLogDisplay(CTerminalUartDriver&);
+  CLogDisplay(CTerminalUartDriver&, CEVENT_LOG&);
   void get_key();
   void set_pTerminal(CTerminalManager*);
-  
-  unsigned int prev_TC0;
-  static constexpr unsigned int MESSAGE_PERIOD_TICKS = 20000000; // 2 сек
+  void first_render();
   
 private:
   CTerminalUartDriver& uartDrv;  
-  CTerminalManager* pTerminal_manager;    
-    
-  enum class EKey_code { 
-    NONE = 0x00, 
-    ESCAPE = 0x1B, 
-    FnEsc = 0x79,
-    START = 0x70,
-    STOP  = 0x2A
-  };
+  CEVENT_LOG& rEventLog;
+  CTerminalManager* pTerminal_manager; 
   
-  static constexpr signed char data_time = -1;
-  static constexpr bool newline = true;
-  static constexpr unsigned char disp_l = 16;
+  unsigned short current_index;
+  bool wrapped;
+  unsigned short current_view;
+  unsigned short TOP;
+  unsigned short END;
+  unsigned short count;
+  unsigned short Log_Length;
   
-  void render_messages(signed char, bool); 
   void sendLine(const std::string&, bool newline = false);
   void Key_Handler(EKey_code);  
+  unsigned short calc_cur_view(); 
+  void renderLogEntry();
+  const char* getEventText(CEVENT_LOG::EEvent);
   
 };
 

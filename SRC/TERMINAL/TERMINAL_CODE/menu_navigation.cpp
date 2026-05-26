@@ -186,19 +186,19 @@ void CMenuNavigation::render_1var(ETitleType title_type) {
     std::string title_cp1251 = StringUtils::utf8_to_cp1251(node.title);  // UTF-8 -> CP1251
     //std::string title = StringUtils::padRight(title_cp1251, (disp_l - node.unit.size())) + node.unit + "\r\n";
     unsigned short  unitLen = node.unit ? strlen(node.unit) : 0; 
-    std::string title = StringUtils::padRight(title_cp1251, (disp_l - unitLen));
+    std::string title = StringUtils::padRight(title_cp1251, (G_CONST::disp_l - unitLen));
     if (unitLen > 0) { title += node.unit; } 
     title += "\r\n";
     uartDrv.sendBuffer(reinterpret_cast<const unsigned char*>(title.c_str()), title.size());
   }
   // нижняя строка — значение переменной
-  char buf[disp_l + 1];
+  char buf[G_CONST::disp_l + 1];
   formatValue(node, buf, sizeof(buf));  // вспомогательная функция форматирования
   std::string value(buf);
   if (start_e_data.edit_mode) {
     value += "<";
     // Добавляем справа значение текущей дельты 
-    char deltaBuf[disp_l >> 1]; 
+    char deltaBuf[G_CONST::disp_l >> 1]; 
     switch (start_e_data.var_type) { 
     case EVarType::sshort: 
     case EVarType::ushort: 
@@ -213,9 +213,9 @@ void CMenuNavigation::render_1var(ETitleType title_type) {
     } // Выравнивание: значение слева, дельта справа 
     std::string delta(deltaBuf); 
     int totalLen = value.size() + delta.size(); 
-    if (totalLen < disp_l) { 
+    if (totalLen < G_CONST::disp_l) { 
       // добавляем пробелы между значением и дельтой 
-      value += std::string(disp_l - totalLen, ' '); 
+      value += std::string(G_CONST::disp_l - totalLen, ' '); 
     } 
     value += delta;
   }
@@ -257,7 +257,7 @@ void CMenuNavigation::render_2var(ETitleType title_type) {
     uartDrv.sendBuffer(reinterpret_cast<const unsigned char*>(line.c_str()), line.size());
   }
   // нижняя строка — значения переменных
-  char buf1[disp_l >> 1], buf2[disp_l >> 1];
+  char buf1[G_CONST::disp_l >> 1], buf2[G_CONST::disp_l >> 1];
   formatValue(node1, buf1, sizeof(buf1));  // вспомогательная функция форматирования
   formatValue(node2, buf2, sizeof(buf2));
   
@@ -269,7 +269,7 @@ void CMenuNavigation::render_2var(ETitleType title_type) {
   if (start_e_data.edit_mode) { 
     if (d.show_delta) { 
       // формируем строку дельты 
-      char deltaBuf[disp_l]; 
+      char deltaBuf[G_CONST::disp_l]; 
       switch (start_e_data.var_type) { 
       case EVarType::sshort: 
       case EVarType::ushort: 
@@ -283,8 +283,8 @@ void CMenuNavigation::render_2var(ETitleType title_type) {
       } 
       std::string delta(deltaBuf); // строка = value1 + пробелы + delta справа 
       std::string line = value1; int totalLen = value1.size() + delta.size(); 
-      if (totalLen < disp_l) { 
-        line += std::string(disp_l - totalLen, ' '); 
+      if (totalLen < G_CONST::disp_l) { 
+        line += std::string(G_CONST::disp_l - totalLen, ' '); 
       } 
       line += delta; line += "\r"; 
       uartDrv.sendBuffer(reinterpret_cast<const unsigned char*>(line.c_str()), line.size()); return; 
@@ -339,7 +339,7 @@ void CMenuNavigation::Key_Handler(EKey_code key) {
     edit_delta(0);
     break;
     
-  case EKey_code::START:
+  case EKey_code::START: 
     //rProcess.clr_test_mode();
     break;
   case EKey_code::STOP:

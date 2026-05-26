@@ -20,5 +20,6 @@ void CTerminalManager::switchToMenu() {
   rMenuNavigation.first_render();
 }
 void CTerminalManager::switchToLog() {
-  mode = ETerminalMode::Log_mode; 
+  mode = ETerminalMode::Log_mode;
+  rLogDisplay.first_render();
 }

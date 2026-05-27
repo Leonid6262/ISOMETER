@@ -20,17 +20,12 @@ private:
   CEVENT_LOG& rEventLog;
   CTerminalManager* pTerminal_manager; 
   
-  unsigned short current_index;
-  bool wrapped;
+  CEVENT_LOG::LogEntry local_buffer[CEVENT_LOG::Log_Length];    // Локальная копия лога 
+  unsigned short local_count;                                   // Сколько реально записей скопировано
   unsigned short current_view;
-  unsigned short TOP;
-  unsigned short END;
-  unsigned short count;
-  unsigned short Log_Length;
-  
+
   void sendLine(const std::string&, bool newline = false);
   void Key_Handler(EKey_code);  
-  unsigned short calc_cur_view(); 
   void renderLogEntry();
   const char* getEventText(CEVENT_LOG::EEvent);
   

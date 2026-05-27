@@ -11,21 +11,47 @@ void CLogDisplay::set_pTerminal(CTerminalManager* pTerminal_manager){
 // Отправки строки 
 void CLogDisplay::sendLine(const std::string& s, bool newline) {
   std::string text = StringUtils::padTo16(s);
-  text += newline ? "\r\n" : "\r";
+  //text += newline ? "\r\n" : "\r";
+  if(newline) {
+    text = "\r\n" + text + "\r";
+  } else {
+    text = "\n" + text;
+  }
   uartDrv.sendBuffer(reinterpret_cast<const unsigned char*>(text.c_str()), text.size());
 }
 
 void CLogDisplay::first_render(){
-  current_index = rEventLog.current_index;
-  wrapped = rEventLog.log_wrapped;
-  Log_Length = CEVENT_LOG::Log_Length;
-  current_view = calc_cur_view();
+  
+  unsigned short global_index = rEventLog.current_index;
+  bool global_wrapped = rEventLog.log_wrapped;
+  unsigned short max_len = CEVENT_LOG::Log_Length;
+  
+  local_count = global_wrapped ? max_len : global_index;
+  
+  if (local_count == 0) {
+    current_view = 0;
+    renderLogEntry();
+    return;
+  }
+  
+  // Выпрямляем кольцо в плоский массив (от старых к новым)
+  unsigned short src_idx = global_wrapped ? global_index : 0;
+  
+  for (unsigned short i = 0; i < local_count; i++) {
+    local_buffer[i] = rEventLog.log_buffer[src_idx];
+    src_idx = (src_idx + 1) % max_len;
+  }
+  
+  // Лог скопирован. Теперь мы работаем с обычным массивом от 0 до local_count - 1
+  // Показываем самую свежую запись (последнюю в массиве)
+  current_view = local_count - 1; 
   renderLogEntry();
+  
 }
 
 const char* CLogDisplay::getEventText(CEVENT_LOG::EEvent event) {
   switch (event) {
-    // Каждая строка жестко макс. 8 символов
+  // Каждая строка жестко макс. 8 символов
   case CEVENT_LOG::EEvent::NoEvents:   return "No Evnt";  // 7 симв.
   case CEVENT_LOG::EEvent::LessMin:    return "R<Rmin";   // 6 симв.
   case CEVENT_LOG::EEvent::MoreMax:    return "R>Rmax";   // 6 симв.
@@ -41,67 +67,48 @@ const char* CLogDisplay::getEventText(CEVENT_LOG::EEvent event) {
 }
 
 void CLogDisplay::renderLogEntry() { 
-  
-  if (count == 0) {
-    sendLine("   LOG BOOK     ", true);  // Центрированный заголовок
-    sendLine("   Empty Log    ", false); // Сообщение о пустоте
+  if (local_count == 0) {
+    sendLine("    LOG BOOK    ", true);
+    sendLine("   Empty Log    ", false);
     return;
   }
   
-  unsigned char day    = rEventLog.log_buffer[current_view].day;
-  unsigned char month  = rEventLog.log_buffer[current_view].month;
-  unsigned char hour   = rEventLog.log_buffer[current_view].hour;
-  unsigned char minute = rEventLog.log_buffer[current_view].minute;
-  unsigned short R     = rEventLog.log_buffer[current_view].R_val;
-  CEVENT_LOG::EEvent event = rEventLog.log_buffer[current_view].event;
+  // Читаем из гарантированно стабильного локального буфера
+  unsigned char day    = local_buffer[current_view].day;
+  unsigned char month  = local_buffer[current_view].month;
+  unsigned char hour   = local_buffer[current_view].hour;
+  unsigned char minute = local_buffer[current_view].minute;
+  unsigned short R     = local_buffer[current_view].R_val;
+  CEVENT_LOG::EEvent event = local_buffer[current_view].event;
   
   char line[G_CONST::disp_l + 1];
   
-  char idx_part[6] = ""; // Буфер под " TOP", " END" или номер (макс 5 символов с \0)
-  
-  if (current_view == TOP) {
-    snprintf(idx_part, sizeof(idx_part), " TOP");
-  } else if (current_view == END) {
-    snprintf(idx_part, sizeof(idx_part), " END");
-  } else {
-    // Вычисляем порядковый номер от 1 до count
-    unsigned short user_num = ((current_view - TOP + Log_Length) % Log_Length) + 1;
-    // Печатаем номер с ведущим пробелом для красоты
-    snprintf(idx_part, sizeof(idx_part), "%4u", user_num); 
-  }
-  
-  // 3. Формируем Строку 1: "DD-MM hh:mm" (11 симв) + idx_part (выравнивание займет оставшиеся 5 симв)
-  // Шаблон %-11s прижмет дату влево, а %5s прижмет номер/маркер вправо
-  snprintf(line, sizeof(line), "%-11s%5s", 
-           (char[12]){0}, // Временный хак, лучше сделать чистый snprintf:
-           idx_part); 
-  
   char date_part[12];
   snprintf(date_part, sizeof(date_part), "%02u-%02u %02u:%02u", day, month, hour, minute);
-  // Собираем вместе: 11 символов даты + 5 символов номера = ровно 16 символов
-  snprintf(line, sizeof(line), "%-11s%5s", date_part, idx_part);
   
+  char idx_part[6] = "";
+  if (current_view == 0) {
+    snprintf(idx_part, sizeof(idx_part), " TOP"); // Самое старое событие
+  } else if (current_view == local_count - 1) {
+    snprintf(idx_part, sizeof(idx_part), " END"); // Самое свежее событие
+  } else {
+    // Человеческий порядковый номер — это просто индекс в массиве + 1
+    snprintf(idx_part, sizeof(idx_part), "%4u", current_view + 1); 
+  }
+  
+  snprintf(line, sizeof(line), "%-11s%5s", date_part, idx_part);
   sendLine(line, true);
   
-  // 1. Формируем правую часть во временный буфер
   char r_part[9]; 
   snprintf(r_part, sizeof(r_part), "R=%uk", R);
   
-  // 2. Получаем левую часть
   const char* l_part = getEventText(event); 
-  
-  // 3. Вычисляем, сколько символов займет правая часть
   int r_len = strlen(r_part);
   
-  // 4. Спецификатор %-*s выравнивает l_part по левому краю с шириной (16 - r_len).
-  // Все оставшееся место между ними автоматически забьется пробелами.
   snprintf(line, sizeof(line), "%-*s%s", (G_CONST::disp_l - r_len), l_part, r_part);
-  
   sendLine(line, false);
-  
+
 }
-
-
 
 // "Опрос" клавиатуры
 void CLogDisplay::get_key() {
@@ -113,57 +120,44 @@ void CLogDisplay::get_key() {
   }
 }
 
-unsigned short CLogDisplay::calc_cur_view() {
-  if (!wrapped) { 
-    if (current_index == 0) {
-      // Вариант 1: Лог пуст
-      count = 0; 
-      TOP = 0;
-      END = 0;
-    } else {
-      // Вариант 2: Лог частично заполнен (первый круг)
-      count = current_index;
-      TOP = 0;
-      END = current_index - 1;
-    }
-  } else {
-    // Вариант 3: Лог зациклен
-    count = Log_Length;
-    TOP = current_index;
-    END = (current_index > 0) ? (current_index - 1) : (Log_Length - 1);
-  }
-  return TOP;
-}
-
 void CLogDisplay::Key_Handler(EKey_code key) {
+  if (key == EKey_code::NONE) return;
+  
+  if (key == EKey_code::ESCAPE) {
+    std::string text = "\r";
+    uartDrv.sendBuffer(reinterpret_cast<const unsigned char*>(text.c_str()), text.size());
+    pTerminal_manager->switchToMenu();
+    return;
+  }
+  
+  if (local_count == 0) return; // Лог пуст
+  
   switch (key) {
   case EKey_code::UP: 
-    if (current_view == TOP) {
-      current_view = END; 
+    if (current_view == 0) {
+      current_view = local_count - 1; // Закольцовываем просмотр (в конец)
     } else {
-      current_view = (current_view + Log_Length - 1) % Log_Length;
+      current_view--;
     }
-    renderLogEntry();
     break;    
+    
   case EKey_code::DOWN:
-    if (current_view == END) {
-      current_view = TOP;
+    if (current_view == local_count - 1) {
+      current_view = 0; // Закольцовываем просмотр (в начало)
     } else {
-      current_view = (current_view + 1) % Log_Length;
-    }    
-    renderLogEntry();
+      current_view++;
+    }   
     break;            
-  case EKey_code::ESCAPE:
-    pTerminal_manager->switchToMenu(); // переключаемся в меню
-    break;
-  case EKey_code::START:
-  case EKey_code::STOP:
-  case EKey_code::FnEsc:    
   case EKey_code::FnUP:
+    current_view = 0;
+    break;    
   case EKey_code::FnDOWN:
-  case EKey_code::FnENTER:
-  case EKey_code::ENTER:
-  case EKey_code::NONE:   
+    current_view = local_count - 1;
+    break;    
+  default:
     break;
   }
+  
+  renderLogEntry();
+
 }

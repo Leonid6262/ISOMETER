@@ -85,7 +85,6 @@ CMenuNavigation::MenuNode::Dual(const char* title1,
                     m);
 }
 
-
 // "Опрос" клавиатуры
 void CMenuNavigation::get_key(bool only_fn_enter) {
   unsigned char input_key;

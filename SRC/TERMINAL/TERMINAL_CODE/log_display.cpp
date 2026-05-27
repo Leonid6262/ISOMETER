@@ -132,6 +132,29 @@ void CLogDisplay::Key_Handler(EKey_code key) {
   
   if (local_count == 0) return; // Лог пуст
   
+  // Выгрузка лога
+  if ((key == EKey_code::LoadLogl) || (key == EKey_code::LoadLogL)) {
+    
+    pTerminal_manager->rMenuNavigation.rProcess.rRTC.update_now();                 
+    auto now = pTerminal_manager->rMenuNavigation.rProcess.rRTC.get_now();
+    char date_time[G_CONST::disp_l + 5];
+    snprintf(date_time, sizeof(date_time), "\n%02u.%02u.%02u %02u:%02u:%02u\r\n", 
+             now.day, now.month, now.year, now.hour, now.minute, now.second);
+    sendLine("\nLOG LIST:", true);
+    uartDrv.sendBuffer(reinterpret_cast<const unsigned char*>(date_time), (G_CONST::disp_l + 5));
+
+    current_view = 0;
+    for(unsigned short n = 0; n < local_count; n++){
+      renderLogEntry();
+      current_view++;
+    }
+    
+    sendLine("END LIST\r\n", true);
+    current_view = local_count - 1; 
+    renderLogEntry();
+    return;
+  }
+  
   switch (key) {
   case EKey_code::UP: 
     if (current_view == 0) {
@@ -153,7 +176,7 @@ void CLogDisplay::Key_Handler(EKey_code key) {
     break;    
   case EKey_code::FnDOWN:
     current_view = local_count - 1;
-    break;    
+    break; 
   default:
     break;
   }

@@ -11,5 +11,7 @@ enum class EKey_code : unsigned char {
   FnDOWN = 0x5F,
   FnEsc = 0x79,
   START = 0x70,
-  STOP  = 0x2A
+  STOP  = 0x2A,
+  LoadLogl = 0x4C,
+  LoadLogL = 0x6C
 };

@@ -23,7 +23,7 @@ class CTerminalUartDriver {
 
   // Внутренний кольцевой буфер
   struct RingBuffer {
-    static constexpr int SIZE = 256;
+    static constexpr int SIZE = 512;
     unsigned char buf[SIZE];
     unsigned short head = 0;
     unsigned short tail = 0;

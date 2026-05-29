@@ -5,7 +5,7 @@ enum class EKey_code : unsigned char {
   UP = 0x2B, 
   DOWN = 0x2D, 
   ENTER = 0x0D, 
-  ESCAPE = 0x1B, 
+  ESCAPE = 0x1B,
   FnENTER = 0x78,
   FnUP = 0x3D,     
   FnDOWN = 0x5F,

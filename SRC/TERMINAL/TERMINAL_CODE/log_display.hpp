@@ -14,6 +14,7 @@ public:
   void get_key();
   void set_pTerminal(CTerminalManager*);
   void first_render();
+  void sendLine(const std::string&, bool newline = false);
   
 private:
   CTerminalUartDriver& uartDrv;  
@@ -24,7 +25,6 @@ private:
   unsigned short local_count;                                   // Сколько реально записей скопировано
   unsigned short current_view;
 
-  void sendLine(const std::string&, bool newline = false);
   void Key_Handler(EKey_code);  
   void renderLogEntry();
   const char* getEventText(CEVENT_LOG::EEvent);

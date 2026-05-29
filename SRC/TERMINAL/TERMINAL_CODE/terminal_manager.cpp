@@ -20,6 +20,7 @@ void CTerminalManager::switchToMenu() {
   rMenuNavigation.first_render();
 }
 void CTerminalManager::switchToLog() {
+  rLogDisplay.sendLine("\n    LOG LIST    ", true); // Имеет смысл только для ПК
   mode = ETerminalMode::Log_mode;
   rLogDisplay.first_render();
 }

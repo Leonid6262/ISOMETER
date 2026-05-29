@@ -325,8 +325,12 @@ void CMenuNavigation::Key_Handler(EKey_code key) {
     break;
     
   case EKey_code::FnENTER: 
-    save_settings();
+    save_settings_PT(); // Запись уставок с ПТ
     break;
+  case EKey_code::SaveSet: 
+    save_settings_PC(); // Запись уставок с ПК
+    break;
+
     
   case EKey_code::FnUP:
     edit_delta(10.0f);
@@ -601,13 +605,18 @@ void CMenuNavigation::edit_delta(float mul) {
 }
 
 // Обработка Fn+ENTER (запись уставок в EEPROM)
-void CMenuNavigation::save_settings() {
+void CMenuNavigation::save_settings_PT() {
   unsigned char led_green[] = {static_cast<unsigned char>(ELED::LED_GREEN), '\r'};
   uartDrv.sendBuffer(led_green, sizeof(led_green));
   CEEPSettings::getInstance().saveSettings();
   Pause_us(200000);
   unsigned char led_off[] = {static_cast<unsigned char>(ELED::LED_OFF), '\r'};
   uartDrv.sendBuffer(led_off, sizeof(led_off));
+}
+void CMenuNavigation::save_settings_PC() {
+  CEEPSettings::getInstance().saveSettings();
+  unsigned char answer[] = "\r\nSettings saved\r\n";
+  uartDrv.sendBuffer(answer, sizeof(answer));
 }
 
 // Вход в режим редактирования

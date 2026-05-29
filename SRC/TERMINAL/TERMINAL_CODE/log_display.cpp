@@ -133,7 +133,7 @@ void CLogDisplay::Key_Handler(EKey_code key) {
   if (local_count == 0) return; // Лог пуст
   
   // Выгрузка лога
-  if ((key == EKey_code::LoadLogl) || (key == EKey_code::LoadLogL)) {
+  if (key == EKey_code::LoadLog) {
     
     pTerminal_manager->rMenuNavigation.rProcess.rRTC.update_now();                 
     auto now = pTerminal_manager->rMenuNavigation.rProcess.rRTC.get_now();
@@ -141,7 +141,7 @@ void CLogDisplay::Key_Handler(EKey_code key) {
     snprintf(date_time, sizeof(date_time), "\n%02u.%02u.%02u %02u:%02u:%02u\r\n", 
              now.day, now.month, now.year, now.hour, now.minute, now.second);
     sendLine("\nLOG LIST:", true);
-    uartDrv.sendBuffer(reinterpret_cast<const unsigned char*>(date_time), (G_CONST::disp_l + 5));
+    uartDrv.sendBuffer(reinterpret_cast<const unsigned char*>(date_time), sizeof(date_time));
 
     current_view = 0;
     for(unsigned short n = 0; n < local_count; n++){

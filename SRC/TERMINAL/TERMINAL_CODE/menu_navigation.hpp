@@ -142,7 +142,8 @@ private:
   void navigateUpMenu();
   void handleEnter();
   void handleEscape();
-  void save_settings();
+  void save_settings_PT();
+  void save_settings_PC();
   void edit_delta(float);
   
   void Key_Handler(EKey_code);

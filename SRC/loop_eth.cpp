@@ -28,15 +28,15 @@ void CLOOP_ETH::test() {
   unsigned int dTrs = LPC_TIM0->TC - prev_TC0; //Текущая дельта [0.1*mks]
   if(dTrs < 5000000) return;
   prev_TC0 = LPC_TIM0->TC;
+  short L_MAC = sizeof(CLOOP_ETH::MAC_PC);
 
   if(rEnet_drv.receiveFrame(rxBuffer) == CENET_DRV::ReceiveStatus::FRAME_RECIVED)
   {
-    sendFrame[0 + 2 + (2 * sizeof(CLOOP_ETH::MAC_PC))] = 'T';
-    sendFrame[1 + 2 + (2 * sizeof(CLOOP_ETH::MAC_PC))] = 'E';
-    sendFrame[2 + 2 + (2 * sizeof(CLOOP_ETH::MAC_PC))] = 'S';
-    sendFrame[3 + 2 + (2 * sizeof(CLOOP_ETH::MAC_PC))] = 'T';
-    sendFrame[4 + 2 + (2 * sizeof(CLOOP_ETH::MAC_PC))] = 0;
+    for(unsigned char n = 0; n < (CEMAC::ETH_FRAG_SIZE - 4); n++) {
+      if(rxBuffer[n + 2 + (L_MAC * 2)] == 0) break;
+      sendFrame[n + 2 + (L_MAC * 2)] = rxBuffer[n + 2 + (L_MAC * 2)];
+    }    
     rEnet_drv.sendFrame(sendFrame);
   }  
-
+  
 }

@@ -53,8 +53,14 @@ CTerminalManager& CFactory::createTM(CPROCESS& rProcess) {
   log_display.set_pTerminal(&terminal_manager);                                             // Создание циклической зависимости log
   return terminal_manager;
 }
-
 extern "C" void UART0_IRQHandler(void) { CTerminalUartDriver::getInstance().irq_handler(); }  // Вызов обработчика UART-0
+
+CLOOP_ETH CFactory::create_LOOP_ETH() { 
+  CEMAC emac;
+  emac.initEMAC();
+  static CENET_DRV enet;
+  return CLOOP_ETH(enet);
+}
 
 // Контроль загрузки. При ошибке КС требуется зпись дефолтных уставок 
 void CFactory::control_set(CTerminalManager& rTM) { 

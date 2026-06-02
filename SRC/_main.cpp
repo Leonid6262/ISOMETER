@@ -16,12 +16,17 @@ void main(void) {
   
   CFactory::control_set(term_manager);                          // При ошибке КС требуется зпись дефолтных уставок  
   
+  static auto loop_eth = CFactory::create_LOOP_ETH(); 
+  
   CPROCESS::UserLedOff();       // Визуальный контроль окончания инициализации
 
   while (true) {       
     process.step();             // Процесс измерений
     mb_slave.monitor();         // Мониторинг запросов по ModBus
     term_manager.dispatch();    // Управление объектами (режимами) пультового терминал  
+    
+    loop_eth.test();
+    
   }
   
 }

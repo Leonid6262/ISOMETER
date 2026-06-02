@@ -63,6 +63,11 @@ namespace bRTC {
   static constexpr unsigned int CCALDS   = 1<<4; // Calibration counter disable.
 }
 
+namespace bEMC {  
+  static constexpr unsigned int FUNC_ENET   = 0x01;
+  static constexpr unsigned int MODE_PULLUP = 0x02 << 3;  // Pull-up resistor
+}
+
 namespace bUART {  
   enum RegisterFlags {
     THRE         = 1UL << 5,

@@ -10,6 +10,7 @@ namespace G_CONST {
   constexpr unsigned short N_CHANNELS = 16;   // Количество каналов внешнего АЦП
   constexpr unsigned short Nlang = 3;         // Количество языков
   constexpr unsigned char disp_l = 16;        // Знакомест ПТ
+  constexpr unsigned char MAC_Controller[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 }
 
 class CEEPSettings {

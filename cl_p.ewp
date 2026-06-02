@@ -355,6 +355,7 @@
                     <state>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_DATA\</state>
                     <state>$PROJ_DIR$\SRC\TERMINAL\TERMINAL_CODE\</state>
                     <state>$PROJ_DIR$\SRC\PERIPHERIALS\</state>
+                    <state>$PROJ_DIR$\SRC\ENET\</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2145,6 +2146,15 @@
             </file>
         </group>
         <group>
+            <name>ENET</name>
+            <file>
+                <name>$PROJ_DIR$\SRC\ENET\emac.cpp</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\SRC\ENET\enet_drv.cpp</name>
+            </file>
+        </group>
+        <group>
             <name>MB_SLAVE</name>
             <file>
                 <name>$PROJ_DIR$\SRC\MB_SLAVE\mb_slave.cpp</name>
@@ -2233,6 +2243,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\IntPriority.hpp</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\SRC\loop_eth.cpp</name>
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\out_4_20mA.cpp</name>

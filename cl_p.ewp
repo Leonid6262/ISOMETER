@@ -2153,6 +2153,15 @@
             <file>
                 <name>$PROJ_DIR$\SRC\ENET\enet_drv.cpp</name>
             </file>
+            <file>
+                <name>$PROJ_DIR$\SRC\ENET\net_structs.hpp</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\SRC\ENET\udp_server.cpp</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\SRC\ENET\udp_server.hpp</name>
+            </file>
         </group>
         <group>
             <name>MB_SLAVE</name>
@@ -2243,9 +2252,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\IntPriority.hpp</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\SRC\loop_eth.cpp</name>
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\out_4_20mA.cpp</name>

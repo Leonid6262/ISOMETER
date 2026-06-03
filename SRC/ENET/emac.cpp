@@ -1,11 +1,8 @@
 #include "emac.hpp"
-
+#include "settings_eep.hpp"
 #include <stdio.h>
 
 CEMAC::CEMAC() {}
-
-// MAC адрес контроллера
-const unsigned char CEMAC::MAC_Controller[] = {0x00, 0x22, 0x33, 0x44, 0x55, 0x66};
 
 StatusRet CEMAC::writePHY(unsigned char reg, unsigned short value) {
   // Запись регистра PHY через MDIO
@@ -102,15 +99,15 @@ StatusRet CEMAC::initEMAC() {
   LPC_EMAC->Command = CR_RMII | CR_PASSRUNTFRAME;
 
   // Установка MAC адресов устройства (в обратном порядке!)
-  LPC_EMAC->SA2 = (MAC_Controller[1] << 8) | MAC_Controller[0];  // байт 0 и 1
-  LPC_EMAC->SA1 = (MAC_Controller[3] << 8) | MAC_Controller[2];  // байт 2 и 3
-  LPC_EMAC->SA0 = (MAC_Controller[5] << 8) | MAC_Controller[4];  // байт 4 и 5
+  LPC_EMAC->SA2 = (G_CONST::MAC_Controller[1] << 8) | G_CONST::MAC_Controller[0];  // байт 0 и 1
+  LPC_EMAC->SA1 = (G_CONST::MAC_Controller[3] << 8) | G_CONST::MAC_Controller[2];  // байт 2 и 3
+  LPC_EMAC->SA0 = (G_CONST::MAC_Controller[5] << 8) | G_CONST::MAC_Controller[4];  // байт 4 и 5
 
   initDescriptors();  // Настройка дескрипторов
 
   // Включить фильтрацию пакетов по MAC
   LPC_EMAC->RxFilterCtrl = 0;
-  LPC_EMAC->RxFilterCtrl = RFC_PERFECT_EN;
+  LPC_EMAC->RxFilterCtrl = RFC_PERFECT_EN | RFC_BCAST_EN;
   LPC_EMAC->Command &= ~CR_PASSRXFILTER;
 
   // Разрешить приём/передачу

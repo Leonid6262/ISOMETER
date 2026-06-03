@@ -22,7 +22,7 @@
 #include "terminal_manager.hpp"
 #include "emac.hpp"
 #include "enet_drv.hpp"
-#include "loop_eth.hpp"
+#include "udp_server.hpp"
 
 class CFactory {
 public:     
@@ -30,7 +30,7 @@ public:
   static StatusRet load_settings();                 
   static COUT_4_20 create_OUT_4_20(); 
   static CMBSLAVE create_MBslave();
-  static CLOOP_ETH create_LOOP_ETH();
+  static CUDP_Server create_UDP_Server(); 
   static CPROCESS& create_Process(); 
   static CTerminalManager& createTM(CPROCESS&);  
   static void control_set(CTerminalManager&);  

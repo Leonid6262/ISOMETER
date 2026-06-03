@@ -13,22 +13,20 @@ class CEMAC {
 public:
       
     CEMAC();
-    
-    static const unsigned char MAC_Controller[]; 
+
     bool link_up;
  
     StatusRet initEMAC();
   
     bool EMAC_Ready;
         
-    static constexpr unsigned int ETH_FRAG_SIZE = 64; 
-    
-    
+    static constexpr unsigned int ETH_FRAG_SIZE = 128;
+       
     static constexpr unsigned int RX_DESC_BASE  = 0x20004000;
   
     static constexpr unsigned int NUM_RX_FRAG   =  4;
-    static constexpr unsigned int NUM_TX_FRAG   =  2;  
-    static constexpr unsigned int ETH_MAX_FLEN  = 64; 
+    static constexpr unsigned int NUM_TX_FRAG   =  4;  
+    static constexpr unsigned int ETH_MAX_FLEN  = 128;
   
     static constexpr unsigned int DESC_RX_SIZE  = 0x7FF;
   

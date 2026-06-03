@@ -68,6 +68,11 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
       o("RS-485",{
           o("Slave address",    {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 247  ),
           o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}), 
+      o("IP:",{
+          o("ip-3",    {}, &set.ip3,   "", 1, p0, vt::ushort, nm::Ed1V, 0, 255  ),
+          o("ip-2",    {}, &set.ip2,   "", 1, p0, vt::ushort, nm::Ed1V, 0, 255  ),
+          o("ip-1",    {}, &set.ip1,   "", 1, p0, vt::ushort, nm::Ed1V, 0, 255  ),
+          o("ip-0",    {}, &set.ip0,   "", 1, p0, vt::ushort, nm::Ed1V, 0, 255  ),}), 
       o(Mn.CLOCK_SETUP[l],{
           o("Year:",        {}, &rRTC.DateTimeForSet.year,  "", 1, p0, vt::ushort, nm::Ed1V, 26, 99),
           o("Month:",       {}, &rRTC.DateTimeForSet.month, "", 1, p0, vt::ushort, nm::Ed1V,  1, 12),

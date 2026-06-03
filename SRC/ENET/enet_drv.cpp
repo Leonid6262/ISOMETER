@@ -21,20 +21,21 @@ void CENET_DRV::sendFrame(const unsigned char* data) {
 CENET_DRV::ReceiveStatus CENET_DRV::receiveFrame(unsigned char* buffer) {
   idx_Cons = LPC_EMAC->RxConsumeIndex;
   idx_Prod = LPC_EMAC->RxProduceIndex;
-
+  
   if (idx_Cons == idx_Prod) {
     return ReceiveStatus::EMPTY;  // Нет непринятого кадра
   }
-
-  LPC_EMAC->RxConsumeIndex = (idx_Cons + 1) % CEMAC::NUM_RX_FRAG;  // Продвинуть ConsumeIndex
+  
   status_rx = CEMAC::rxStatInfo(idx_Cons);
-
-  if (status_rx & ~RX_CTRL_ERR_BITS) {
-    return ReceiveStatus::ERROR;  // Кадр принят с ошибками
+  
+  if (status_rx & CRCERR) { 
+    LPC_EMAC->RxConsumeIndex = (idx_Cons + 1) % CEMAC::NUM_RX_FRAG;
+    return ReceiveStatus::ERROR;  
   }
   
-  // Кадр принят, копируем весь кадр
   memcpy(buffer, reinterpret_cast<void*>(CEMAC::rxBuf(idx_Cons)), CEMAC::ETH_FRAG_SIZE);
+  
+  LPC_EMAC->RxConsumeIndex = (idx_Cons + 1) % CEMAC::NUM_RX_FRAG;
   return ReceiveStatus::FRAME_RECIVED;  
 }
 

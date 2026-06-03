@@ -55,11 +55,11 @@ CTerminalManager& CFactory::createTM(CPROCESS& rProcess) {
 }
 extern "C" void UART0_IRQHandler(void) { CTerminalUartDriver::getInstance().irq_handler(); }  // Вызов обработчика UART-0
 
-CLOOP_ETH CFactory::create_LOOP_ETH() { 
+CUDP_Server CFactory::create_UDP_Server() {
   CEMAC emac;
   emac.initEMAC();
   static CENET_DRV enet;
-  return CLOOP_ETH(enet);
+  return CUDP_Server(enet, ESET::getInstance());
 }
 
 // Контроль загрузки. При ошибке КС требуется зпись дефолтных уставок 

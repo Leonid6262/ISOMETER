@@ -10,7 +10,7 @@ namespace G_CONST {
   constexpr unsigned short N_CHANNELS = 16;   // Количество каналов внешнего АЦП
   constexpr unsigned short Nlang = 3;         // Количество языков
   constexpr unsigned char disp_l = 16;        // Знакомест ПТ
-  constexpr unsigned char MAC_Controller[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
+  constexpr unsigned char MAC_Controller[] = {0x00, 0x22, 0x33, 0x44, 0x55, 0x66};
 }
 
 class CEEPSettings {
@@ -31,6 +31,10 @@ class CEEPSettings {
     unsigned short Rmax_20mA;                           // 10 Max R для индикации по 4...20mA
     unsigned char  Address;                             // 11 Адрес Slave
     unsigned short Baud_rate;                           // 12 Скорость
+    unsigned short ip3;                                 // 13 Третья  группа
+    unsigned short ip2;                                 // 14 Вторая  группа
+    unsigned short ip1;                                 // 15 Первая  группа
+    unsigned short ip0;                                 // 16 Нулевая группа
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -47,7 +51,11 @@ class CEEPSettings {
     .comp_dUd = true,
     .Rmax_20mA = 500,
     .Address = 3,
-    .Baud_rate = 5
+    .Baud_rate = 5,
+    .ip3 = 192,
+    .ip2 = 168,
+    .ip1 = 1,
+    .ip0 = 0   
   };
     
   // Текущий набор уставок, хранящийся в RAM ---

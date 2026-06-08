@@ -3,7 +3,7 @@
 #include "settings_eep.hpp"
 #include "controllerDMA.hpp"
 #include "adc.hpp"
-#include "mb_slave.hpp" 
+#include "mb_rtu_slave.hpp" 
 #include "mbDataProxy.hpp"
 #include "out_4_20mA.hpp"
 #include "pause_us.hpp"

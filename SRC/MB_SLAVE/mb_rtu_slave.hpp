@@ -4,8 +4,6 @@
 #include "mbDataProxy.hpp"
 #include "crc16.hpp"
 
-class CPROCESS;
-
 class CMBSLAVE {
   
 private:

@@ -20,7 +20,7 @@ public:
   
     bool EMAC_Ready;
         
-    static constexpr unsigned int ETH_FRAG_SIZE = 128;
+    static constexpr unsigned int ETH_FRAG_SIZE = 256;
        
     static constexpr unsigned int RX_DESC_BASE  = 0x20004000;
   

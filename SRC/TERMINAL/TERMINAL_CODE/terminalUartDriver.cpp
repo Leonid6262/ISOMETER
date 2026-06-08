@@ -11,7 +11,6 @@ void CTerminalUartDriver::init(LPC_UART_TypeDef* UART, IRQn_Type UART_IRQ) {
   txbuf.tail = 0;
   // Настройка прерываний
   UART->IER |= THRE_I;  // b1-THRE
-
   NVIC_EnableIRQ(UART_IRQ);
 }
 

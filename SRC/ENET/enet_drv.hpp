@@ -15,7 +15,7 @@ public:
     enum class ReceiveStatus { EMPTY, FRAME_RECIVED, ERROR };
     
     ReceiveStatus receiveFrame(unsigned char*);
-    void sendFrame(const unsigned char*);
+    void sendFrame(const unsigned char*, unsigned short);
 
 private:
   

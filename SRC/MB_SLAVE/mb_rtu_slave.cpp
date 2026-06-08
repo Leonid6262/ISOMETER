@@ -1,4 +1,4 @@
-#include "mb_slave.hpp" 
+#include "mb_rtu_slave.hpp" 
 
 CMBSLAVE::CMBSLAVE(CMBUartDriver& rUartDrv, CModbusDataProxy& rModbusData, unsigned char* pAddressSlave) : 
   rUartDrv(rUartDrv), rModbusData(rModbusData), pAddressSlave(pAddressSlave) {}
@@ -72,9 +72,9 @@ void CMBSLAVE::Answer(unsigned char Function) {
     }
     break;
   case F06:
-    if (rModbusData.registers[AddressReg].isWritable) {
-      rModbusData.registers[AddressReg].value = Value;  // Записываем значение в Proxy-массив 
-      rModbusData.isDirty = true;                       // Устанавливаем флаг - данные изменились (для EEPROM)
+    if (rModbusData.registers[AddressReg].isWritable) { // Если поле редактируемое,
+      rModbusData.registers[AddressReg].value = Value;  // записываем значение в Proxy-массив 
+      rModbusData.isDirty = true;                       // и устанавливаем флаг - данные изменились (для EEPROM)
       for (int i = 0; i < LRequestF346; i++) {          // Формируем ответ (Эхо запроса)
         tx_mbs_buffer[i] = rx_mbs_buffer[i];
       }   

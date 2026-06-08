@@ -1,5 +1,5 @@
 #include "mbUartDriver.hpp"
-#include "mb_slave.hpp" 
+#include "mb_rtu_slave.hpp" 
 #include "IntPriority.hpp"
 #include "LPC407x_8x_177x_8x.h"
 #include "system_LPC177x.h"

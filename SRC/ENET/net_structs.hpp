@@ -44,6 +44,22 @@ struct SICMPHeader {
     unsigned short sequence;      // Номер последовательности
 };
 
+// 5. Заголовок UDP (8 байт)
+struct SUDPHeader {
+    unsigned short src_port;     // Порт отправителя
+    unsigned short dst_port;     // Порт получателя (наш порт, например, 502)
+    unsigned short length;       // Длина UDP заголовка + данных
+    unsigned short checksum;     // Контрольная сумма UDP
+};
+
+// 6. Заголовок MBAP для Modbus UDP/TCP (7 байт)
+struct SModbusMBAP {
+    unsigned short transaction_id; // Идентификатор транзакции
+    unsigned short protocol_id;    // Всегда 0x0000
+    unsigned short length;         // Длина оставшейся части пакета
+    unsigned char  unit_id;        // Адрес устройства
+};
+
 #pragma pack(pop)
 
 

@@ -2166,7 +2166,10 @@
         <group>
             <name>MB_SLAVE</name>
             <file>
-                <name>$PROJ_DIR$\SRC\MB_SLAVE\mb_slave.cpp</name>
+                <name>$PROJ_DIR$\SRC\MB_SLAVE\mb_rtu_slave.cpp</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\SRC\MB_SLAVE\mb_udp_slave.cpp</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\SRC\MB_SLAVE\mbDataProxy.hpp</name>

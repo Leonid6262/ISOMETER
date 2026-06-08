@@ -18,11 +18,11 @@ public:
   bool isDirty = false;
   
   enum ERegisters {
-    RegStatus,
-    RegR,
-    RegAlarm1,
-    RegAlarm2,
-    RegSaveEEP
+    RegStatus,          // Статус регистр
+    RegR,               // Текущее измерение
+    RegAlarm1,          // Текущее значение 1-го Alarm
+    RegAlarm2,          // Текущее значение 2-го Alarm
+    RegSaveEEP          // Команда записи в EEPROM (0xAA55)
   };
   
   static constexpr unsigned short SaveCode = 0xAA55;

@@ -287,6 +287,6 @@ void CPROCESS::update_modbus_data() {
   rModbusData.getInstance().registers[CModbusDataProxy::RegStatus].value = UStatus.all;
   rModbusData.getInstance().registers[CModbusDataProxy::RegR].value      = static_cast<unsigned short>(R + 0.5f);
   rModbusData.getInstance().registers[CModbusDataProxy::RegAlarm1].value = rSet.getSettings().RAlarm1;
-  rModbusData.getInstance().registers[CModbusDataProxy::RegAlarm2].value = rSet.getSettings().RAlarm2;
+  rModbusData.getInstance().registers[CModbusDataProxy::RegAlarm2].value = rSet.getSettings().RAlarm2; 
 }
 

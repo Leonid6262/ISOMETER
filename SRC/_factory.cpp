@@ -60,15 +60,12 @@ CUDP_Server CFactory::create_UDP_Server() {
   emac.initEMAC();
   CModbusDataProxy& modbusProxy = CModbusDataProxy::getInstance();
   ESET& settings = ESET::getInstance();
-  static CENET_DRV enet;
-  static CUDP_Server udp_server(enet, settings);
+  static CENET_DRV enet_drv;
+  static CUDP_Server udp_server(enet_drv, settings);
   static CMB_UDP_Slave mb_slave(
     modbusProxy,
-    enet,
-    udp_server.getRxBuffer(), // Метод должен возвращать указатель на Rx_Frame
-    udp_server.getTxBuffer(), // Метод должен возвращать указатель на Tx_Frame
-    &settings.getSettings().Address, // Указатель на адрес прибора
-    udp_server.getMyIPPtr()   // Указатель на текущий IP контроллера
+    udp_server, 
+    &settings.getSettings().Address
   );
   
   udp_server.setModbusSlave(&mb_slave);

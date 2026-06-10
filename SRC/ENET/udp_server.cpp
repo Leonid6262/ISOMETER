@@ -16,10 +16,10 @@ void CUDP_Server::poll() {
   unsigned short eth_type = __REV16(rx_eth_header->type);
   
   switch (eth_type) {
-  case 0x0806:
+  case ETH_TYPE_ARP: 
     handleARP(); // Обработка ARP запроса
     break;
-  case 0x0800:
+  case ETH_TYPE_IPV4:
     handleIP(); // Обработка IP запроса
     break;
   }
@@ -27,17 +27,17 @@ void CUDP_Server::poll() {
 
 void CUDP_Server::handleARP() { 
   // В ARP-пакете Opcode запроса/ответа лежит в байтах 20 и 21 кадра Rx_Frame
-  unsigned short opcode = (Rx_Frame[20] << 8) | Rx_Frame[21];
+  unsigned short opcode = (Rx_Frame[ARP_OP_INDEX] << 8) | Rx_Frame[ARP_OP_INDEX +1];
   
   // Target IP (тот, кого ищут в сети) всегда лежит в байтах 38, 39, 40, 41 кадра Rx_Frame
-  if (opcode == 1 && 
-      Rx_Frame[38] == My_IP[0] && 
-      Rx_Frame[39] == My_IP[1] && 
-      Rx_Frame[40] == My_IP[2] && 
-      Rx_Frame[41] == My_IP[3]) 
+  if (opcode == ARP_OP_REQUEST && 
+      Rx_Frame[IP_TARGET_INDEX + 0] == My_IP[0] &&  
+      Rx_Frame[IP_TARGET_INDEX + 1] == My_IP[1] && 
+      Rx_Frame[IP_TARGET_INDEX + 2] == My_IP[2] && 
+      Rx_Frame[IP_TARGET_INDEX + 3] == My_IP[3]) 
   {
     // 1. Копируем заголовок (Eth + ARP) во внутренний Tx_Frame для сборки ответа
-    memcpy(Tx_Frame, Rx_Frame, 42);
+    memcpy(Tx_Frame, Rx_Frame, ARP_MSG_LEN);
     
     SEthernetHeader* tx_eth = reinterpret_cast<SEthernetHeader*>(Tx_Frame);
     SEthernetHeader* rx_eth = reinterpret_cast<SEthernetHeader*>(Rx_Frame);
@@ -47,23 +47,24 @@ void CUDP_Server::handleARP() {
     memcpy(tx_eth->src_mac, G_CONST::MAC_Controller, 6); 
     
     // --- 3. Модификация ARP-данных строго по физическим индексам Tx_Frame ---
-    Tx_Frame[20] = 0x00; // Opcode Hi
-    Tx_Frame[21] = 0x02; // Opcode Lo -> Reply (Ответ)
+    Tx_Frame[ARP_OP_INDEX]   = 0x00; // Opcode Hi 
+    Tx_Frame[ARP_OP_INDEX+1] = ARP_OP_REPLY; // Opcode Lo -> Reply (Ответ)
     
     // Настраиваем target (куда шлем): копируем из sender'а входящего пакета
     // В Rx_Frame MAC отправителя — это [22..27], IP отправителя — [28..31]
-    memcpy(Tx_Frame + 32, Rx_Frame + 22, 6); // target_mac = sender_mac
-    memcpy(Tx_Frame + 38, Rx_Frame + 28, 4); // target_ip = sender_ip
+    // Настраиваем target (куда шлем): копируем из sender'а входящего пакета
+    memcpy(Tx_Frame + ARP_TX_TARGET_MAC_IDX, Rx_Frame + ARP_RX_SENDER_MAC_IDX, 6); // target_mac = sender_mac
+    memcpy(Tx_Frame + ARP_TX_TARGET_IP_IDX,  Rx_Frame + ARP_RX_SENDER_IP_IDX,  4); // target_ip = sender_ip
     
     // Настраиваем sender (себя): пишем наш железный MAC и статический IP уставки
-    memcpy(Tx_Frame + 22, G_CONST::MAC_Controller, 6); // sender_mac
-    memcpy(Tx_Frame + 28, My_IP, 4);                // sender_ip
+    memcpy(Tx_Frame + ARP_RX_SENDER_MAC_IDX, G_CONST::MAC_Controller, 6);  // sender_mac
+    memcpy(Tx_Frame + ARP_RX_SENDER_IP_IDX,  My_IP, 4);                    // sender_ip
     
     // 4. Чистим хвост пакета (Padding) до 60 байт
-    memset(Tx_Frame + 42, 0, 18);
+    memset(Tx_Frame + ARP_MSG_LEN, 0, ETH_MIN_FRAME_LEN - ARP_MSG_LEN); // 60 - 42 = 18 байт
     
     // 5. Отправляем
-    rEnet_drv.sendFrame(Tx_Frame, 42);
+    rEnet_drv.sendFrame(Tx_Frame, ARP_MSG_LEN);
   }
 }
 
@@ -76,10 +77,10 @@ void CUDP_Server::handleIP() {
   
   
   switch (rx_ip_header->protocol) {
-  case 1:
+  case IP_PROTO_ICMP:
     handleICMP(); // Обработка протокол ICMP (Ping)  
     break;
-  case 17:
+  case IP_PROTO_UDP:
     handleUDP();  // Обработка протокол UDP (ModBus) 
     break;
   }
@@ -92,7 +93,7 @@ void CUDP_Server::handleICMP() {
   SEthernetHeader* rx_eth_header = reinterpret_cast<SEthernetHeader*>(Rx_Frame);
   SICMPHeader* rx_icmp_header = reinterpret_cast<SICMPHeader*>(Rx_Frame + sizeof(SEthernetHeader) + sizeof(SIPHeader));
   
-  if (rx_icmp_header->type != 8)  return; // Echo Request (Запрос пинга)
+  if (rx_icmp_header->type != ICMP_TYPE_ECHO_REQ)  return; // Echo Request (Запрос пинга)
   
   // Вычисляем полную длину входящего ICMP пакета по IP заголовку
   unsigned short full_frame_len = sizeof(SEthernetHeader) + __REV16(rx_ip_header->total_length);
@@ -116,9 +117,9 @@ void CUDP_Server::handleICMP() {
   // --- 3. Модифицируем ICMP в Tx_Frame ---
   tx_icmp_header->type = 0; // Echo Reply (Ответ)
   
-  // Пересчет контрольной суммы (теперь выполняется в Tx_Frame)
+  // Пересчет контрольной суммы (выполняется в Tx_Frame)
   unsigned int icmp_chk = __REV16(tx_icmp_header->checksum);
-  icmp_chk += 0x0800;
+  icmp_chk += ICMP_CHKSUM_DELTA;
   if (icmp_chk > 0xFFFF) icmp_chk += 1;
   tx_icmp_header->checksum = __REV16(static_cast<unsigned short>(icmp_chk));
   

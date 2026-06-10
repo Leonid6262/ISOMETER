@@ -9,7 +9,7 @@ struct SEthernetHeader {
 };
 
 // 2. Заголовок ARP (28 байт)
-struct SARPHeader {
+/*struct SARPHeader {
     unsigned short hw_type;       // Тип сети (Ethernet = 0x0001)
     unsigned short proto_type;    // Тип протокола (IP = 0x0800)
     unsigned char  hw_len;        // Длина MAC = 6
@@ -19,7 +19,7 @@ struct SARPHeader {
     unsigned char  sender_ip[4];
     unsigned char  target_mac[6];
     unsigned char  target_ip[4];
-};
+};*/
 
 // 3. Заголовок IPv4 (20 байт)
 struct SIPHeader {
@@ -50,14 +50,6 @@ struct SUDPHeader {
     unsigned short dst_port;     // Порт получателя (наш порт, например, 502)
     unsigned short length;       // Длина UDP заголовка + данных
     unsigned short checksum;     // Контрольная сумма UDP
-};
-
-// 6. Заголовок MBAP для Modbus UDP/TCP (7 байт)
-struct SModbusMBAP {
-    unsigned short transaction_id; // Идентификатор транзакции
-    unsigned short protocol_id;    // Всегда 0x0000
-    unsigned short length;         // Длина оставшейся части пакета
-    unsigned char  unit_id;        // Адрес устройства
 };
 
 #pragma pack(pop)

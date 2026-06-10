@@ -42,7 +42,7 @@ public:
   static inline void RelReadyOn()     { P::G1->SET = (1UL << bg::B_RelReady); }
   static inline void RelReadyOff()    { P::G1->CLR = (1UL << bg::B_RelReady); }
   
-  static constexpr unsigned short Rmax         = 2000;
+  static constexpr unsigned short Rmax         = 2500;
 
   unsigned int prev_TC0_Phase;
   

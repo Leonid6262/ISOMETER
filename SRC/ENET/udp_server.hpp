@@ -29,6 +29,33 @@ private:
         My_IP[2] = rSet.getSettings().ip1;
         My_IP[3] = rSet.getSettings().ip0;
     }
+    
+    // Эфирные типы (EtherType)
+    static constexpr unsigned short ETH_TYPE_ARP  = 0x0806;
+    static constexpr unsigned short ETH_TYPE_IPV4 = 0x0800;
+    static constexpr unsigned short ETH_MIN_FRAME_LEN = 60; // Минимальная длина кадра в Ethernet
+
+    // Коды протоколов внутри IP
+    static constexpr unsigned char  IP_PROTO_ICMP = 1;
+    static constexpr unsigned char  IP_PROTO_UDP  = 17;
+    static constexpr unsigned char  IP_TARGET_INDEX = 38;
+
+    // ARP константы
+    static constexpr unsigned short ARP_OP_INDEX = 20;
+    static constexpr unsigned short ARP_OP_REQUEST = 1;
+    static constexpr unsigned short ARP_OP_REPLY   = 2;
+    static constexpr unsigned short ARP_MSG_LEN    = 42;
+    static constexpr unsigned short ARP_RX_SENDER_MAC_IDX = 22; // Входящий MAC отправителя
+    static constexpr unsigned short ARP_RX_SENDER_IP_IDX  = 28; // Входящий IP отправителя
+    static constexpr unsigned short ARP_TX_TARGET_MAC_IDX = 32; // Куда шлем ответ (MAC)
+    static constexpr unsigned short ARP_TX_TARGET_IP_IDX  = 38; // Куда шлем ответ (IP)
+
+    // ICMP константы
+    static constexpr unsigned char  ICMP_TYPE_ECHO_REQ = 8;
+    static constexpr unsigned char  ICMP_TYPE_ECHO_RPL = 0;
+    
+    // Дельта для быстрого пересчета чексуммы: (Request Type (8) - Reply Type (0)) << 8 = 0x0800
+    static constexpr unsigned short ICMP_CHKSUM_DELTA = 0x0800;
 
 public:
   

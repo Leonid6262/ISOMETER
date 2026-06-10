@@ -26,6 +26,7 @@ public:
   
     static constexpr unsigned int NUM_RX_FRAG   =  4;
     static constexpr unsigned int NUM_TX_FRAG   =  4;  
+ 
     static constexpr unsigned int ETH_MAX_FLEN  = 128;
   
     static constexpr unsigned int DESC_RX_SIZE  = 0x7FF;
@@ -36,14 +37,14 @@ public:
     static constexpr unsigned int RX_BUF_BASE  = (TX_STAT_BASE + NUM_TX_FRAG*4); 
     static constexpr unsigned int TX_BUF_BASE  = (RX_BUF_BASE  + NUM_RX_FRAG*ETH_FRAG_SIZE); 
   
-    constexpr unsigned int& rxDescPacket(int i) {return *reinterpret_cast<unsigned int*>(RX_DESC_BASE + 8 * i);}    
-    constexpr unsigned int& rxDescCtrl(int i)   {return *reinterpret_cast<unsigned int*>(RX_DESC_BASE + 4 + 8 * i);}    
-    static constexpr unsigned int& rxStatInfo(int i)   {return *reinterpret_cast<unsigned int*>(RX_STAT_BASE + 8 * i);}   
-    constexpr unsigned int& rxStatHashCrc(int i){return *reinterpret_cast<unsigned int*>(RX_STAT_BASE + 4 + 8 * i);}
+    constexpr unsigned int& rxDescPacket(int i)         {return *reinterpret_cast<unsigned int*>(RX_DESC_BASE + 8 * i);}    
+    constexpr unsigned int& rxDescCtrl(int i)           {return *reinterpret_cast<unsigned int*>(RX_DESC_BASE + 4 + 8 * i);}    
+    static constexpr unsigned int& rxStatInfo(int i)    {return *reinterpret_cast<unsigned int*>(RX_STAT_BASE + 8 * i);}   
+    constexpr unsigned int& rxStatHashCrc(int i)        {return *reinterpret_cast<unsigned int*>(RX_STAT_BASE + 4 + 8 * i);}
   
-    static constexpr unsigned int& txDescPacket(int i) {return *reinterpret_cast<unsigned int*>(TX_DESC_BASE + 8 * i);}
-    static constexpr unsigned int& txDescCtrl(int i)   {return *reinterpret_cast<unsigned int*>(TX_DESC_BASE + 4 + 8 * i);}
-    static constexpr unsigned int& txStatInfo(int i)   {return *reinterpret_cast<unsigned int*>(TX_STAT_BASE + 4 * i);}
+    static constexpr unsigned int& txDescPacket(int i)  {return *reinterpret_cast<unsigned int*>(TX_DESC_BASE + 8 * i);}
+    static constexpr unsigned int& txDescCtrl(int i)    {return *reinterpret_cast<unsigned int*>(TX_DESC_BASE + 4 + 8 * i);}
+    static constexpr unsigned int& txStatInfo(int i)    {return *reinterpret_cast<unsigned int*>(TX_STAT_BASE + 4 * i);}
   
     static constexpr uintptr_t rxBuf(int i) {return RX_BUF_BASE + ETH_FRAG_SIZE * i;}  
     static constexpr uintptr_t txBuf(int i) {return TX_BUF_BASE + ETH_FRAG_SIZE * i;}  

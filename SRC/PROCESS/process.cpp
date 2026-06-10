@@ -168,11 +168,13 @@ void CPROCESS::calc_avr(EPhases ph) {
     if((r > Rmax) || (r < 0)) { 
       R = Rmax;
       bsMoreMax(State::ON);
+      bsNormRange(State::OFF);
       snprintf(r_buf, sizeof(r_buf), "R>%uk", Rmax);
       SaveEvent(CEVENT_LOG::EEvent::MoreMax);
     } else if((ILeak1N_avr >= d_max) || (ILeak1P_avr >= d_max)) { 
       R = 0;
       bsLessMin(State::ON);
+      bsNormRange(State::OFF);
       snprintf(r_buf, sizeof(r_buf), "R<Rmin");
       SaveEvent(CEVENT_LOG::EEvent::LessMin);
     } else {      

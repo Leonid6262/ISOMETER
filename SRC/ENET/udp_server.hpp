@@ -12,15 +12,15 @@ private:
     CEEPSettings& rSet;
     CMB_UDP_Slave* pMB_Slave;
     
-    unsigned char Rx_Frame[CEMAC::ETH_FRAG_SIZE];
-    unsigned char Tx_Frame[CEMAC::ETH_FRAG_SIZE];
+    alignas(4) unsigned char Rx_Frame[CEMAC::ETH_FRAG_SIZE];
+    alignas(4) unsigned char Tx_Frame[CEMAC::ETH_FRAG_SIZE];
     
     unsigned char My_IP[4];
 
     void handleARP();
     void handleIP();
-    void handleICMP();
     void handleUDP();
+    void handleICMP_Ping();
 
     // Вспомогательный метод для динамического обновления IP из уставок
     void updateCurrentIP() {
@@ -38,17 +38,12 @@ private:
     // Коды протоколов внутри IP
     static constexpr unsigned char  IP_PROTO_ICMP = 1;
     static constexpr unsigned char  IP_PROTO_UDP  = 17;
-    static constexpr unsigned char  IP_TARGET_INDEX = 38;
 
     // ARP константы
-    static constexpr unsigned short ARP_OP_INDEX = 20;
     static constexpr unsigned short ARP_OP_REQUEST = 1;
-    static constexpr unsigned short ARP_OP_REPLY   = 2;
     static constexpr unsigned short ARP_MSG_LEN    = 42;
-    static constexpr unsigned short ARP_RX_SENDER_MAC_IDX = 22; // Входящий MAC отправителя
-    static constexpr unsigned short ARP_RX_SENDER_IP_IDX  = 28; // Входящий IP отправителя
-    static constexpr unsigned short ARP_TX_TARGET_MAC_IDX = 32; // Куда шлем ответ (MAC)
-    static constexpr unsigned short ARP_TX_TARGET_IP_IDX  = 38; // Куда шлем ответ (IP)
+    // Перевернутый Opcode Reply для записи напрямую в буфер (0x0002 -> Big-Endian -> 0x0200)
+    static constexpr unsigned short ARP_OP_REPLY_NET  = 0x0200;
 
     // ICMP константы
     static constexpr unsigned char  ICMP_TYPE_ECHO_REQ = 8;

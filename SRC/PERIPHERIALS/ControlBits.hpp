@@ -3,8 +3,6 @@
 namespace bg {
   // Биты физических связей GPIO
   static constexpr unsigned short B_ULED      = 9;        // Бит U-LED
-  static constexpr unsigned short B0_PORT_OUT = 24;       // 1-й бит DOUT порта GPIO2  
-  static constexpr unsigned int B0_PORT_IN    = 15;       // 0-й бит порта. Начало Pi0 в PORT2 контроллера
   static constexpr unsigned int B_LampMeas = 31;
   static constexpr unsigned int B_LampAlarm1 = 30;
   static constexpr unsigned int B_LampAlarm2 = 29;
@@ -13,6 +11,7 @@ namespace bg {
   static constexpr unsigned int B_RelAlarm2 = 26;
   static constexpr unsigned int B_TN = 27;
   static constexpr unsigned int B_TP = 28;
+  static constexpr unsigned int C_P40 = 29;
 }
 
 namespace bf {

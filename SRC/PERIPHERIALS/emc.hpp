@@ -47,16 +47,6 @@ public:
     P::EMC->StaticWaitWr0   = 0x00;     // Ожидание записи. 0 - задержка в два цикла EMCCLK
     P::EMC->StaticWaitTurn0 = 0x00;     // Циклов реверсирования шины. 0 - задержка в один цикл EMCCLK
     
-    //---------------   Конфигурация адресного пространства Jockey   -------------------------
-    //P::EMC->StaticConfig1   = 0x81;   // 16-bit
-    //P::EMC->StaticWaitWen1  = 0;
-    //P::EMC->StaticWaitOen1  = 0;    
-    //P::EMC->StaticWaitRd1   = 0x7;    
-    //P::EMC->StaticWaitPage1 = 0;
-    //P::EMC->StaticWaitWr1   = 0x5;
-    //P::EMC->StaticWaitTurn1 = 0;
-    //-------------------------------------------------------------------------------------
-    
     unsigned int Counter_Err_RAM;
     unsigned short* adr_ram;
     unsigned short dir;

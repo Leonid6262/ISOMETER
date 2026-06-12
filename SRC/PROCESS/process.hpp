@@ -28,9 +28,14 @@ public:
   inline signed short*   getPointerUd_d()    { return &Ud_avr_d;        }
   inline char*           getPointerDT()      { return date_time;        }
   inline char*           getPointerRES()     { return RES;              }
-   
+  inline float*          getPointerP5()      { return &P5_avr_V;        }
+  inline float*          getPointerN5()      { return &N5_avr_V;        }
+  inline bool*           getPointerC40()     { return &CP40V_PN;        }
+
   static inline void UserLedOn()  { P::G0->CLR  = (1UL << bg::B_ULED); } 
   static inline void UserLedOff() { P::G0->SET  = (1UL << bg::B_ULED); }
+  
+  static inline bool get_С_P40V()    { return !(((P::G0->PIN) & (1UL << bg::C_P40)) != 0); }
   
   static inline void LampMeasOn()     { P::G2->CLR = (1UL << bg::B_LampMeas); }
   static inline void LampMeasOff()    { P::G2->SET = (1UL << bg::B_LampMeas); }
@@ -57,19 +62,25 @@ public:
       unsigned char sNormRange : 1; // R в диапазоне измерений
       unsigned char sAlarm1    : 1; // Alarm1
       unsigned char sAlarm2    : 1; // Alarm2
+      unsigned char sFaultP5   : 1; // +5V
+      unsigned char sFaultN5   : 1; // -5V
+      unsigned char sFaultS40  : 1; // +/- 40V
     };
   } UStatus;
   
   unsigned short prevUStatus;
   
   // Установка/сброс битов статуса
-  void bsWork(State state)      { UStatus.sWork    = static_cast<unsigned char>(state); }
-  void bsFault(State state)     { UStatus.sFault   = static_cast<unsigned char>(state); }
-  void bsLessMin(State state)   { UStatus.sLessMin = static_cast<unsigned char>(state); }
-  void bsMoreMax(State state)   { UStatus.sMoreMax = static_cast<unsigned char>(state); }
+  void bsWork(State state)      { UStatus.sWork      = static_cast<unsigned char>(state); }
+  void bsFault(State state)     { UStatus.sFault     = static_cast<unsigned char>(state); }
+  void bsLessMin(State state)   { UStatus.sLessMin   = static_cast<unsigned char>(state); }
+  void bsMoreMax(State state)   { UStatus.sMoreMax   = static_cast<unsigned char>(state); }
   void bsNormRange(State state) { UStatus.sNormRange = static_cast<unsigned char>(state); }
-  void bsAlarm1(State state)    { UStatus.sAlarm1  = static_cast<unsigned char>(state); }
-  void bsAlarm2(State state)    { UStatus.sAlarm2  = static_cast<unsigned char>(state); }
+  void bsAlarm1(State state)    { UStatus.sAlarm1    = static_cast<unsigned char>(state); }
+  void bsAlarm2(State state)    { UStatus.sAlarm2    = static_cast<unsigned char>(state); }
+  void bsFaultP5(State state)   { UStatus.sFaultP5   = static_cast<unsigned char>(state); }
+  void bsFaultN5(State state)   { UStatus.sFaultN5   = static_cast<unsigned char>(state); }
+  void bsFaultV40(State state)  { UStatus.sFaultS40  = static_cast<unsigned char>(state); }
   void clr_bs()                 { UStatus.all  = 0; }
   
   void start_test();
@@ -80,6 +91,8 @@ public:
   float R2;
   signed short Ud_avr_d;
   float Ud_avr_V;
+  float P5_avr_V;
+  float N5_avr_V;
   
 private:
 
@@ -107,16 +120,20 @@ private:
 
   static constexpr unsigned short d_max        = 4070;    // дискрет считающихся насыщеним
   
+  //С учётом Uop=3V и делителя 10к/10к -> (3V * 2) / 4095 = 0.0014652015
+  static constexpr float K_P5 = 0.0014652015f;  
+  //С учётом Uop=3V и делителя 10к/30к между +5V и -5V -> (3V * 4) / 4095 = 0.0029304029
+  static constexpr float K_N5 = 0.0029304029f;
+  
   static constexpr float u      = 40000.0f;               // u [mV]
   static constexpr float RT     = 51.0f + 5.1f + 5.1f;    // RT [kOhm]
   static constexpr float Rs     = 1.0f;                   // R шунта [kOhm]
 
-  signed short Ud_P[AVR_NUMBER];
-  signed short ILeak1_P[AVR_NUMBER]; 
-  signed short ILeak2_P[AVR_NUMBER];
-  signed short Ud_N[AVR_NUMBER];
-  signed short ILeak1_N[AVR_NUMBER]; 
-  signed short ILeak2_N[AVR_NUMBER];
+  static inline signed short Ud[AVR_NUMBER];
+  static inline signed short ILeak1[AVR_NUMBER]; 
+  static inline signed short ILeak2[AVR_NUMBER];
+  static inline signed short P5V[AVR_NUMBER]; 
+  static inline signed short N5V[AVR_NUMBER];
   
   unsigned short pause_counter;
   unsigned short wait_number;
@@ -124,6 +141,8 @@ private:
   char RES[G_CONST::disp_l + 1];
   char polarity;
   char N_ch;
+  
+  bool CP40V_PN = true;
    
   enum class EPhases {
     PhaseP,
@@ -150,6 +169,8 @@ private:
   float ILeak1P_avr;
   float ILeak1N_avr;
   float ILeak2P_avr;
-  float ILeak2N_avr; 
+  float ILeak2N_avr;
+  float P5V_avr; 
+  float N5V_avr;
   
 };

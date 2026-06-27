@@ -55,8 +55,8 @@ public:
   void initDOutputs() {      
     
     // Дискретные выходы
-    P::G0->SET = (1UL << bg::B_ULED);
-    P::G0->CLR = (!(1UL << bg::B_ULED));
+    P::G1->SET = (1UL << bg::B_ULED);
+    P::G1->CLR = (!(1UL << bg::B_ULED));
     
     P::G1->CLR = 0xFFFFFFFF;
     P::G2->CLR = 0xFFFFFFFF;
@@ -65,7 +65,9 @@ public:
     P::G5->CLR = 0xFFFFFFFF;
     
     // Настройка направления
-    P::G0->DIR |= (1UL << bg::B_ULED);
+    P::G1->DIR |= (1UL << bg::B_ULED);          //v
+    
+    
     P::G1->DIR |= (1UL << bg::B_RelReady);
     P::G2->DIR |= (
                    1UL << bg::B_LampMeas | 
@@ -93,19 +95,19 @@ public:
   
   void initIOCON() {
     
-    P::IOCON->P2_4  = bf::IOCON_PORT_PWM;                   // P2_4 -> PWM1:5 PWM_DAC1
+    P::IOCON->P1_24  = bf::IOCON_PORT_PWM;                  //v P1_24 -> PWM1:5 PWM_DAC1
     
-    P::IOCON->P4_20 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SCK1
-    P::IOCON->P4_21 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SSEL1
-    P::IOCON->P4_22 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // MISO1
-    P::IOCON->P4_23 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // MOSI1
+    P::IOCON->P1_31 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   //v SCK1
+    P::IOCON->P0_14 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   //v SSEL1
+    P::IOCON->P0_12 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   //v MISO1
+    P::IOCON->P0_13 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   //v MOSI1
     
-    P::IOCON->P0_2 = bf::IOCON_U0_TXD;         // U0_TXD
-    P::IOCON->P0_3 = bf::IOCON_U0_RXD;         // U0_RXD
+    P::IOCON->P0_0 = bf::IOCON_U0_TXD;         //v U0_TXD
+    P::IOCON->P0_1 = bf::IOCON_U0_RXD;         //v U0_RXD
     
-    P::IOCON->P2_6 = bf::IOCON_U2_OE;          // U2_OE
-    P::IOCON->P2_8 = bf::IOCON_U2_TXD;         // U2_TXD
-    P::IOCON->P2_9 = bf::IOCON_U2_RXD;         // U2_RXD
+    P::IOCON->P1_19 = bf::IOCON_U2_OE;          //v U2_OE
+    P::IOCON->P0_10 = bf::IOCON_U2_TXD;         //v U2_TXD
+    P::IOCON->P0_11 = bf::IOCON_U2_RXD;         //v U2_RXD
     
     // Настройка RMII пинов
     P::IOCON->P1_0 = bEMC::FUNC_ENET;                           // ENET_TXD0

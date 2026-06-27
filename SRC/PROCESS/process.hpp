@@ -32,17 +32,17 @@ public:
   inline float*          getPointerN5()      { return &N5_avr_V;        }
   inline bool*           getPointerC40()     { return &CP40V_PN;        }
 
-  static inline void UserLedOn()  { P::G0->CLR  = (1UL << bg::B_ULED); } 
-  static inline void UserLedOff() { P::G0->SET  = (1UL << bg::B_ULED); }
+  static inline void UserLedOn()  { P::G1->CLR  = (1UL << bg::B_ULED); } 
+  static inline void UserLedOff() { P::G1->SET  = (1UL << bg::B_ULED); }
   
   static inline bool get_С_P40V()    { return !(((P::G0->PIN) & (1UL << bg::C_P40)) != 0); }
   
-  static inline void LampMeasOn()     { P::G2->CLR = (1UL << bg::B_LampMeas); }
-  static inline void LampMeasOff()    { P::G2->SET = (1UL << bg::B_LampMeas); }
-  static inline void LampAlarm1On()   { P::G2->CLR = (1UL << bg::B_LampAlarm1); }
-  static inline void LampAlarm1Off()  { P::G2->SET = (1UL << bg::B_LampAlarm1); }
-  static inline void LampAlarm2On()   { P::G2->CLR = (1UL << bg::B_LampAlarm2); }
-  static inline void LampAlarm2Off()  { P::G2->SET = (1UL << bg::B_LampAlarm2); }
+  static inline void LampReadyOn()    { P::G1->CLR = (1UL << bg::B_LampReady); }
+  static inline void LampReadyOff()   { P::G1->SET = (1UL << bg::B_LampReady); }
+  static inline void LampAlarm1On()   { P::G1->CLR = (1UL << bg::B_LampAlarm1); }
+  static inline void LampAlarm1Off()  { P::G1->SET = (1UL << bg::B_LampAlarm1); }
+  static inline void LampAlarm2On()   { P::G1->CLR = (1UL << bg::B_LampAlarm2); }
+  static inline void LampAlarm2Off()  { P::G1->SET = (1UL << bg::B_LampAlarm2); }
   
   static inline void RelReadyOn()     { P::G1->SET = (1UL << bg::B_RelReady); }
   static inline void RelReadyOff()    { P::G1->CLR = (1UL << bg::B_RelReady); }
@@ -99,14 +99,14 @@ private:
   unsigned int dTrsPhase;
   bool start_log = false;
   
-  static inline void Negative_phase()     { P::G2->CLR = (1UL << bg::B_TP); Pause_us(2); P::G2->SET = (1UL << bg::B_TN); }
-  static inline void Positive_phase()     { P::G2->CLR = (1UL << bg::B_TN); Pause_us(2); P::G2->SET = (1UL << bg::B_TP); }
-  static inline void phase_Off()          { P::G2->CLR = (1UL << bg::B_TN); P::G2->CLR = (1UL << bg::B_TP); }
+  static inline void Negative_phase()     { P::G1->CLR = (1UL << bg::B_TP); Pause_us(2); P::G1->SET = (1UL << bg::B_TN); }
+  static inline void Positive_phase()     { P::G1->CLR = (1UL << bg::B_TN); Pause_us(2); P::G1->SET = (1UL << bg::B_TP); }
+  static inline void phase_Off()          { P::G1->CLR = (1UL << bg::B_TN); P::G1->CLR = (1UL << bg::B_TP); }
   
-  static inline void RelAlarm1On()     { P::G2->SET = (1UL << bg::B_RelAlarm1); }
-  static inline void RelAlarm1Off()    { P::G2->CLR = (1UL << bg::B_RelAlarm1); }
-  static inline void RelAlarm2On()     { P::G2->SET = (1UL << bg::B_RelAlarm2); }
-  static inline void RelAlarm2Off()    { P::G2->CLR = (1UL << bg::B_RelAlarm2); }
+  static inline void RelAlarm1On()     { P::G1->SET = (1UL << bg::B_RelAlarm1); }
+  static inline void RelAlarm1Off()    { P::G1->CLR = (1UL << bg::B_RelAlarm1); }
+  static inline void RelAlarm2On()     { P::G1->SET = (1UL << bg::B_RelAlarm2); }
+  static inline void RelAlarm2Off()    { P::G1->CLR = (1UL << bg::B_RelAlarm2); }
   
   static constexpr unsigned short MEAS_PAUSED  = 7000;    // 0.7ms - пауза между выборками
   static constexpr unsigned short WAIT_NUMBER  = 5000;    // Время заряда - 0.7ms * 5000 = 3.5s

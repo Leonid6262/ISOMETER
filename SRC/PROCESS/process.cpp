@@ -23,19 +23,19 @@ void CPROCESS::step() {
   
   switch (phases) {
   case EPhases::PhaseP:
-    LampMeasOn();
+    LampReadyOn();
     if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); wait(phases); } 
     break;   
   case EPhases::MeasP:
-    LampMeasOff();
+    LampReadyOff();
     if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); conv(phases); }    
     break; 
   case EPhases::PhaseN:
-    LampMeasOn();
+    LampReadyOn();
     if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); wait(phases); } 
     break;   
   case EPhases::MeasN:
-    LampMeasOff();
+    LampReadyOff();
     if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); conv(phases); }    
     break;
   }
@@ -287,10 +287,10 @@ void CPROCESS::conv_adc() {
 }
 
 void CPROCESS::start_test() { 
-  CPROCESS::LampMeasOn();
+  CPROCESS::LampReadyOn();
   RelAlarm1On();
   Pause_us(500000); 
-  CPROCESS::LampMeasOff();
+  CPROCESS::LampReadyOff();
   RelAlarm1Off();
   
   CPROCESS::LampAlarm1On();

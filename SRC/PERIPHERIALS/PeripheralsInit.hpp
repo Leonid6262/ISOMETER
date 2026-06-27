@@ -52,13 +52,11 @@ class CPERIPHERIALS_INIT {
 
 public:
   
-  void initDOutputs() {      
+  void initDOutputs() {  
     
     // Дискретные выходы
-    P::G1->SET = (1UL << bg::B_ULED);
-    P::G1->CLR = (!(1UL << bg::B_ULED));
     
-    P::G1->CLR = 0xFFFFFFFF;
+    P::G1->SET = 0xFFFFFFFF; P::G1->CLR = (1UL << bg::B_ULED);
     P::G2->CLR = 0xFFFFFFFF;
     P::G3->CLR = 0xFFFFFFFF;
     P::G4->CLR = 0xFFFFFFFF;
@@ -67,17 +65,17 @@ public:
     // Настройка направления
     P::G1->DIR |= (1UL << bg::B_ULED);          //v
     
+    P::G1->DIR |= (1UL << bg::B_RelReady);      //v
+    P::G1->DIR |= (1UL << bg::B_RelAlarm1);     //v
+    P::G1->DIR |= (1UL << bg::B_RelAlarm2);     //v
     
-    P::G1->DIR |= (1UL << bg::B_RelReady);
-    P::G2->DIR |= (
-                   1UL << bg::B_LampMeas | 
-                   1UL << bg::B_LampAlarm1 | 
-                   1UL << bg::B_LampAlarm2 | 
-                   1UL << bg::B_TP | 
-                   1UL << bg::B_TN |
-                   1UL << bg::B_RelAlarm2 |
-                   1UL << bg::B_RelAlarm1
-                                 );
+    P::G1->DIR |= (1UL << bg::B_TP);            //v
+    P::G1->DIR |= (1UL << bg::B_TN);            //v
+    
+    P::G1->DIR |= (1UL << bg::B_LampReady);     //v
+    P::G1->DIR |= (1UL << bg::B_LampAlarm1);    //v
+    P::G1->DIR |= (1UL << bg::B_LampAlarm2);    //v
+          
     P::G3->DIR = 0x00000000;
     P::G4->DIR = 0x00000000;
     P::G5->DIR = 0x00000000;

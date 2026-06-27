@@ -89,11 +89,11 @@ void CFactory::control_set(CTerminalManager& rTM) {
         prev_TC0 = SysT::TC();
         led_on = !led_on;
         if(led_on) {
-          CPROCESS::LampMeasOff();
+          CPROCESS::LampReadyOff();
           CPROCESS::LampAlarm1Off();
           CPROCESS::LampAlarm2Off();
         } else {
-          CPROCESS::LampMeasOn();
+          CPROCESS::LampReadyOn();
           CPROCESS::LampAlarm1On();
           CPROCESS::LampAlarm2On();
         }

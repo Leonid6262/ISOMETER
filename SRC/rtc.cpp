@@ -68,7 +68,7 @@ void CRTC::setDefault() {
       25,  // Default year
       6,   // Default month
       15,  // Default day
-      0,   // Default hour
+      12,  // Default hour
       0,   // Default minute
       0    // Default second
   });

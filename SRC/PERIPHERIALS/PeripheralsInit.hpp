@@ -56,13 +56,13 @@ public:
     
     // Дискретные выходы
     
-    P::G1->SET = 0xFFFFFFFF; P::G1->CLR = (1UL << bg::B_ULED);
+    P::G1->SET = 0xFFFFFFFF; P::G1->CLR = (1UL << bg::B_ULED) | (1UL << bg::B_TP) | (1UL << bg::B_TN);
     P::G2->CLR = 0xFFFFFFFF;
     P::G3->CLR = 0xFFFFFFFF;
     P::G4->CLR = 0xFFFFFFFF;
     P::G5->CLR = 0xFFFFFFFF;
     
-    // Настройка направления
+    // Настройка направления на вывод
     P::G1->DIR |= (1UL << bg::B_ULED);          //v
     
     P::G1->DIR |= (1UL << bg::B_RelReady);      //v

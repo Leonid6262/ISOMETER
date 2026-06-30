@@ -24,7 +24,7 @@ namespace bf {
   
   static constexpr unsigned int IOCON_PORT_PWM = 2;
   
-  static constexpr unsigned int IOCON_SPI1 = 0x02;
+  static constexpr unsigned int IOCON_SPI1 = 0x82;
   
   static constexpr unsigned int IOCON_U0_TXD  = 0x4;  
   static constexpr unsigned int IOCON_U0_RXD  = 0x4;

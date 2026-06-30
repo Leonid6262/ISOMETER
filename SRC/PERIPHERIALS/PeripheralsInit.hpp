@@ -18,35 +18,24 @@ namespace P {
   
   constexpr LPC_UART_TypeDef* UART0 = LPC_UART0;
   constexpr LPC_UART_TypeDef* UART2 = LPC_UART2;
-  constexpr LPC_UART_TypeDef* UART3 = LPC_UART3;
   
-  constexpr LPC_SSP_TypeDef* SPI0 = LPC_SSP0;
   constexpr LPC_SSP_TypeDef* SPI1 = LPC_SSP1;
-  constexpr LPC_SSP_TypeDef* SPI2 = LPC_SSP2;
   
   constexpr LPC_GPDMA_TypeDef*  GPDMA = LPC_GPDMA;
-  
-  constexpr LPC_CAN_TypeDef* CAN1 = LPC_CAN1;
-  constexpr LPC_CAN_TypeDef* CAN2 = LPC_CAN2;
-  constexpr LPC_CANAF_TypeDef* CANAF = LPC_CANAF;
-  constexpr LPC_CANAF_RAM_TypeDef* CANAF_RAM = LPC_CANAF_RAM;
     
-  constexpr LPC_IOCON_TypeDef* IOCON = LPC_IOCON;  // IOCON 
-  constexpr LPC_SC_TypeDef* SC = LPC_SC;           // System Control
-  constexpr LPC_EMC_TypeDef* EMC = LPC_EMC;        // EMC
+  constexpr LPC_IOCON_TypeDef* IOCON = LPC_IOCON; 
   
-  constexpr LPC_ADC_TypeDef* IADC = LPC_ADC;       // Внутреннее АЦП
+  constexpr LPC_SC_TypeDef* SC = LPC_SC;           
   
-  constexpr LPC_DAC_TypeDef* DAC = LPC_DAC;        // DAC0
-  constexpr LPC_PWM_TypeDef* PWM_DAC = LPC_PWM1;   // PWM1 DAC_PWM
-  
-  constexpr LPC_PWM_TypeDef* PULS_PWM = LPC_PWM0;  // PWM ИУ
+  constexpr LPC_EMC_TypeDef* EMC = LPC_EMC;        
+
+  constexpr LPC_PWM_TypeDef* PWM_DAC = LPC_PWM1;  
   
   constexpr LPC_RTC_TypeDef* RTC = LPC_RTC;
+  
   constexpr LPC_EEPROM_TypeDef* EEPROM = LPC_EEPROM;
 
 }
-
 
 class CPERIPHERIALS_INIT {
 
@@ -56,25 +45,26 @@ public:
     
     // Дискретные выходы
     
-    P::G1->SET = 0xFFFFFFFF; P::G1->CLR = (1UL << bg::B_ULED) | (1UL << bg::B_TP) | (1UL << bg::B_TN);
+    P::G1->SET = 0xFFFFFFFF; 
+    P::G1->CLR = (1UL << bg::B_ULED) | (1UL << bg::B_TP) | (1UL << bg::B_TN); // ULED - On, Bridge - Off !!!
     P::G2->CLR = 0xFFFFFFFF;
     P::G3->CLR = 0xFFFFFFFF;
     P::G4->CLR = 0xFFFFFFFF;
     P::G5->CLR = 0xFFFFFFFF;
     
     // Настройка направления на вывод
-    P::G1->DIR |= (1UL << bg::B_ULED);          //v
+    P::G1->DIR |= (1UL << bg::B_ULED);          
     
-    P::G1->DIR |= (1UL << bg::B_RelReady);      //v
-    P::G1->DIR |= (1UL << bg::B_RelAlarm1);     //v
-    P::G1->DIR |= (1UL << bg::B_RelAlarm2);     //v
+    P::G1->DIR |= (1UL << bg::B_RelReady);      
+    P::G1->DIR |= (1UL << bg::B_RelAlarm1);     
+    P::G1->DIR |= (1UL << bg::B_RelAlarm2);     
     
-    P::G1->DIR |= (1UL << bg::B_TP);            //v
-    P::G1->DIR |= (1UL << bg::B_TN);            //v
+    P::G1->DIR |= (1UL << bg::B_TP);            
+    P::G1->DIR |= (1UL << bg::B_TN);            
     
-    P::G1->DIR |= (1UL << bg::B_LampReady);     //v
-    P::G1->DIR |= (1UL << bg::B_LampAlarm1);    //v
-    P::G1->DIR |= (1UL << bg::B_LampAlarm2);    //v
+    P::G1->DIR |= (1UL << bg::B_LampReady);     
+    P::G1->DIR |= (1UL << bg::B_LampAlarm1);    
+    P::G1->DIR |= (1UL << bg::B_LampAlarm2);    
           
     P::G3->DIR = 0x00000000;
     P::G4->DIR = 0x00000000;
@@ -93,19 +83,19 @@ public:
   
   void initIOCON() {
     
-    P::IOCON->P1_24  = bf::IOCON_PORT_PWM;                  //v P1_24 -> PWM1:5 PWM_DAC1
+    P::IOCON->P1_24  = bf::IOCON_PORT_PWM;                  // P1_24 -> PWM1:5 PWM_DAC1
     
-    P::IOCON->P1_31 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   //v SCK1
-    P::IOCON->P0_14 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   //v SSEL1
-    P::IOCON->P0_12 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   //v MISO1
-    P::IOCON->P0_13 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   //v MOSI1
+    P::IOCON->P1_31 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SCK1
+    P::IOCON->P0_14 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SSEL1
+    P::IOCON->P0_12 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // MISO1
+    P::IOCON->P0_13 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // MOSI1
     
-    P::IOCON->P0_0 = bf::IOCON_U0_TXD;         //v U0_TXD
-    P::IOCON->P0_1 = bf::IOCON_U0_RXD;         //v U0_RXD
+    P::IOCON->P0_0 = bf::IOCON_U0_TXD;          // U0_TXD
+    P::IOCON->P0_1 = bf::IOCON_U0_RXD;          // U0_RXD
     
-    P::IOCON->P1_19 = bf::IOCON_U2_OE;          //v U2_OE
-    P::IOCON->P0_10 = bf::IOCON_U2_TXD;         //v U2_TXD
-    P::IOCON->P0_11 = bf::IOCON_U2_RXD;         //v U2_RXD
+    P::IOCON->P1_19 = bf::IOCON_U2_OE;          // U2_OE
+    P::IOCON->P0_10 = bf::IOCON_U2_TXD;         // U2_TXD
+    P::IOCON->P0_11 = bf::IOCON_U2_RXD;         // U2_RXD
     
     // Настройка RMII пинов
     P::IOCON->P1_0 = bEMC::FUNC_ENET;                           // ENET_TXD0

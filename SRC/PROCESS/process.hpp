@@ -108,6 +108,10 @@ private:
   static inline void RelAlarm2On()     { P::G1->SET = (1UL << bg::B_RelAlarm2); }
   static inline void RelAlarm2Off()    { P::G1->CLR = (1UL << bg::B_RelAlarm2); }
   
+  static constexpr float P5_MIN  =  4.5;    //
+  static constexpr float N5_MIN  = -4.5;    //
+  
+  
   static constexpr unsigned short MEAS_PAUSED  = 7000;    // 0.7ms - пауза между выборками
   static constexpr unsigned short WAIT_NUMBER  = 5000;    // Время заряда - 0.7ms * 5000 = 3.5s
   static constexpr unsigned short AVR_NUMBER   = 0x200;   // Количество выборок. 0.7ms * 512 примерно 358ms

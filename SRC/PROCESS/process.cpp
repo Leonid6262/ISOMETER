@@ -119,6 +119,8 @@ void CPROCESS::conv(EPhases ph) {
   }
 }
 
+float PP5 = 5.0f;
+
 void CPROCESS::calc_avr(EPhases ph) {
   signed int ud = 0;
   signed int ileak1 = 0;
@@ -164,6 +166,17 @@ void CPROCESS::calc_avr(EPhases ph) {
   P5_avr_V = K_P5 * P5V_avr;
   N5_avr_V = (K_N5 * N5V_avr) - (3 * P5_avr_V);
   
+  
+  P5_avr_V = PP5;
+  
+  if(P5_avr_V < P5_MIN) bsFaultP5(State::ON);
+  else bsFaultP5(State::OFF);
+ 
+  if(N5_avr_V > N5_MIN) bsFaultN5(State::ON);
+  else bsFaultN5(State::OFF);
+  
+  if(UStatus.sFaultP5 || UStatus.sFaultN5) bsFault(State::ON);
+  else bsFault(State::OFF);
   /*
 
     Контроль P5, N5, C40
@@ -252,7 +265,17 @@ void CPROCESS::calc_avr(EPhases ph) {
     RelAlarm1Off();
     RelAlarm2Off();
     RelReadyOff();
+    LampAlarm1Off();
+    LampAlarm2Off();
+    LampReadyOff();
+    CPROCESS::UserLedOn();
     SaveEvent(CEVENT_LOG::EEvent::Fault_On);
+    
+    if(UStatus.sFaultP5) {
+      snprintf(RES, sizeof(RES), "   FAULT P5     ");    
+    }else if(UStatus.sFaultN5) {
+      snprintf(RES, sizeof(RES), "   FAULT N5     ");   
+    }
     
     /*
 
@@ -261,10 +284,9 @@ void CPROCESS::calc_avr(EPhases ph) {
     */
     
     
-    snprintf(RES, sizeof(RES), "     FAULT      ");    
-  } else {
-    SaveEvent(CEVENT_LOG::EEvent::Fault_Off);
-  }
+
+  } 
+  
 }
 
 void CPROCESS::SaveEvent(CEVENT_LOG::EEvent event) {

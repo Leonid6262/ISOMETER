@@ -37,8 +37,8 @@ public:
   
   static inline bool get_С_P40V()    { return !(((P::G0->PIN) & (1UL << bg::C_P40)) != 0); }
   
-  static inline void LampReadyOn()    { P::G1->CLR = (1UL << bg::B_LampReady); }
-  static inline void LampReadyOff()   { P::G1->SET = (1UL << bg::B_LampReady); }
+  static inline void LampReadyOn()    { P::G1->CLR = (1UL << bg::B_LampReady);  }
+  static inline void LampReadyOff()   { P::G1->SET = (1UL << bg::B_LampReady);  }
   static inline void LampAlarm1On()   { P::G1->CLR = (1UL << bg::B_LampAlarm1); }
   static inline void LampAlarm1Off()  { P::G1->SET = (1UL << bg::B_LampAlarm1); }
   static inline void LampAlarm2On()   { P::G1->CLR = (1UL << bg::B_LampAlarm2); }

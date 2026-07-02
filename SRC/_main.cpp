@@ -5,6 +5,7 @@ void UserStartInit() {
 }
 
 void main(void) {
+  
   CFactory::Peripherals_init(); // Инициализация периферии
   
   Priorities::initPriorities(); // Распределение векторов по группам. см. в файле IntPriority.h  

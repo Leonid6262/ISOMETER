@@ -8,6 +8,9 @@ namespace bg {
   static constexpr unsigned short B_LampAlarm1 = 25;
   static constexpr unsigned short B_LampAlarm2 = 26;
   
+  static constexpr unsigned short B_LampPult1 = 29;
+  static constexpr unsigned short B_LampPult2 = 30;
+  
   static constexpr unsigned short B_RelReady = 20;
   static constexpr unsigned short B_RelAlarm1 = 21;
   static constexpr unsigned short B_RelAlarm2 = 22;

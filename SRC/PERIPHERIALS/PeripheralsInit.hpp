@@ -46,7 +46,12 @@ public:
     // Дискретные выходы
     
     P::G1->SET = 0xFFFFFFFF; 
-    P::G1->CLR = (1UL << bg::B_ULED) | (1UL << bg::B_TP) | (1UL << bg::B_TN); // ULED - On, Bridge - Off !!!
+    P::G1->CLR = 
+        (1UL << bg::B_ULED)             | 
+        (1UL << bg::B_TP)               | 
+        (1UL << bg::B_TN)               |
+        (1UL << bg::B_LampPult1)        |
+        (1UL << bg::B_LampPult2);
     P::G2->CLR = 0xFFFFFFFF;
     P::G3->CLR = 0xFFFFFFFF;
     P::G4->CLR = 0xFFFFFFFF;
@@ -64,7 +69,9 @@ public:
     
     P::G1->DIR |= (1UL << bg::B_LampReady);     
     P::G1->DIR |= (1UL << bg::B_LampAlarm1);    
-    P::G1->DIR |= (1UL << bg::B_LampAlarm2);    
+    P::G1->DIR |= (1UL << bg::B_LampAlarm2); 
+    P::G1->DIR |= (1UL << bg::B_LampPult1); 
+    P::G1->DIR |= (1UL << bg::B_LampPult2);
           
     P::G3->DIR = 0x00000000;
     P::G4->DIR = 0x00000000;

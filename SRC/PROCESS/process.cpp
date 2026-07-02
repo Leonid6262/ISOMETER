@@ -23,7 +23,7 @@ void CPROCESS::step() {
   
   switch (phases) {
   case EPhases::PhaseP:
-    LampReadyOn();
+    if(UStatus.sWork) LampReadyOn();
     if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); wait(phases); } 
     break;   
   case EPhases::MeasP:
@@ -31,7 +31,7 @@ void CPROCESS::step() {
     if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); conv(phases); }    
     break; 
   case EPhases::PhaseN:
-    LampReadyOn();
+    if(UStatus.sWork) LampReadyOn();
     if(dTrsPhase > MEAS_PAUSED) { prev_TC0_Phase = SysT::TC(); wait(phases); } 
     break;   
   case EPhases::MeasN:
@@ -119,8 +119,6 @@ void CPROCESS::conv(EPhases ph) {
   }
 }
 
-float PP5 = 5.0f;
-
 void CPROCESS::calc_avr(EPhases ph) {
   signed int ud = 0;
   signed int ileak1 = 0;
@@ -166,22 +164,24 @@ void CPROCESS::calc_avr(EPhases ph) {
   P5_avr_V = K_P5 * P5V_avr;
   N5_avr_V = (K_N5 * N5V_avr) - (3 * P5_avr_V);
   
-  
-  P5_avr_V = PP5;
-  
   if(P5_avr_V < P5_MIN) bsFaultP5(State::ON);
   else bsFaultP5(State::OFF);
  
   if(N5_avr_V > N5_MIN) bsFaultN5(State::ON);
   else bsFaultN5(State::OFF);
   
-  if(UStatus.sFaultP5 || UStatus.sFaultN5) bsFault(State::ON);
-  else bsFault(State::OFF);
-  /*
+  //////////if(!CP40V_PN) bsFaultV40(State::ON);
+  //////////else bsFaultV40(State::OFF);
+  
+  if(UStatus.sFaultP5 || UStatus.sFaultN5 || UStatus.sFaultS40) {
+    bsWork(State::OFF);
+    bsFault(State::ON);
+  }
+  else {
+    bsWork(State::ON);
+    bsFault(State::OFF);
+  }
 
-    Контроль P5, N5, C40
-
- */
   
   Ud_avr_d = lroundf((UdN_avr + UdP_avr) / 2.0f ) + rSet.getSettings().shift_Ud;
   Ud_avr_V = ((UdN_avr + UdP_avr + 2.0f * rSet.getSettings().shift_Ud) / 2.0f) * rSet.getSettings().k_Ud;
@@ -275,16 +275,9 @@ void CPROCESS::calc_avr(EPhases ph) {
       snprintf(RES, sizeof(RES), "   FAULT P5     ");    
     }else if(UStatus.sFaultN5) {
       snprintf(RES, sizeof(RES), "   FAULT N5     ");   
+    }else if(UStatus.sFaultS40) {
+      snprintf(RES, sizeof(RES), "   FAULT P50    ");   
     }
-    
-    /*
-
-    Расшифровать аварии
-
-    */
-    
-    
-
   } 
   
 }

@@ -64,15 +64,31 @@ bool CTerminalUartDriver::sendBuffer(const unsigned char* data, unsigned char le
   // Включаем прерывание, если остались данные
   if (!txbuf.empty()) {
     UART->IER |= THRE_I;
-  }
+  } 
   return true;
 }
 
 // Опрос RX
 bool CTerminalUartDriver::poll_rx(unsigned char& byte) {
+  
+  unsigned int dTrsTx = SysT::TC() - prev_TC0_Tx;
+  unsigned int dTrsRx = SysT::TC() - prev_TC0_Rx;
+  
+  if (bLampTx && (dTrsTx > LAMP_PERIOD_TICKS)) {
+    bLampTx = false;
+    LampPultTxOff();
+  }
+  if (bLampRx && (dTrsRx > LAMP_PERIOD_TICKS)) {
+    bLampRx = false;
+    LampPultRxOff();
+  }
+  
   if (UART->LSR & RDR_F)  // RDR flag. Есть данные для чтения
   {
     byte = UART->RBR;
+    LampPultRxOn();
+    bLampRx = true;
+    prev_TC0_Rx = SysT::TC();
     return true;
   }
   return false;
@@ -83,7 +99,7 @@ void CTerminalUartDriver::irq_handler() {
   unsigned int IRQ = UART->IIR;
   if ((IRQ & INTID_I) == INTID_I)  // THRE interrupt
   {
-    unsigned char FIFO_SPACE = UART_FIFO_SIZE;
+    unsigned char FIFO_SPACE = UART_FIFO_SIZE;    
     while (FIFO_SPACE--) {
       unsigned char byte;
       if (txbuf.pop(byte)) {
@@ -93,5 +109,8 @@ void CTerminalUartDriver::irq_handler() {
         break;
       }
     }
+    LampPultTxOn();
+    bLampTx = true; 
+    prev_TC0_Tx = SysT::TC();
   }
 }

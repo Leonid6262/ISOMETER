@@ -97,9 +97,9 @@ public:
           
           Counter_Err_RAM = (Counter_Err_RAM + 1) & 0x1FFFF;
           if (Counter_Err_RAM < 0x10000) {
-            P::G0->CLR = 1UL << bg::B_ULED;
+            P::G1->CLR = 1UL << bg::B_ULED;
           } else {
-            P::G0->SET = 1UL << bg::B_ULED;
+            P::G1->SET = 1UL << bg::B_ULED;
           }
         }
       }

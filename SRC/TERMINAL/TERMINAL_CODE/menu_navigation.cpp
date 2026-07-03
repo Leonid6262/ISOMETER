@@ -27,11 +27,13 @@ CMenuNavigation::CMenuNavigation(CTerminalUartDriver& uartDrv, CEEPSettings& rSe
   d.show_delta = false;
   d.delta_timer_ms = 0;
   
+  Pause_us(3000000);
+  
   // Создание дерева узлов меню
   MENU = MENU_Factory(rProcess, CEEPSettings::getInstance(), rProcess.rRTC);  
   currentList = &MENU;
   render_menu();
-
+  
   handleEnter(); // Переход в Индикацию
   first_render();
 }

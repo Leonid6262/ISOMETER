@@ -200,9 +200,11 @@ void CPROCESS::calc_avr(EPhases ph) {
     R2 = (((rSet.getSettings().k_ch2 * ((2 * u) + (dUd / 2.0f))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
     
     float r;
-    if((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)){ r = R1; N_ch  = '1'; }  
+    if(((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)) || ((ILeak2N_avr < d_min) || (ILeak2P_avr < d_min))) { r = R1; N_ch  = '1'; }  
     else { r = R2; N_ch = '2'; }
     
+    if((r < 0) && (N_ch  == '1')) r = 0; // Очень низкое сопротивление
+      
     char r_buf[10];
     if((r > Rmax) || (r < 0)) { 
       R = Rmax;

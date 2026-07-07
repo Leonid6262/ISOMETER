@@ -47,7 +47,7 @@ public:
   static inline void RelReadyOn()     { P::G1->SET = (1UL << bg::B_RelReady); }
   static inline void RelReadyOff()    { P::G1->CLR = (1UL << bg::B_RelReady); }
   
-  static constexpr unsigned short Rmax         = 2500;
+  static constexpr unsigned short Rmax         = 9999;
 
   unsigned int prev_TC0_Phase;
   
@@ -123,6 +123,7 @@ private:
   static constexpr unsigned short gis_percent  = 15;      // 15% - гитерезис 2-го диапазона (от range_1 и выше) 
 
   static constexpr unsigned short d_max        = 4070;    // дискрет считающихся насыщеним
+  static constexpr unsigned short d_min        = 25;      // дискрет считающихся насыщеним
   
   //С учётом Uop=3V и делителя 10к/10к -> (3V * 2) / 4095 = 0.0014652015
   static constexpr float K_P5 = 0.0014652015f;  

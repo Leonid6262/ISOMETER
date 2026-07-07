@@ -54,9 +54,10 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
       o("Date-Time",     {}, rProcess.getPointerDT(),  "",     1, p0, vt::text,   nm::In1V),}),
   o(Mn.SETTINGS[l],{
       o(Mn.PARAMS[l],{
-          o("Alarm1",  {}, &set.RAlarm1,   "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
-          o("Alarm2",  {}, &set.RAlarm2,   "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
-          o("20mA->R", {}, &set.Rmax_20mA, "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 2000 ),}),
+          o("Alarm1",  {}, &set.RAlarm1,     "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
+          o("Alarm2",  {}, &set.RAlarm2,     "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
+          o("20mA->R", {}, &set.Rmax_20mA,   "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 2000 ),
+          o("Ramp 20mA", {}, &set.Ramp_20mA, "b",    1, p0, vt::vbool,  nm::Ed1V, 0, 1 ),}),
       o(Mn.SETTING_UP[l],{
           o(      "RTadd",{},&set.RTadd,                    "kOhm",   1, p4, vt::vfloat, nm::Ed1V, 0, 200000 ),
           o::Dual("Ud",      rProcess.getPointerUd_V(),     "V",      1, p2, vt::vfloat,

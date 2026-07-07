@@ -29,6 +29,7 @@ class CEEPSettings {
     float RTadd;                                        // 8 RLadd
     bool comp_dUd;                                      // 9 Компенсация dUd On/Off
     unsigned short Rmax_20mA;                           // 10 Max R для индикации по 4...20mA
+    bool Ramp_20mA;                                     // 11 Наклон. false - 0-0, max-max. true - 0-max, max-0
     unsigned char  Address;                             // 11 Адрес Slave
     unsigned short Baud_rate;                           // 12 Скорость
     unsigned short ip3;                                 // 13 Третья  группа
@@ -50,6 +51,7 @@ class CEEPSettings {
     .RTadd = 100,
     .comp_dUd = true,
     .Rmax_20mA = 500,
+    .Ramp_20mA = false,
     .Address = 3,
     .Baud_rate = 5,
     .ip3 = 192,

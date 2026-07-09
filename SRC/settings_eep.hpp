@@ -22,20 +22,23 @@ class CEEPSettings {
     unsigned short Language;                            // 1 Номер языка
     float k_ch1;                                        // 2 Коэффициент ch1
     float k_ch2;                                        // 3 Коэффициент ch2
-    float k_Ud;                                         // 4 Коэффициент ch Ud
-    signed short shift_Ud;                              // 5 Коэффициент ch Ud
-    unsigned short RAlarm1;                             // 6 RAlarm1
-    unsigned short RAlarm2;                             // 7 RAlarm2
-    float RTadd;                                        // 8 RLadd
-    bool comp_dUd;                                      // 9 Компенсация dUd On/Off
-    unsigned short Rmax_20mA;                           // 10 Max R для индикации по 4...20mA
-    bool Ramp_20mA;                                     // 11 Наклон. false - 0-0, max-max. true - 0-max, max-0
-    unsigned char  Address;                             // 11 Адрес Slave
-    unsigned short Baud_rate;                           // 12 Скорость
-    unsigned short ip3;                                 // 13 Третья  группа
-    unsigned short ip2;                                 // 14 Вторая  группа
-    unsigned short ip1;                                 // 15 Первая  группа
-    unsigned short ip0;                                 // 16 Нулевая группа
+    float k_cor_ch2;                                    // 4 Коэффициент коррекции ch2
+    float k_Ud;                                         // 5 Коэффициент ch Ud
+    signed short shift_Ud;                              // 6 Смещение Ud
+    signed short shift_ch1;                             // 7 Смещение ch1
+    signed short shift_ch2;                             // 8 Смещение ch2
+    unsigned short RAlarm1;                             // 9 RAlarm1
+    unsigned short RAlarm2;                             // 10 RAlarm2
+    float RTadd;                                        // 11 RLadd
+    bool comp_dUd;                                      // 12 Компенсация dUd On/Off
+    unsigned short Rmax_20mA;                           // 13 Max R для индикации по 4...20mA
+    bool Ramp_20mA;                                     // 14 Наклон. false - 0-0, max-max. true - 0-max, max-0
+    unsigned char  Address;                             // 15 Адрес Slave
+    unsigned short Baud_rate;                           // 16 Скорость
+    unsigned short ip3;                                 // 18 Третья  группа
+    unsigned short ip2;                                 // 19 Вторая  группа
+    unsigned short ip1;                                 // 20 Первая  группа
+    unsigned short ip0;                                 // 21 Нулевая группа
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -44,8 +47,11 @@ class CEEPSettings {
     .Language = 1,
     .k_ch1 =   0.7,
     .k_ch2 =   4.8,
+    .k_cor_ch2 = 0.15,
     .k_Ud  =   0.055,
     .shift_Ud = 0,
+    .shift_ch1 = 0,
+    .shift_ch2 = 0,
     .RAlarm1 = 40,
     .RAlarm2 = 20,
     .RTadd = 100,

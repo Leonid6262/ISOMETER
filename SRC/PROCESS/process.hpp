@@ -31,6 +31,9 @@ public:
   inline float*          getPointerP5()      { return &P5_avr_V;        }
   inline float*          getPointerN5()      { return &N5_avr_V;        }
   inline bool*           getPointerC40()     { return &CP40V_PN;        }
+  inline signed short*   getPointerCh1_4_shift()    { return &ch1_4_shift; }
+  inline signed short*   getPointerCh2_4_shift()    { return &ch2_4_shift; }
+  
 
   static inline void UserLedOn()  { P::G1->CLR  = (1UL << bg::B_ULED); } 
   static inline void UserLedOff() { P::G1->SET  = (1UL << bg::B_ULED); }
@@ -167,7 +170,12 @@ private:
   
   float dIL1;   
   float dIL2;
+  float pIL1;   
+  float pIL2;
   float dUd;
+  float pUd;
+  float Ucor1;
+  float Ucor2;
   
   float UdP_avr;
   float UdN_avr;
@@ -177,5 +185,8 @@ private:
   float ILeak2N_avr;
   float P5V_avr; 
   float N5V_avr;
+  
+  signed short ch1_4_shift;
+  signed short ch2_4_shift;
   
 };

@@ -161,6 +161,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     break;
   }
   
+  
   P5_avr_V = K_P5 * P5V_avr;
   N5_avr_V = (K_N5 * N5V_avr) - (3 * P5_avr_V);
   
@@ -181,49 +182,86 @@ void CPROCESS::calc_avr(EPhases ph) {
     bsWork(State::ON);
     bsFault(State::OFF);
   }
-
+  
   
   Ud_avr_d = lroundf((UdN_avr + UdP_avr) / 2.0f ) + rSet.getSettings().shift_Ud;
   Ud_avr_V = ((UdN_avr + UdP_avr + 2.0f * rSet.getSettings().shift_Ud) / 2.0f) * rSet.getSettings().k_Ud;
   
   dIL1 = ILeak1N_avr - ILeak1P_avr;    
-  dIL2 = ILeak2N_avr - ILeak2P_avr;
+  dIL2 = ILeak2N_avr - ILeak2P_avr; 
+  pIL1 = ILeak1N_avr + ILeak1P_avr - 4095 + rSet.getSettings().shift_ch1;    
+  pIL2 = ILeak2N_avr + ILeak2P_avr - 4095 + rSet.getSettings().shift_ch2;
   
-  if(abs(round(UdN_avr - UdP_avr)) > 2) dUd = 1000.0f * (UdN_avr - UdP_avr) * rSet.getSettings().k_Ud;
-  else dUd = 0; 
- 
-  if(!rSet.getSettings().comp_dUd) dUd = 0;
+  ch1_4_shift = static_cast<signed short>(round(pIL1 / 2.0f)); 
+  ch2_4_shift = static_cast<signed short>(round(pIL2 / 2.0f));  
+  
+  dUd = UdN_avr - UdP_avr;
+  pUd = UdN_avr + UdP_avr;
+  
+  Ucor1 = 1 - ((pIL1 * dUd) / ((pIL1 * dUd) - (dIL1 * pUd)));
+  Ucor2 = 1 - ((pIL2 * dUd) / ((pIL2 * dUd) - (dIL2 * pUd))); 
+  
+  if(!rSet.getSettings().comp_dUd)  { Ucor1 = 1; Ucor2 = 1; }
+  
+  bool top_ch2 = false;
+  if(((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)) || ((ILeak2N_avr < d_min) || (ILeak2P_avr < d_min))) { top_ch2 = true; } 
   
   if(UStatus.sWork) {
-    
-    R1 = (((rSet.getSettings().k_ch1 * ((2 * u) + (dUd / 2.0f))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
-    R2 = (((rSet.getSettings().k_ch2 * ((2 * u) + (dUd / 2.0f))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
-    
     float r;
-    if(((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)) || ((ILeak2N_avr < d_min) || (ILeak2P_avr < d_min))) { r = R1; N_ch  = '1'; }  
-    else { r = R2; N_ch = '2'; }
+    R1 = (((rSet.getSettings().k_ch1 * ((2 * u * (Ucor1)))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
+    R2 = (((rSet.getSettings().k_ch2 * ((2 * u * (Ucor2)))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
     
-    if((r < 0) && (N_ch  == '1')) r = 0; // Очень низкое сопротивление
-      
+    if(R2 > 1000){
+      float dIL2_cor = dIL2 * ( 1.0f / (1.0f + ( 1.0f / (rSet.getSettings().k_cor_ch2 * dIL2))));
+      R2 = (((rSet.getSettings().k_ch2 * ((2 * u * (Ucor2)))) / dIL2_cor) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
+    }
+    
+    
+    if(R1<0 && R2>0 && top_ch2 ) 
+    {
+      r=0;
+    }
+    else if(R1<0 || R2<0 && !top_ch2)
+    {
+      r=Rmax;
+    } 
+    else if(R1>0 && R2>0)
+    {
+      if(top_ch2) { r = R1; N_ch  = '1'; }  
+      else { r = R2; N_ch = '2'; }
+    }
+    if(abs(r)<1.0f) {
+      r=0;
+    }
+
     char r_buf[10];
-    if((r > Rmax) || (r < 0)) { 
+    if((r > Rmax)) { 
       R = Rmax;
       bsMoreMax(State::ON);
       bsNormRange(State::OFF);
       snprintf(r_buf, sizeof(r_buf), "R>%uk", Rmax);
       SaveEvent(CEVENT_LOG::EEvent::MoreMax);
-    } else if((ILeak1N_avr >= d_max) || (ILeak1P_avr >= d_max)) { 
-      R = 0;
-      bsLessMin(State::ON);
-      bsNormRange(State::OFF);
-      snprintf(r_buf, sizeof(r_buf), "R<Rmin");
-      SaveEvent(CEVENT_LOG::EEvent::LessMin);
     } else {  
       R = round(r);
       bsMoreMax(State::OFF);
       bsLessMin(State::OFF);
       bsNormRange(State::ON);
-      snprintf(r_buf, sizeof(r_buf), "R=%uk", R);     
+      
+      if(R == 0) {
+        if(Ud_avr_V > 10){
+          if(pIL1 > 0){
+            snprintf(r_buf, sizeof(r_buf), "S/C -L");
+          }else if(pIL1 < 0){
+            snprintf(r_buf, sizeof(r_buf), "S/C +L");
+          }else if(pIL1 == 0){
+            snprintf(r_buf, sizeof(r_buf), "SHORT");
+          }
+        }else{
+          snprintf(r_buf, sizeof(r_buf), "SHORT");
+        }        
+      }else {
+        snprintf(r_buf, sizeof(r_buf), "R=%uk", R);
+      } 
       SaveEvent(CEVENT_LOG::EEvent::NormRange);
     }
     
@@ -299,7 +337,7 @@ void CPROCESS::conv_adc() {
     static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2),
     static_cast<unsigned char>(CADC::EADC_NameCh::P5V),
     static_cast<unsigned char>(CADC::EADC_NameCh::N5V)
-    
+      
   });  
 }
 

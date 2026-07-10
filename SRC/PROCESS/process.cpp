@@ -45,7 +45,13 @@ void CPROCESS::step() {
   snprintf(date_time, sizeof(date_time), "%02u.%02u.%02u %02u:%02u", now.day, now.month, now.year, now.hour, now.minute);   
   
   update_modbus_data(); // Обновление данных для MoBus (F03, F04), запись по F06
-  rCOUT_4_20.update(static_cast<unsigned short>(R + 0.5f));  // Обновление 4...20мА
+  
+  // Обновление 4...20мА
+  if(test_4_20){
+    rCOUT_4_20.update(R_Test);  
+  }else{
+    rCOUT_4_20.update(static_cast<unsigned short>(R + 0.5f));
+  }
   
 }
 
@@ -77,9 +83,11 @@ void CPROCESS::conv(EPhases ph) {
     ILeak1[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1));
     Ud[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
     ILeak2[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2));
-    P5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::P5V));
-    N5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::N5V));
-    
+    if(pause_counter < N_AVR_5V){
+      P5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::P5V));
+      N5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::N5V));
+    }
+       
     if(UStatus.sFault) { LampAlarm1On(); LampAlarm2On(); }
     if(++pause_counter > AVR_NUMBER - 1) {
       pause_counter = 0;
@@ -100,8 +108,10 @@ void CPROCESS::conv(EPhases ph) {
     ILeak1[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)); 
     Ud[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
     ILeak2[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2));
-    P5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::P5V));
-    N5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::N5V));
+    if(pause_counter < N_AVR_5V){
+      P5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::P5V));
+      N5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::N5V));
+    }
     
     if(UStatus.sFault) { LampAlarm1On(); LampAlarm2On(); }
     if(++pause_counter > AVR_NUMBER - 1) {
@@ -132,14 +142,16 @@ void CPROCESS::calc_avr(EPhases ph) {
       ud += Ud[n];
       ileak1 += ILeak1[n];
       ileak2 += ILeak2[n];
+    }
+    for(unsigned short n = 0; n < N_AVR_5V; n++) {
       p5v += P5V[n];
       n5v += N5V[n];
     }
     UdP_avr = static_cast<float>(ud) / N_AVR;
     ILeak1P_avr = static_cast<float>(ileak1) / N_AVR;
     ILeak2P_avr = static_cast<float>(ileak2) / N_AVR;
-    P5V_avr = static_cast<float>(p5v) / N_AVR;
-    N5V_avr = static_cast<float>(n5v) / N_AVR;
+    P5V_avr = static_cast<float>(p5v) / N_AVR_5V;
+    N5V_avr = static_cast<float>(n5v) / N_AVR_5V;
     break; 
   case EPhases::MeasN:
     polarity = 0xCF; //'П';
@@ -147,14 +159,16 @@ void CPROCESS::calc_avr(EPhases ph) {
       ud += Ud[n];
       ileak1 += ILeak1[n];
       ileak2 += ILeak2[n];
+    }
+    for(unsigned short n = 0; n < N_AVR_5V; n++) {
       p5v += P5V[n];
       n5v += N5V[n];
     }
     UdN_avr = static_cast<float>(ud) / N_AVR;
     ILeak1N_avr = static_cast<float>(ileak1) / N_AVR;
     ILeak2N_avr = static_cast<float>(ileak2) / N_AVR;
-    P5V_avr = static_cast<float>(p5v) / N_AVR;
-    N5V_avr = static_cast<float>(n5v) / N_AVR;
+    P5V_avr = static_cast<float>(p5v) / N_AVR_5V;
+    N5V_avr = static_cast<float>(n5v) / N_AVR_5V; 
     break; 
   case EPhases::PhaseP:
   case EPhases::PhaseN:
@@ -182,8 +196,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     bsWork(State::ON);
     bsFault(State::OFF);
   }
-  
-  
+   
   Ud_avr_d = lroundf((UdN_avr + UdP_avr) / 2.0f ) + rSet.getSettings().shift_Ud;
   Ud_avr_V = ((UdN_avr + UdP_avr + 2.0f * rSet.getSettings().shift_Ud) / 2.0f) * rSet.getSettings().k_Ud;
   
@@ -198,8 +211,11 @@ void CPROCESS::calc_avr(EPhases ph) {
   dUd = UdN_avr - UdP_avr;
   pUd = UdN_avr + UdP_avr;
   
-  Ucor1 = 1 - ((pIL1 * dUd) / ((pIL1 * dUd) - (dIL1 * pUd)));
-  Ucor2 = 1 - ((pIL2 * dUd) / ((pIL2 * dUd) - (dIL2 * pUd))); 
+  float ucor1 = 1 - ((pIL1 * dUd) / ((pIL1 * dUd) - (dIL1 * pUd)));
+  float ucor2 = 1 - ((pIL2 * dUd) / ((pIL2 * dUd) - (dIL2 * pUd)));
+  
+  if (isnan(ucor1)) { Ucor1 = 1.0f; } else { Ucor1 = ucor1; } 
+  if (isnan(ucor2)) { Ucor2 = 1.0f; } else { Ucor2 = ucor2; }
   
   if(!rSet.getSettings().comp_dUd)  { Ucor1 = 1; Ucor2 = 1; }
   

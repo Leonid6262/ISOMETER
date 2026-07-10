@@ -75,6 +75,9 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
           o::Dual("ch2",     rProcess.getPointerCh2_4_shift(), "d",      1, p0, vt::sshort,
                   "shift",   &set.shift_ch2,                   "d",      1, p0, vt::sshort, nm::IE2V, -100, 100   ),
           o("comp dUd",{},   &set.comp_dUd,                    "b",      1, p0, vt::vbool,  nm::Ed1V, 0, 1   ),}),
+      o("TEST 4...20",{
+          o("Test",    {}, rProcess.getPointerTest_4_20(),   "b",    1, p0, vt::vbool,  nm::Ed1V, 0, 1  ),
+          o("R test",  {}, rProcess.getPointerRTest_4_20(),  "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0,   10000  ),}), 
       o("RS-485",{
           o("Slave address",    {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 247  ),
           o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}), 

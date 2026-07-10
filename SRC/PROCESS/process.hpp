@@ -31,9 +31,10 @@ public:
   inline float*          getPointerP5()      { return &P5_avr_V;        }
   inline float*          getPointerN5()      { return &N5_avr_V;        }
   inline bool*           getPointerC40()     { return &CP40V_PN;        }
+  inline bool*           getPointerTest_4_20()      { return &test_4_20;   }
   inline signed short*   getPointerCh1_4_shift()    { return &ch1_4_shift; }
   inline signed short*   getPointerCh2_4_shift()    { return &ch2_4_shift; }
-  
+  inline unsigned short* getPointerRTest_4_20()     { return &R_Test; }
 
   static inline void UserLedOn()  { P::G1->CLR  = (1UL << bg::B_ULED); } 
   static inline void UserLedOff() { P::G1->SET  = (1UL << bg::B_ULED); }
@@ -90,6 +91,7 @@ public:
   void step();
   
   unsigned short R;
+  unsigned short R_Test = 0;
   float R1;
   float R2;
   signed short Ud_avr_d;
@@ -117,9 +119,10 @@ private:
   
   static constexpr unsigned short MEAS_PAUSED  = 7000;    // 0.7ms - пауза между выборками
   static constexpr unsigned short WAIT_NUMBER  = 5000;    // Время заряда - 0.7ms * 5000 = 3.5s
-  static constexpr unsigned short AVR_NUMBER   = 0x200;   // Количество выборок. 0.7ms * 512 примерно 358ms
+  static constexpr unsigned short AVR_NUMBER   = 0x200;     // Количество выборок. 0.7ms * 520 примерно 364ms
   static constexpr unsigned short N_AVR        = 500;     // Кадр усреднения
-  static constexpr unsigned short sh_avr       = 5;       // Сдвиг кадра
+  static constexpr unsigned short N_AVR_5V     = 100;     // Кадр усреднения
+  static constexpr unsigned short sh_avr       = 5;      // Сдвиг кадра
   
   static constexpr unsigned short gis_const    = 2;       // 2kOhm - гитерезис 1-го диапазона 
   static constexpr unsigned short range        = 50;      // 50kOhm - 1-й диапазон от 0 до range
@@ -137,11 +140,11 @@ private:
   static constexpr float RT     = 51.0f + 5.1f + 5.1f;    // RT [kOhm]
   static constexpr float Rs     = 1.0f;                   // R шунта [kOhm]
 
-  static inline signed short Ud[AVR_NUMBER];
-  static inline signed short ILeak1[AVR_NUMBER]; 
-  static inline signed short ILeak2[AVR_NUMBER];
-  static inline signed short P5V[AVR_NUMBER]; 
-  static inline signed short N5V[AVR_NUMBER];
+  inline static signed short Ud[AVR_NUMBER];
+  inline static signed short ILeak1[AVR_NUMBER]; 
+  inline static signed short ILeak2[AVR_NUMBER];
+  inline static signed short P5V[N_AVR_5V]; 
+  inline static signed short N5V[N_AVR_5V];
   
   unsigned short pause_counter;
   unsigned short wait_number;
@@ -151,6 +154,7 @@ private:
   char N_ch;
   
   bool CP40V_PN = true;
+  bool test_4_20 = false;
    
   enum class EPhases {
     PhaseP,

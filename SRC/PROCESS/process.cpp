@@ -89,7 +89,7 @@ void CPROCESS::conv(EPhases ph) {
     }
        
     if(UStatus.sFault) { LampAlarm1On(); LampAlarm2On(); }
-    if(++pause_counter > AVR_NUMBER - 1) {
+    if(++pause_counter > N_AVR - 1) {
       pause_counter = 0;
       CP40V_PN = get_С_P40V();
       Positive_phase();
@@ -114,7 +114,7 @@ void CPROCESS::conv(EPhases ph) {
     }
     
     if(UStatus.sFault) { LampAlarm1On(); LampAlarm2On(); }
-    if(++pause_counter > AVR_NUMBER - 1) {
+    if(++pause_counter > N_AVR - 1) {
       pause_counter = 0;
       CP40V_PN = get_С_P40V();
       Negative_phase();    
@@ -138,7 +138,7 @@ void CPROCESS::calc_avr(EPhases ph) {
   switch (ph) {
   case EPhases::MeasP:
     polarity = 'U';
-    for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
+    for(unsigned short n = 0; n < N_AVR; n++) {
       ud += Ud[n];
       ileak1 += ILeak1[n];
       ileak2 += ILeak2[n];
@@ -155,7 +155,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     break; 
   case EPhases::MeasN:
     polarity = 0xCF; //'П';
-    for(unsigned short n = sh_avr; n < (N_AVR + sh_avr); n++) {
+    for(unsigned short n = 0; n < N_AVR; n++) {
       ud += Ud[n];
       ileak1 += ILeak1[n];
       ileak2 += ILeak2[n];

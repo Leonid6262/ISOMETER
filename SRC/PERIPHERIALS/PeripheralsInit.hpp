@@ -51,7 +51,10 @@ public:
         (1UL << bg::B_TP)               | 
         (1UL << bg::B_TN)               |
         (1UL << bg::B_LampPult1)        |
-        (1UL << bg::B_LampPult2);
+        (1UL << bg::B_LampPult2)        |
+        (1UL << bg::B_RelReady)         |
+        (1UL << bg::B_RelAlarm1)        | 
+        (1UL << bg::B_RelAlarm2);
     P::G2->CLR = 0xFFFFFFFF;
     P::G3->CLR = 0xFFFFFFFF;
     P::G4->CLR = 0xFFFFFFFF;
@@ -80,7 +83,6 @@ public:
   
   
   void powerON() {
-    //P::SC->PCONP |= CLKPWR_PCONP_PCPWM1;      
     P::SC->PCONP |= CLKPWR_PCONP_PCTIM0;      
     P::SC->PCONP |= CLKPWR_PCONP_PCUART0;  
     P::SC->PCONP |= CLKPWR_PCONP_PCUART2;        

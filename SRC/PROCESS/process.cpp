@@ -323,10 +323,8 @@ void CPROCESS::start_test() {
   CPROCESS::LampAlarm1Off();
   
   CPROCESS::LampAlarm2On(); 
-  RelReadyOn();
   Pause_us(500000);
   CPROCESS::LampAlarm2Off();
-  RelReadyOff();
   
   Pause_us(500000);
   RelReadyOn();

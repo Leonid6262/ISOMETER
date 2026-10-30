@@ -24,10 +24,10 @@ private:
 
     // Вспомогательный метод для динамического обновления IP из уставок
     void updateCurrentIP() {
-        My_IP[0] = rSet.getSettings().ip3;
-        My_IP[1] = rSet.getSettings().ip2;
-        My_IP[2] = rSet.getSettings().ip1;
-        My_IP[3] = rSet.getSettings().ip0;
+//        My_IP[0] = rSet.getSettings().ip3;
+//        My_IP[1] = rSet.getSettings().ip2;
+//        My_IP[2] = rSet.getSettings().ip1;
+//        My_IP[3] = rSet.getSettings().ip0;
     }
     
     // Эфирные типы (EtherType)

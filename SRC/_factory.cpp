@@ -32,10 +32,10 @@ extern "C" void UART2_IRQHandler(void) { CMBUartDriver::getInstance().irq_handle
 CPROCESS& CFactory::create_Process() { 
   static CADC adc(CSET_SPI::config(P::SPI1, 3000000, 16), ESET::getInstance());
   static CRTC rt_clock;  
-  static CDAC_PWM dac_pwm(P::PWM_DAC);
+  //static CDAC_PWM dac_pwm(P::PWM_DAC);
   static CEVENT_LOG event_log; 
-  static COUT_4_20 out_4_20(dac_pwm, CDAC_PWM::DAC_PWM_MAX_VAL, ESET::getInstance());  // Out 4...20mA   
-  static CPROCESS process(adc, ESET::getInstance(), CModbusDataProxy::getInstance(), out_4_20, rt_clock, event_log);
+  //static COUT_4_20 out_4_20(dac_pwm, CDAC_PWM::DAC_PWM_MAX_VAL, ESET::getInstance());  // Out 4...20mA   
+  static CPROCESS process(adc, ESET::getInstance(), CModbusDataProxy::getInstance(), /*out_4_20,*/ rt_clock, event_log); 
   event_log.get_pProcess(&process);
   return process; 
 }
@@ -55,6 +55,7 @@ CTerminalManager& CFactory::createTM(CPROCESS& rProcess) {
 }
 extern "C" void UART0_IRQHandler(void) { CTerminalUartDriver::getInstance().irq_handler(); }  // Вызов обработчика UART-0
 
+/*
 CUDP_Server CFactory::create_UDP_Server() {
   CEMAC emac;
   emac.initEMAC();
@@ -71,6 +72,7 @@ CUDP_Server CFactory::create_UDP_Server() {
   udp_server.setModbusSlave(&mb_slave);
   return udp_server;
 }
+*/
 
 // Контроль загрузки. При ошибке КС требуется зпись дефолтных уставок 
 void CFactory::control_set(CTerminalManager& rTM) { 

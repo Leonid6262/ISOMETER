@@ -5,7 +5,7 @@
 #include "adc.hpp"
 #include "mb_rtu_slave.hpp" 
 #include "mbDataProxy.hpp"
-#include "out_4_20mA.hpp"
+//#include "out_4_20mA.hpp"
 #include "pause_us.hpp"
 #include "rtc.hpp"
 #include "PeripheralsInit.hpp"

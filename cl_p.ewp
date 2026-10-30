@@ -2141,35 +2141,11 @@
             <file>
                 <name>$PROJ_DIR$\SRC\ANALOG\adc.cpp</name>
             </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\ANALOG\dac.cpp</name>
-            </file>
-        </group>
-        <group>
-            <name>ENET</name>
-            <file>
-                <name>$PROJ_DIR$\SRC\ENET\emac.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\ENET\enet_drv.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\ENET\net_structs.hpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\ENET\udp_server.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\ENET\udp_server.hpp</name>
-            </file>
         </group>
         <group>
             <name>MB_SLAVE</name>
             <file>
                 <name>$PROJ_DIR$\SRC\MB_SLAVE\mb_rtu_slave.cpp</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\SRC\MB_SLAVE\mb_udp_slave.cpp</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\SRC\MB_SLAVE\mbDataProxy.hpp</name>
@@ -2255,9 +2231,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\IntPriority.hpp</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\SRC\out_4_20mA.cpp</name>
         </file>
         <file>
             <name>$PROJ_DIR$\SRC\pause_us.hpp</name>

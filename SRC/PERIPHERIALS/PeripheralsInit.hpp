@@ -90,8 +90,6 @@ public:
   
   void initIOCON() {
     
-    //P::IOCON->P1_24  = bf::IOCON_PORT_PWM;                  // P1_24 -> PWM1:5 PWM_DAC1
-    
     P::IOCON->P1_31 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SCK1
     P::IOCON->P0_14 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // SSEL1
     P::IOCON->P0_12 = bf::D_MODE_PULLUP | bf::IOCON_SPI1;   // MISO1
@@ -103,18 +101,6 @@ public:
     P::IOCON->P1_19 = bf::IOCON_U2_OE;          // U2_OE
     P::IOCON->P0_10 = bf::IOCON_U2_TXD;         // U2_TXD
     P::IOCON->P0_11 = bf::IOCON_U2_RXD;         // U2_RXD
-    
-    // Настройка RMII пинов
-    //P::IOCON->P1_0 = bEMC::FUNC_ENET;                           // ENET_TXD0
-    //P::IOCON->P1_1 = bEMC::FUNC_ENET;                           // ENET_TXD1
-    //P::IOCON->P1_4 |= bEMC::FUNC_ENET | bEMC::MODE_PULLUP;      // ENET_TX_EN
-    //P::IOCON->P1_8 |= bEMC::FUNC_ENET | bEMC::MODE_PULLUP;      // ENET_CRS_DV
-    //P::IOCON->P1_9 = bEMC::FUNC_ENET;                           // ENET_RXD0
-    //P::IOCON->P1_10 = bEMC::FUNC_ENET;                          // ENET_RXD1
-    //P::IOCON->P1_14 |= bEMC::FUNC_ENET | bEMC::MODE_PULLUP;     // RXER
-    //P::IOCON->P1_15 |= bEMC::FUNC_ENET | bEMC::MODE_PULLUP;     // RXCK
-    //P::IOCON->P1_16 |= bEMC::FUNC_ENET | bEMC::MODE_PULLUP;     // MDC
-    //P::IOCON->P1_17 |= bEMC::FUNC_ENET | bEMC::MODE_PULLUP;     // MDIO
     
   }
   

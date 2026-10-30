@@ -5,7 +5,6 @@
 #include "adc.hpp"
 #include "mb_rtu_slave.hpp" 
 #include "mbDataProxy.hpp"
-//#include "out_4_20mA.hpp"
 #include "pause_us.hpp"
 #include "rtc.hpp"
 #include "PeripheralsInit.hpp"
@@ -14,9 +13,8 @@
 class CPROCESS {
   
 public:  
-  CPROCESS(CADC&, CEEPSettings&, CModbusDataProxy&, /*COUT_4_20&,*/ CRTC&, CEVENT_LOG&);
+  CPROCESS(CADC&, CEEPSettings&, CModbusDataProxy&, CRTC&, CEVENT_LOG&);
   CModbusDataProxy& rModbusData;
-  //COUT_4_20& rCOUT_4_20;
   CEEPSettings& rSet;
   CADC& rAdc;
   CRTC& rRTC;
@@ -24,17 +22,11 @@ public:
   
   inline float*          getPointerR1()      { return &R1;              }
   inline float*          getPointerR2()      { return &R2;              }
-//  inline float*          getPointerUd_V()    { return &Ud_avr_V;        }
-//  inline signed short*   getPointerUd_d()    { return &Ud_avr_d;        }
   inline char*           getPointerDT()      { return date_time;        }
   inline char*           getPointerRES()     { return RES;              }
   inline float*          getPointerP5()      { return &P5_avr_V;        }
   inline float*          getPointerN5()      { return &N5_avr_V;        }
   inline bool*           getPointerC40()     { return &CP40V_PN;        }
-//  inline bool*           getPointerTest_4_20()      { return &test_4_20;   }
-//  inline signed short*   getPointerCh1_4_shift()    { return &ch1_4_shift; }
-//  inline signed short*   getPointerCh2_4_shift()    { return &ch2_4_shift; }
-//  inline unsigned short* getPointerRTest_4_20()     { return &R_Test; }
 
   static inline void UserLedOn()  { P::G1->CLR  = (1UL << bg::B_ULED); } 
   static inline void UserLedOff() { P::G1->SET  = (1UL << bg::B_ULED); }
@@ -94,8 +86,6 @@ public:
   unsigned short R_Test = 0;
   float R1;
   float R2;
-  //signed short Ud_avr_d;
-  //float Ud_avr_V;
   float P5_avr_V;
   float N5_avr_V;
   
@@ -137,7 +127,6 @@ private:
   static constexpr float RT     = 51.0f + 5.1f + 5.1f;    // RT [kOhm]
   static constexpr float Rs     = 1.0f;                   // R шунта [kOhm]
 
-  //inline static signed short Ud[N_AVR];
   inline static signed short ILeak1[N_AVR]; 
   inline static signed short ILeak2[N_AVR];
   inline static signed short P5V[N_AVR_5V]; 
@@ -171,23 +160,13 @@ private:
   
   float dIL1;   
   float dIL2;
-  //float pIL1;   
-  //float pIL2;
-  //float dUd;
-  //float pUd;
-  float Ucor1;
-  float Ucor2;
-  
-  //float UdP_avr;
-  //float UdN_avr;
+
   float ILeak1P_avr;
   float ILeak1N_avr;
   float ILeak2P_avr;
   float ILeak2N_avr;
   float P5V_avr; 
   float N5V_avr;
-  
-  //signed short ch1_4_shift;
-  //signed short ch2_4_shift;
+
   
 };

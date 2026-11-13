@@ -62,8 +62,12 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
                   "k-ch1",   &set.k_ch1,                       "",       1, p3, vt::vfloat, nm::IE2V,   0.1f, 100 ),
           o::Dual("R-ch2",   rProcess.getPointerR2(),          "kOhm",   1, p2, vt::vfloat,
                   "k-ch2",   &set.k_ch2,                        "",      1, p3, vt::vfloat, nm::IE2V,   0.1f, 100 ),
-          o::Dual("R-ch2",   rProcess.getPointerR2(),          "kOhm",   1, p2, vt::vfloat,
-                  "corCh2",  &set.k_cor_ch2,                    "",      1, p3, vt::vfloat, nm::IE2V,   0.01f, 1.0f ),}),
+          o::Dual("R-ch3",   rProcess.getPointerR3(),          "kOhm",   1, p2, vt::vfloat,
+                  "k-ch3",   &set.k_ch3,                        "",      1, p3, vt::vfloat, nm::IE2V,   0.1f, 100 ),
+          
+          //o::Dual("R-ch2",   rProcess.getPointerR2(),          "kOhm",   1, p2, vt::vfloat,
+          //        "corCh2",  &set.k_cor_ch2,                    "",      1, p3, vt::vfloat, nm::IE2V,   0.01f, 1.0f ),
+      }),
       o("RS-485",{
           o("Slave address",    {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 247  ),
           o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}), 

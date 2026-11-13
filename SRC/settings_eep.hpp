@@ -21,14 +21,16 @@ class CEEPSettings {
     unsigned short Language;                            // 1 Номер языка
     float k_ch1;                                        // 2 Коэффициент ch1
     float k_ch2;                                        // 3 Коэффициент ch2
-    float k_cor_ch2;                                    // 4 Коэффициент коррекции ch2
-    unsigned short RAlarm1;                             // 5 RAlarm1
-    unsigned short RAlarm2;                             // 6 RAlarm2
-    float RTadd;                                        // 7 RLadd
-    unsigned short Rmax_20mA;                           // 8 Max R для индикации по 4...20mA
-    bool Ramp_20mA;                                     // 9 Наклон. false - 0-0, max-max. true - 0-max, max-0
-    unsigned char  Address;                             // 10 Адрес Slave
-    unsigned short Baud_rate;                           // 11 Скорость
+    float k_ch3;                                        // 4 Коэффициент ch3
+    float k_cor_ch2;                                    // 5 Коэффициент коррекции ch2
+    float k_cor_ch3;                                    // 6 Коэффициент коррекции ch3
+    unsigned short RAlarm1;                             // 7 RAlarm1
+    unsigned short RAlarm2;                             // 8 RAlarm2
+    float RTadd;                                        // 9 RTadd
+    unsigned short Rmax_20mA;                           // 10 Max R для индикации по 4...20mA
+    bool Ramp_20mA;                                     // 11 Наклон. false - 0-0, max-max. true - 0-max, max-0
+    unsigned char  Address;                             // 12 Адрес Slave
+    unsigned short Baud_rate;                           // 13 Скорость
     // Добавляя новые уставки сюда, не забывайте обновлять defaultSettings ниже!!!
   };
   //  Статические константные уставки по умолчанию (во Flash) ---
@@ -37,7 +39,9 @@ class CEEPSettings {
     .Language = 1,
     .k_ch1 =   0.7,
     .k_ch2 =   4.8,
+    .k_ch3 =   6.0,
     .k_cor_ch2 = 0.15,
+    .k_cor_ch3 = 0.15,
     .RAlarm1 = 40,
     .RAlarm2 = 20,
     .RTadd = 100,

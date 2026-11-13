@@ -22,6 +22,7 @@ public:
   
   inline float*          getPointerR1()      { return &R1;              }
   inline float*          getPointerR2()      { return &R2;              }
+  inline float*          getPointerR3()      { return &R3;              }
   inline char*           getPointerDT()      { return date_time;        }
   inline char*           getPointerRES()     { return RES;              }
   inline float*          getPointerP5()      { return &P5_avr_V;        }
@@ -86,6 +87,7 @@ public:
   unsigned short R_Test = 0;
   float R1;
   float R2;
+  float R3;
   float P5_avr_V;
   float N5_avr_V;
   
@@ -106,9 +108,9 @@ private:
   static constexpr float P5_MIN  =  4.5;    //
   static constexpr float N5_MIN  = -4.5;    //
   
-  static constexpr unsigned short MEAS_PAUSED  = 7000;    // 0.7ms - пауза между выборками
-  static constexpr unsigned short WAIT_NUMBER  = 5000;    // Время заряда - 0.7ms * 5000 = 3.5s
-  static constexpr unsigned short N_AVR        = 512;     // Количество выборок. 0.7ms * 520 примерно 358ms
+  static constexpr unsigned short MEAS_PAUSED  = 8000;    // 0.8ms - пауза между выборками
+  static constexpr unsigned short WAIT_NUMBER  = 5000;    // Время заряда - 0.8ms * 5000 = 4s
+  static constexpr unsigned short N_AVR        = 500;     // Количество выборок. 0.8ms * 500 = 400ms
   static constexpr unsigned short N_AVR_5V     = 100;     // Кадр усреднения P5,N5
   
   static constexpr unsigned short gis_const    = 2;       // 2kOhm - гитерезис 1-го диапазона 
@@ -129,6 +131,7 @@ private:
 
   inline static signed short ILeak1[N_AVR]; 
   inline static signed short ILeak2[N_AVR];
+  inline static signed short ILeak3[N_AVR];
   inline static signed short P5V[N_AVR_5V]; 
   inline static signed short N5V[N_AVR_5V];
   
@@ -160,11 +163,14 @@ private:
   
   float dIL1;   
   float dIL2;
+  float dIL3;
 
   float ILeak1P_avr;
   float ILeak1N_avr;
   float ILeak2P_avr;
   float ILeak2N_avr;
+  float ILeak3P_avr;
+  float ILeak3N_avr;
   float P5V_avr; 
   float N5V_avr;
 

@@ -75,6 +75,7 @@ void CPROCESS::conv(EPhases ph) {
 
     ILeak1[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1));
     ILeak2[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2));
+    ILeak3[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak3));
     if(pause_counter < N_AVR_5V){
       P5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::P5V));
       N5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::N5V));
@@ -99,6 +100,7 @@ void CPROCESS::conv(EPhases ph) {
     
     ILeak1[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)); 
     ILeak2[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2));
+    ILeak3[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak3));
     if(pause_counter < N_AVR_5V){
       P5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::P5V));
       N5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::N5V));
@@ -123,6 +125,7 @@ void CPROCESS::conv(EPhases ph) {
 void CPROCESS::calc_avr(EPhases ph) {
   signed int ileak1 = 0;
   signed int ileak2 = 0;
+  signed int ileak3 = 0;
   signed int p5v = 0;
   signed int n5v = 0;
   switch (ph) {
@@ -131,6 +134,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     for(unsigned short n = 0; n < N_AVR; n++) {
       ileak1 += ILeak1[n];
       ileak2 += ILeak2[n];
+      ileak3 += ILeak3[n];
     }
     for(unsigned short n = 0; n < N_AVR_5V; n++) {
       p5v += P5V[n];
@@ -138,6 +142,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     }   
     ILeak1P_avr = static_cast<float>(ileak1) / N_AVR;
     ILeak2P_avr = static_cast<float>(ileak2) / N_AVR;
+    ILeak3P_avr = static_cast<float>(ileak3) / N_AVR; 
     P5V_avr = static_cast<float>(p5v) / N_AVR_5V;
     N5V_avr = static_cast<float>(n5v) / N_AVR_5V;
     break; 
@@ -146,6 +151,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     for(unsigned short n = 0; n < N_AVR; n++) {     
       ileak1 += ILeak1[n];
       ileak2 += ILeak2[n];
+      ileak3 += ILeak3[n];
     }
     for(unsigned short n = 0; n < N_AVR_5V; n++) {
       p5v += P5V[n];
@@ -153,6 +159,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     }
     ILeak1N_avr = static_cast<float>(ileak1) / N_AVR;
     ILeak2N_avr = static_cast<float>(ileak2) / N_AVR;
+    ILeak3N_avr = static_cast<float>(ileak3) / N_AVR;
     P5V_avr = static_cast<float>(p5v) / N_AVR_5V;
     N5V_avr = static_cast<float>(n5v) / N_AVR_5V; 
     break; 
@@ -171,8 +178,8 @@ void CPROCESS::calc_avr(EPhases ph) {
   if(N5_avr_V > N5_MIN) bsFaultN5(State::ON);
   else bsFaultN5(State::OFF);
   
-  //////////if(!CP40V_PN) bsFaultV40(State::ON);
-  //////////else bsFaultV40(State::OFF);
+  if(!CP40V_PN) bsFaultV40(State::ON);
+  else bsFaultV40(State::OFF);
   
   if(UStatus.sFaultP5 || UStatus.sFaultN5 || UStatus.sFaultS40) {
     bsWork(State::OFF);
@@ -181,42 +188,39 @@ void CPROCESS::calc_avr(EPhases ph) {
   else {
     bsWork(State::ON);
     bsFault(State::OFF);
-  }
-  
-  dIL1 = ILeak1N_avr - ILeak1P_avr;    
-  dIL2 = ILeak2N_avr - ILeak2P_avr; 
-
-  bool top_ch2 = false;
-  if(((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)) || ((ILeak2N_avr < d_min) || (ILeak2P_avr < d_min))) { top_ch2 = true; } 
-  
+  }  
+ 
   if(UStatus.sWork) {
-    float r;
+    
+    dIL1 = (ILeak1N_avr > ILeak1P_avr) ? (ILeak1N_avr - ILeak1P_avr) : 0.01f;
+    dIL2 = (ILeak2N_avr > ILeak2P_avr) ? (ILeak2N_avr - ILeak2P_avr) : 0.01f;
+    dIL3 = (ILeak3N_avr > ILeak3P_avr) ? (ILeak3N_avr - ILeak3P_avr) : 0.01f;
+    
+    bool top_ch1 = false;
+    bool top_ch2 = false;
+    bool top_ch3 = false;
+    
+    if(((ILeak1N_avr > d_max) || (ILeak1P_avr > d_max)) || ((ILeak1N_avr < d_min) || (ILeak1P_avr < d_min))) { top_ch1 = true; }
+    if(((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)) || ((ILeak2N_avr < d_min) || (ILeak2P_avr < d_min))) { top_ch2 = true; }
+    if(((ILeak3N_avr > d_max) || (ILeak3P_avr > d_max)) || ((ILeak3N_avr < d_min) || (ILeak3P_avr < d_min))) { top_ch3 = true; } 
+    
     R1 = (((rSet.getSettings().k_ch1 * ((2 * u ))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
     R2 = (((rSet.getSettings().k_ch2 * ((2 * u ))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
+    R3 = (((rSet.getSettings().k_ch3 * ((2 * u ))) / dIL3) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs); 
+ 
+    // Из за биений на больших токах (при КЗ) R может оказаться немного меньше ((RTadd/2)-Rs) и стать меньше нуля
+    if(R1 < 0) R1 = 0;
+    if(R2 < 0) R2 = 0;
+    if(R3 < 0) R3 = 0;
     
-    if(R2 > 1000){
-      float dIL2_cor = dIL2 * ( 1.0f / (1.0f + ( 1.0f / (rSet.getSettings().k_cor_ch2 * dIL2))));
-      R2 = (((rSet.getSettings().k_ch2 * ((2 * u ))) / dIL2_cor) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
-    }
+    float r;
     
+    if(!top_ch3)        {r = R3; N_ch  = '1';}
+    else if(!top_ch2)   {r = R2; N_ch  = '2';}
+    else if(!top_ch1)   {r = R1; N_ch  = '3';}
+    else                {r = 0;  N_ch  = '-';}
+    if(r < 1.0f) { r = 0; }
     
-    if(R1<0 && R2>0 && top_ch2 ) 
-    {
-      r=0;
-    }
-    else if(R1<0 || R2<0 && !top_ch2)
-    {
-      r=Rmax;
-    } 
-    else if(R1>0 && R2>0)
-    {
-      if(top_ch2) { r = R1; N_ch  = '1'; }  
-      else { r = R2; N_ch = '2'; }
-    }
-    if(abs(r)<1.0f) {
-      r=0;
-    }
-
     char r_buf[10];
     if((r > Rmax)) { 
       R = Rmax;
@@ -307,6 +311,7 @@ void CPROCESS::conv_adc() {
     
     static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1), 
     static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2),
+    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak3),
     static_cast<unsigned char>(CADC::EADC_NameCh::P5V),
     static_cast<unsigned char>(CADC::EADC_NameCh::N5V)
       

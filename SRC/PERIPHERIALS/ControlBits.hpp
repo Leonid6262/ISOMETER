@@ -2,8 +2,7 @@
 
 namespace bg {
   // Биты физических связей GPIO
-  static constexpr unsigned short B_ULED = 28;        // Бит U-LED
-  
+  static constexpr unsigned short B_LampFault = 28;         
   static constexpr unsigned short B_LampReady = 27;
   static constexpr unsigned short B_LampAlarm1 = 25;
   static constexpr unsigned short B_LampAlarm2 = 26;

@@ -7,9 +7,6 @@ class CSET_EMC {
 public:  
   static void initAndCheck() {
     
-    P::G1->DIR |= (1UL << bg::B_ULED);
-    P::G1->CLR  = (1UL << bg::B_ULED);
-        
     constexpr unsigned short* RAM_BEGIN   = reinterpret_cast<unsigned short*>(0x80000000);
     constexpr unsigned short* RAM_END     = reinterpret_cast<unsigned short*>(0x800FFFFF);
     constexpr unsigned short* ADR_TEST_55 = reinterpret_cast<unsigned short*>(0x80055555);
@@ -82,7 +79,7 @@ public:
       if (dat1 != dat2) {
         // Циклический тест, если была ошибка
         adr_ram = 0;
-        P::G0->DIR |= 1U << bg::B_ULED;
+        P::G0->DIR |= 1U << bg::B_LampFault;
         while (true) {
           adr_ram = ADR_TEST_55;
           *adr_ram = 0x5555;
@@ -97,9 +94,9 @@ public:
           
           Counter_Err_RAM = (Counter_Err_RAM + 1) & 0x1FFFF;
           if (Counter_Err_RAM < 0x10000) {
-            P::G1->CLR = 1UL << bg::B_ULED;
+            P::G1->CLR = 1UL << bg::B_LampFault;
           } else {
-            P::G1->SET = 1UL << bg::B_ULED;
+            P::G1->SET = 1UL << bg::B_LampFault;
           }
         }
       }

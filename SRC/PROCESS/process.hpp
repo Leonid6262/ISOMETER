@@ -38,8 +38,8 @@ public:
   inline signed short*   getPointerCh3_4_shift()    { return &ch3_4_shift; }
   inline unsigned short* getPointerRTest_4_20()     { return &R_Test; }
 
-  static inline void UserLedOn()  { P::G1->CLR  = (1UL << bg::B_ULED); } 
-  static inline void UserLedOff() { P::G1->SET  = (1UL << bg::B_ULED); }
+  static inline void FaultLedOn()  { P::G1->CLR  = (1UL << bg::B_LampFault); } 
+  static inline void FaultLedOff() { P::G1->SET  = (1UL << bg::B_LampFault); }
   
   static inline bool get_С_P40V()    { return !(((P::G0->PIN) & (1UL << bg::C_P40)) != 0); }
   
@@ -121,9 +121,9 @@ private:
   static constexpr float P5_MIN  =  4.5;    //
   static constexpr float N5_MIN  = -4.5;    //
   
-  static constexpr unsigned short MEAS_PAUSED  = 7000;    // 0.7ms - пауза между выборками
-  static constexpr unsigned short WAIT_NUMBER  = 5000;    // Время заряда - 0.7ms * 5000 = 3.5s
-  static constexpr unsigned short N_AVR        = 512;     // Количество выборок. 0.7ms * 520 примерно 358ms
+  static constexpr unsigned short MEAS_PAUSED  = 8000;    // 0.8ms - пауза между выборками
+  static constexpr unsigned short WAIT_NUMBER  = 5000;    // Время заряда - 0.8ms * 5000 = 4s
+  static constexpr unsigned short N_AVR        = 500;     // Количество выборок. 0.8ms * 500 = 400ms
   static constexpr unsigned short N_AVR_5V     = 100;     // Кадр усреднения P5,N5
   
   static constexpr unsigned short gis_const    = 2;       // 2kOhm - гитерезис 1-го диапазона 
@@ -174,11 +174,7 @@ private:
   void calc_avr(EPhases);
   void update_modbus_data();
   void SaveEvent(CEVENT_LOG::EEvent);
-  
-  float dIL1;   
-  float dIL2;
-  float dIL3;
-  
+    
   float UdP_avr;
   float UdN_avr;
   

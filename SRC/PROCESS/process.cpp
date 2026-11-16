@@ -181,8 +181,7 @@ void CPROCESS::calc_avr(EPhases ph) {
   case EPhases::PhaseN:
     break;
   }
-  
-  
+   
   P5_avr_V = K_P5 * P5V_avr;
   N5_avr_V = (K_N5 * N5V_avr) - (3 * P5_avr_V);
   
@@ -206,9 +205,9 @@ void CPROCESS::calc_avr(EPhases ph) {
  
   if(UStatus.sWork) {
         
-    dIL1 = (ILeak1N_avr > ILeak1P_avr) ? (ILeak1N_avr - ILeak1P_avr) : 0.01f;
-    dIL2 = (ILeak2N_avr > ILeak2P_avr) ? (ILeak2N_avr - ILeak2P_avr) : 0.01f;
-    dIL3 = (ILeak3N_avr > ILeak3P_avr) ? (ILeak3N_avr - ILeak3P_avr) : 0.01f;
+    float dIL1 = (ILeak1N_avr > ILeak1P_avr) ? (ILeak1N_avr - ILeak1P_avr) : 0.01f;
+    float dIL2 = (ILeak2N_avr > ILeak2P_avr) ? (ILeak2N_avr - ILeak2P_avr) : 0.01f;
+    float dIL3 = (ILeak3N_avr > ILeak3P_avr) ? (ILeak3N_avr - ILeak3P_avr) : 0.01f;
     
     float Ucor1 = 1; 
     float Ucor2 = 1; 
@@ -315,7 +314,7 @@ void CPROCESS::calc_avr(EPhases ph) {
       bsAlarm2(State::OFF);
       SaveEvent(CEVENT_LOG::EEvent::Alarm2_Off);
     }
-    
+    CPROCESS::FaultLedOff();
   } else if(UStatus.sFault) { 
     R = 0;
     RelAlarm1Off();
@@ -324,7 +323,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     LampAlarm1Off();
     LampAlarm2Off();
     LampReadyOff();
-    CPROCESS::UserLedOn();
+    CPROCESS::FaultLedOn();
     SaveEvent(CEVENT_LOG::EEvent::Fault_On);
     
     if(UStatus.sFaultP5) {

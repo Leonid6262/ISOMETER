@@ -3,12 +3,11 @@
 
 void UserStartInit() {     
   //CSET_EMC::initAndCheck();     // Инициализации  и контроль ext RAM
+  CFactory::Peripherals_init(); // Инициализация периферии
 }
 
 void main(void) {
-  
-  CFactory::Peripherals_init(); // Инициализация периферии
-  
+   
   Priorities::initPriorities(); // Распределение векторов по группам. см. в файле IntPriority.h  
   CFactory::load_settings();    // Загрузка уставок (RAM <- EEPROM)
   
@@ -20,7 +19,7 @@ void main(void) {
 #endif
   CFactory::control_set(term_manager);                          // При ошибке КС требуется зпись дефолтных уставок  
   
-  CPROCESS::UserLedOff();       // Визуальный контроль окончания инициализации
+  CPROCESS::FaultLedOff();       // Визуальный контроль окончания инициализации
 
   while (true) {       
     process.step();             // Основной процесс

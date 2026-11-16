@@ -94,9 +94,11 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
           o("Test",    {}, rProcess.getPointerTest_4_20(),   "b",    1, p0, vt::vbool,  nm::Ed1V, 0, 1  ),
           o("R test",  {}, rProcess.getPointerRTest_4_20(),  "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0,   10000  ),}),
 #endif
+#ifdef MB_RS485
       o("RS-485",{
           o("Slave address",    {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 247  ),
-          o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}),  
+          o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}), 
+#endif
 #ifdef UDP_SERVER
       o("IP:",{
           o("ip-3",    {}, &set.ip3,   "", 1, p0, vt::ushort, nm::Ed1V, 0, 255  ),

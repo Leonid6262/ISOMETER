@@ -154,6 +154,7 @@ void CPROCESS::calc_avr(EPhases ph) {
     ILeak1P_avr = static_cast<float>(ileak1) / N_AVR;
     ILeak2P_avr = static_cast<float>(ileak2) / N_AVR;
     ILeak3P_avr = static_cast<float>(ileak3) / N_AVR; 
+    UdP_avr = static_cast<float>(ud) / N_AVR;
     P5V_avr = static_cast<float>(p5v) / N_AVR_5V;
     N5V_avr = static_cast<float>(n5v) / N_AVR_5V;
     break; 

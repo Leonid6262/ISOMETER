@@ -24,6 +24,7 @@ public:
   
   inline float*          getPointerR1()      { return &R1;              }
   inline float*          getPointerR2()      { return &R2;              }
+  inline float*          getPointerR3()      { return &R3;              }
   inline float*          getPointerUd_V()    { return &Ud_avr_V;        }
   inline signed short*   getPointerUd_d()    { return &Ud_avr_d;        }
   inline char*           getPointerDT()      { return date_time;        }
@@ -92,8 +93,11 @@ public:
   
   unsigned short R;
   unsigned short R_Test = 0;
+  
   float R1;
   float R2;
+  float R3;
+  
   signed short Ud_avr_d;
   float Ud_avr_V;
   float P5_avr_V;
@@ -140,6 +144,7 @@ private:
   inline static signed short Ud[N_AVR];
   inline static signed short ILeak1[N_AVR]; 
   inline static signed short ILeak2[N_AVR];
+  inline static signed short ILeak3[N_AVR];
   inline static signed short P5V[N_AVR_5V]; 
   inline static signed short N5V[N_AVR_5V];
   
@@ -171,23 +176,34 @@ private:
   
   float dIL1;   
   float dIL2;
+  float dIL3;
+  
   float pIL1;   
   float pIL2;
+  float pIL3;
+  
   float dUd;
   float pUd;
+  
   float Ucor1;
   float Ucor2;
+  float Ucor3;
   
   float UdP_avr;
   float UdN_avr;
+  
   float ILeak1P_avr;
   float ILeak1N_avr;
   float ILeak2P_avr;
   float ILeak2N_avr;
+  float ILeak3P_avr;
+  float ILeak3N_avr;
+  
   float P5V_avr; 
   float N5V_avr;
   
   signed short ch1_4_shift;
   signed short ch2_4_shift;
+  signed short ch3_4_shift;
   
 };

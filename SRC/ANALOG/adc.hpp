@@ -33,6 +33,7 @@ public:
     Ud     = 2,
     ILeak1 = 1,
     ILeak2 = 0,
+    ILeak3 = 3,
     P5V    = 14,
     N5V    = 15,
     ch_HRf = 13   // Промежуточный канал (0.5 Ref)

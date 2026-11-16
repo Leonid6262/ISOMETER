@@ -1,7 +1,7 @@
 #include "main.hpp"
 
 void UserStartInit() {     
-  CSET_EMC::initAndCheck();     // Инициализации  и контроль ext RAM
+  //CSET_EMC::initAndCheck();     // Инициализации  и контроль ext RAM
 }
 
 void main(void) {

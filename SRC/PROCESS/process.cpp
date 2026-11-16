@@ -81,8 +81,9 @@ void CPROCESS::conv(EPhases ph) {
     conv_adc();
 
     ILeak1[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1));
-    Ud[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
     ILeak2[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2));
+    ILeak3[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak3)); 
+    Ud[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud));
     if(pause_counter < N_AVR_5V){
       P5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::P5V));
       N5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::N5V));
@@ -106,8 +107,9 @@ void CPROCESS::conv(EPhases ph) {
     conv_adc();
     
     ILeak1[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1)); 
-    Ud[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud)); 
     ILeak2[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2));
+    ILeak3[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::ILeak3));
+    Ud[pause_counter]     = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::Ud));
     if(pause_counter < N_AVR_5V){
       P5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::P5V));
       N5V[pause_counter] = rAdc.getData(static_cast<unsigned char>(CADC::EADC_NameCh::N5V));
@@ -133,40 +135,44 @@ void CPROCESS::calc_avr(EPhases ph) {
   signed int ud = 0;
   signed int ileak1 = 0;
   signed int ileak2 = 0;
+  signed int ileak3 = 0;
   signed int p5v = 0;
   signed int n5v = 0;
   switch (ph) {
   case EPhases::MeasP:
     polarity = 'U';
     for(unsigned short n = 0; n < N_AVR; n++) {
-      ud += Ud[n];
       ileak1 += ILeak1[n];
       ileak2 += ILeak2[n];
+      ileak3 += ILeak3[n];
+      ud += Ud[n];
     }
     for(unsigned short n = 0; n < N_AVR_5V; n++) {
       p5v += P5V[n];
       n5v += N5V[n];
-    }
-    UdP_avr = static_cast<float>(ud) / N_AVR;
+    }   
     ILeak1P_avr = static_cast<float>(ileak1) / N_AVR;
     ILeak2P_avr = static_cast<float>(ileak2) / N_AVR;
+    ILeak3P_avr = static_cast<float>(ileak3) / N_AVR; 
     P5V_avr = static_cast<float>(p5v) / N_AVR_5V;
     N5V_avr = static_cast<float>(n5v) / N_AVR_5V;
     break; 
   case EPhases::MeasN:
     polarity = 0xCF; //'П';
-    for(unsigned short n = 0; n < N_AVR; n++) {
-      ud += Ud[n];
+    for(unsigned short n = 0; n < N_AVR; n++) {     
       ileak1 += ILeak1[n];
       ileak2 += ILeak2[n];
+      ileak3 += ILeak3[n];
+      ud += Ud[n];
     }
     for(unsigned short n = 0; n < N_AVR_5V; n++) {
       p5v += P5V[n];
       n5v += N5V[n];
     }
-    UdN_avr = static_cast<float>(ud) / N_AVR;
     ILeak1N_avr = static_cast<float>(ileak1) / N_AVR;
     ILeak2N_avr = static_cast<float>(ileak2) / N_AVR;
+    ILeak3N_avr = static_cast<float>(ileak3) / N_AVR;
+    UdN_avr = static_cast<float>(ud) / N_AVR;
     P5V_avr = static_cast<float>(p5v) / N_AVR_5V;
     N5V_avr = static_cast<float>(n5v) / N_AVR_5V; 
     break; 
@@ -185,8 +191,8 @@ void CPROCESS::calc_avr(EPhases ph) {
   if(N5_avr_V > N5_MIN) bsFaultN5(State::ON);
   else bsFaultN5(State::OFF);
   
-  //////////if(!CP40V_PN) bsFaultV40(State::ON);
-  //////////else bsFaultV40(State::OFF);
+  if(!CP40V_PN) bsFaultV40(State::ON);
+  else bsFaultV40(State::OFF);
   
   if(UStatus.sFaultP5 || UStatus.sFaultN5 || UStatus.sFaultS40) {
     bsWork(State::OFF);
@@ -195,61 +201,63 @@ void CPROCESS::calc_avr(EPhases ph) {
   else {
     bsWork(State::ON);
     bsFault(State::OFF);
-  }
-   
-  Ud_avr_d = lroundf((UdN_avr + UdP_avr) / 2.0f ) + rSet.getSettings().shift_Ud;
-  Ud_avr_V = ((UdN_avr + UdP_avr + 2.0f * rSet.getSettings().shift_Ud) / 2.0f) * rSet.getSettings().k_Ud;
-  
-  dIL1 = ILeak1N_avr - ILeak1P_avr;    
-  dIL2 = ILeak2N_avr - ILeak2P_avr; 
-  pIL1 = ILeak1N_avr + ILeak1P_avr - 4095 + rSet.getSettings().shift_ch1;    
-  pIL2 = ILeak2N_avr + ILeak2P_avr - 4095 + rSet.getSettings().shift_ch2;
-  
-  ch1_4_shift = static_cast<signed short>(round(pIL1 / 2.0f)); 
-  ch2_4_shift = static_cast<signed short>(round(pIL2 / 2.0f));  
-  
-  dUd = UdN_avr - UdP_avr;
-  pUd = UdN_avr + UdP_avr;
-  
-  float ucor1 = 1 - ((pIL1 * dUd) / ((pIL1 * dUd) - (dIL1 * pUd)));
-  float ucor2 = 1 - ((pIL2 * dUd) / ((pIL2 * dUd) - (dIL2 * pUd)));
-  
-  if (isnan(ucor1)) { Ucor1 = 1.0f; } else { Ucor1 = ucor1; } 
-  if (isnan(ucor2)) { Ucor2 = 1.0f; } else { Ucor2 = ucor2; }
-  
-  if(!rSet.getSettings().comp_dUd)  { Ucor1 = 1; Ucor2 = 1; }
-  
-  bool top_ch2 = false;
-  if(((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)) || ((ILeak2N_avr < d_min) || (ILeak2P_avr < d_min))) { top_ch2 = true; } 
-  
+  }  
+ 
   if(UStatus.sWork) {
+    
+    Ud_avr_d = lroundf((UdN_avr + UdP_avr) / 2.0f ) + rSet.getSettings().shift_Ud;
+    Ud_avr_V = ((UdN_avr + UdP_avr + 2.0f * rSet.getSettings().shift_Ud) / 2.0f) * rSet.getSettings().k_Ud;
+    
+    dIL1 = (ILeak1N_avr > ILeak1P_avr) ? (ILeak1N_avr - ILeak1P_avr) : 0.01f;
+    dIL2 = (ILeak2N_avr > ILeak2P_avr) ? (ILeak2N_avr - ILeak2P_avr) : 0.01f;
+    dIL3 = (ILeak3N_avr > ILeak3P_avr) ? (ILeak3N_avr - ILeak3P_avr) : 0.01f;
+    
+    pIL1 = ILeak1N_avr + ILeak1P_avr - 4095 + rSet.getSettings().shift_ch1;    
+    pIL2 = ILeak2N_avr + ILeak2P_avr - 4095 + rSet.getSettings().shift_ch2;
+    pIL3 = ILeak3N_avr + ILeak3P_avr - 4095 + rSet.getSettings().shift_ch3; 
+    
+    ch1_4_shift = static_cast<signed short>(round(pIL1 / 2.0f)); 
+    ch2_4_shift = static_cast<signed short>(round(pIL2 / 2.0f));  
+    ch3_4_shift = static_cast<signed short>(round(pIL3 / 2.0f));   
+    
+    dUd = UdN_avr - UdP_avr;
+    pUd = UdN_avr + UdP_avr;
+    
+    float ucor1 = 1 - ((pIL1 * dUd) / ((pIL1 * dUd) - (dIL1 * pUd)));
+    float ucor2 = 1 - ((pIL2 * dUd) / ((pIL2 * dUd) - (dIL2 * pUd)));
+    float ucor3 = 1 - ((pIL3 * dUd) / ((pIL3 * dUd) - (dIL3 * pUd)));
+    
+    if (isnan(ucor1)) { Ucor1 = 1.0f; } else { Ucor1 = ucor1; } 
+    if (isnan(ucor2)) { Ucor2 = 1.0f; } else { Ucor2 = ucor2; }
+    if (isnan(ucor3)) { Ucor3 = 1.0f; } else { Ucor3 = ucor3; }
+    
+    if(!rSet.getSettings().comp_dUd)  { Ucor1 = 1; Ucor2 = 1; Ucor3 = 1;}
+    
+    bool top_ch1 = false;
+    bool top_ch2 = false;
+    bool top_ch3 = false;
+    
+    if(((ILeak1N_avr > d_max) || (ILeak1P_avr > d_max)) || ((ILeak1N_avr < d_min) || (ILeak1P_avr < d_min))) { top_ch1 = true; }
+    if(((ILeak2N_avr > d_max) || (ILeak2P_avr > d_max)) || ((ILeak2N_avr < d_min) || (ILeak2P_avr < d_min))) { top_ch2 = true; }
+    if(((ILeak3N_avr > d_max) || (ILeak3P_avr > d_max)) || ((ILeak3N_avr < d_min) || (ILeak3P_avr < d_min))) { top_ch3 = true; } 
+    
+    R1 = (((rSet.getSettings().k_ch1 * ((2 * u * Ucor1))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
+    R2 = (((rSet.getSettings().k_ch2 * ((2 * u * Ucor2))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
+    R3 = (((rSet.getSettings().k_ch3 * ((2 * u * Ucor3))) / dIL3) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);  
+ 
+    // Из за биений на больших токах (при КЗ) R может оказаться немного меньше ((RTadd/2)-Rs) и стать меньше нуля
+    if(R1 < 0) R1 = 0;
+    if(R2 < 0) R2 = 0;
+    if(R3 < 0) R3 = 0;
+    
     float r;
-    R1 = (((rSet.getSettings().k_ch1 * ((2 * u * (Ucor1)))) / dIL1) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
-    R2 = (((rSet.getSettings().k_ch2 * ((2 * u * (Ucor2)))) / dIL2) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
     
-    if(R2 > 1000){
-      float dIL2_cor = dIL2 * ( 1.0f / (1.0f + ( 1.0f / (rSet.getSettings().k_cor_ch2 * dIL2))));
-      R2 = (((rSet.getSettings().k_ch2 * ((2 * u * (Ucor2)))) / dIL2_cor) - ((RT + rSet.getSettings().RTadd) / 2.0f) - Rs);
-    }
+    if(!top_ch3)        {r = R3; N_ch  = '1';}
+    else if(!top_ch2)   {r = R2; N_ch  = '2';}
+    else if(!top_ch1)   {r = R1; N_ch  = '3';}
+    else                {r = 0;  N_ch  = '-';}
+    if(r < 1.0f) { r = 0; }
     
-    
-    if(R1<0 && R2>0 && top_ch2 ) 
-    {
-      r=0;
-    }
-    else if(R1<0 || R2<0 && !top_ch2)
-    {
-      r=Rmax;
-    } 
-    else if(R1>0 && R2>0)
-    {
-      if(top_ch2) { r = R1; N_ch  = '1'; }  
-      else { r = R2; N_ch = '2'; }
-    }
-    if(abs(r)<1.0f) {
-      r=0;
-    }
-
     char r_buf[10];
     if((r > Rmax)) { 
       R = Rmax;
@@ -264,17 +272,7 @@ void CPROCESS::calc_avr(EPhases ph) {
       bsNormRange(State::ON);
       
       if(R == 0) {
-        if(Ud_avr_V > 10){
-          if(pIL1 > 0){
-            snprintf(r_buf, sizeof(r_buf), "S/C -L");
-          }else if(pIL1 < 0){
-            snprintf(r_buf, sizeof(r_buf), "S/C +L");
-          }else if(pIL1 == 0){
-            snprintf(r_buf, sizeof(r_buf), "SHORT");
-          }
-        }else{
-          snprintf(r_buf, sizeof(r_buf), "SHORT");
-        }        
+        snprintf(r_buf, sizeof(r_buf), "SHORT");       
       }else {
         snprintf(r_buf, sizeof(r_buf), "R=%uk", R);
       } 
@@ -349,8 +347,8 @@ void CPROCESS::conv_adc() {
   rAdc.conv_tnf({     
     
     static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1), 
-    static_cast<unsigned char>(CADC::EADC_NameCh::Ud),
     static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2),
+    static_cast<unsigned char>(CADC::EADC_NameCh::ILeak3),
     static_cast<unsigned char>(CADC::EADC_NameCh::P5V),
     static_cast<unsigned char>(CADC::EADC_NameCh::N5V)
       
@@ -359,19 +357,25 @@ void CPROCESS::conv_adc() {
 
 void CPROCESS::start_test() { 
   CPROCESS::LampReadyOn();
+#ifdef TEST_REL  
   RelAlarm1On();
+#endif
   Pause_us(500000); 
-  CPROCESS::LampReadyOff();
+  CPROCESS::LampReadyOff();  
   RelAlarm1Off();
   
   CPROCESS::LampAlarm1On();
+#ifdef TEST_REL  
   RelAlarm2On();
+#endif
   Pause_us(500000);
   CPROCESS::LampAlarm1Off();
   RelAlarm2Off();
   
   CPROCESS::LampAlarm2On(); 
+#ifdef TEST_REL  
   RelReadyOn();
+#endif
   Pause_us(500000);
   CPROCESS::LampAlarm2Off();
   RelReadyOff();
@@ -396,4 +400,3 @@ void CPROCESS::update_modbus_data() {
   rModbusData.getInstance().registers[CModbusDataProxy::RegAlarm1].value = rSet.getSettings().RAlarm1;
   rModbusData.getInstance().registers[CModbusDataProxy::RegAlarm2].value = rSet.getSettings().RAlarm2; 
 }
-

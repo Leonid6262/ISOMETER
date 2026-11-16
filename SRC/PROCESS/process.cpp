@@ -1,5 +1,5 @@
 #include "process.hpp" 
-
+#include "Config.hpp" 
 #include <math.h>
 
 CPROCESS::CPROCESS(CADC& rAdc, CEEPSettings& rSet, CModbusDataProxy& rModbusData, COUT_4_20& rCOUT_4_20, CRTC& rRTC, CEVENT_LOG& rEventLog) :   
@@ -204,35 +204,36 @@ void CPROCESS::calc_avr(EPhases ph) {
   }  
  
   if(UStatus.sWork) {
-    
-    Ud_avr_d = lroundf((UdN_avr + UdP_avr) / 2.0f ) + rSet.getSettings().shift_Ud;
-    Ud_avr_V = ((UdN_avr + UdP_avr + 2.0f * rSet.getSettings().shift_Ud) / 2.0f) * rSet.getSettings().k_Ud;
-    
+        
     dIL1 = (ILeak1N_avr > ILeak1P_avr) ? (ILeak1N_avr - ILeak1P_avr) : 0.01f;
     dIL2 = (ILeak2N_avr > ILeak2P_avr) ? (ILeak2N_avr - ILeak2P_avr) : 0.01f;
     dIL3 = (ILeak3N_avr > ILeak3P_avr) ? (ILeak3N_avr - ILeak3P_avr) : 0.01f;
     
-    pIL1 = ILeak1N_avr + ILeak1P_avr - 4095 + rSet.getSettings().shift_ch1;    
-    pIL2 = ILeak2N_avr + ILeak2P_avr - 4095 + rSet.getSettings().shift_ch2;
-    pIL3 = ILeak3N_avr + ILeak3P_avr - 4095 + rSet.getSettings().shift_ch3; 
+    float Ucor1 = 1; 
+    float Ucor2 = 1; 
+    float Ucor3 = 1;
+#ifdef U_CHANNEL    
+    float pIL1 = ILeak1N_avr + ILeak1P_avr - 4095 + rSet.getSettings().shift_ch1;    
+    float pIL2 = ILeak2N_avr + ILeak2P_avr - 4095 + rSet.getSettings().shift_ch2;
+    float pIL3 = ILeak3N_avr + ILeak3P_avr - 4095 + rSet.getSettings().shift_ch3; 
     
     ch1_4_shift = static_cast<signed short>(round(pIL1 / 2.0f)); 
     ch2_4_shift = static_cast<signed short>(round(pIL2 / 2.0f));  
     ch3_4_shift = static_cast<signed short>(round(pIL3 / 2.0f));   
     
-    dUd = UdN_avr - UdP_avr;
-    pUd = UdN_avr + UdP_avr;
+    Ud_avr_d = lroundf((UdN_avr + UdP_avr) / 2.0f ) + rSet.getSettings().shift_Ud;
+    Ud_avr_V = ((UdN_avr + UdP_avr + 2.0f * rSet.getSettings().shift_Ud) / 2.0f) * rSet.getSettings().k_Ud;
     
-    float ucor1 = 1 - ((pIL1 * dUd) / ((pIL1 * dUd) - (dIL1 * pUd)));
-    float ucor2 = 1 - ((pIL2 * dUd) / ((pIL2 * dUd) - (dIL2 * pUd)));
-    float ucor3 = 1 - ((pIL3 * dUd) / ((pIL3 * dUd) - (dIL3 * pUd)));
+    float dUd = UdN_avr - UdP_avr;
+    float pUd = UdN_avr + UdP_avr;
     
-    if (isnan(ucor1)) { Ucor1 = 1.0f; } else { Ucor1 = ucor1; } 
-    if (isnan(ucor2)) { Ucor2 = 1.0f; } else { Ucor2 = ucor2; }
-    if (isnan(ucor3)) { Ucor3 = 1.0f; } else { Ucor3 = ucor3; }
+    Ucor1 = 1 - ((pIL1 * dUd) / ((pIL1 * dUd) - (dIL1 * pUd)));
+    Ucor2 = 1 - ((pIL2 * dUd) / ((pIL2 * dUd) - (dIL2 * pUd)));
+    Ucor3 = 1 - ((pIL3 * dUd) / ((pIL3 * dUd) - (dIL3 * pUd)));
     
     if(!rSet.getSettings().comp_dUd)  { Ucor1 = 1; Ucor2 = 1; Ucor3 = 1;}
-    
+#endif 
+   
     bool top_ch1 = false;
     bool top_ch2 = false;
     bool top_ch3 = false;
@@ -252,9 +253,9 @@ void CPROCESS::calc_avr(EPhases ph) {
     
     float r;
     
-    if(!top_ch3)        {r = R3; N_ch  = '1';}
+    if(!top_ch3)        {r = R3; N_ch  = '3';}
     else if(!top_ch2)   {r = R2; N_ch  = '2';}
-    else if(!top_ch1)   {r = R1; N_ch  = '3';}
+    else if(!top_ch1)   {r = R1; N_ch  = '1';}
     else                {r = 0;  N_ch  = '-';}
     if(r < 1.0f) { r = 0; }
     
@@ -349,6 +350,7 @@ void CPROCESS::conv_adc() {
     static_cast<unsigned char>(CADC::EADC_NameCh::ILeak1), 
     static_cast<unsigned char>(CADC::EADC_NameCh::ILeak2),
     static_cast<unsigned char>(CADC::EADC_NameCh::ILeak3),
+    static_cast<unsigned char>(CADC::EADC_NameCh::Ud),
     static_cast<unsigned char>(CADC::EADC_NameCh::P5V),
     static_cast<unsigned char>(CADC::EADC_NameCh::N5V)
       

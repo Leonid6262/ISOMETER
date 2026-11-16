@@ -35,6 +35,7 @@ public:
   inline bool*           getPointerTest_4_20()      { return &test_4_20;   }
   inline signed short*   getPointerCh1_4_shift()    { return &ch1_4_shift; }
   inline signed short*   getPointerCh2_4_shift()    { return &ch2_4_shift; }
+  inline signed short*   getPointerCh3_4_shift()    { return &ch3_4_shift; }
   inline unsigned short* getPointerRTest_4_20()     { return &R_Test; }
 
   static inline void UserLedOn()  { P::G1->CLR  = (1UL << bg::B_ULED); } 
@@ -177,17 +178,6 @@ private:
   float dIL1;   
   float dIL2;
   float dIL3;
-  
-  float pIL1;   
-  float pIL2;
-  float pIL3;
-  
-  float dUd;
-  float pUd;
-  
-  float Ucor1;
-  float Ucor2;
-  float Ucor3;
   
   float UdP_avr;
   float UdN_avr;

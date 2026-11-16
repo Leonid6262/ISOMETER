@@ -2248,6 +2248,9 @@
             <name>$PROJ_DIR$\SRC\bool_name.hpp</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\SRC\Config.hpp</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\SRC\controllerDMA.cpp</name>
         </file>
         <file>

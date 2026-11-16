@@ -12,7 +12,7 @@ class CDAC_PWM {
 
  public:
   static constexpr unsigned short DAC_PWM_MAX_VAL = DAC_PWM_T - 1;  // Максимальное значение DAC_PWM
-  static constexpr unsigned short DAC_PWM_MIN_VAL = 0;               // Минимальное значение DAC_PWM
+  static constexpr unsigned short DAC_PWM_MIN_VAL = 0;              // Минимальное значение DAC_PWM
 
   CDAC_PWM(LPC_PWM_TypeDef*);
 

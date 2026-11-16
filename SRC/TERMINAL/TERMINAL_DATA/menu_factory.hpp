@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Config.hpp" 
 #include "settings_eep.hpp"
 #include "version.hpp"
 
@@ -56,12 +56,17 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
       o(Mn.PARAMS[l],{
           o("Alarm1",  {}, &set.RAlarm1,     "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
           o("Alarm2",  {}, &set.RAlarm2,     "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 500  ),
+#ifdef OUT_4_20          
           o("20mA->R", {}, &set.Rmax_20mA,   "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0, 2000 ),
-          o("Ramp 20mA", {}, &set.Ramp_20mA, "b",    1, p0, vt::vbool,  nm::Ed1V, 0, 1 ),}),
+          o("Ramp 20mA", {}, &set.Ramp_20mA, "b",    1, p0, vt::vbool,  nm::Ed1V, 0, 1 ),
+#endif          
+      }),
       o(Mn.SETTING_UP[l],{
           o(      "RTadd",{},&set.RTadd,                       "kOhm",   1, p4, vt::vfloat, nm::Ed1V, 0, 200000 ),
+#ifdef U_CHANNEL        
           o::Dual("Ud",      rProcess.getPointerUd_V(),        "V",      1, p2, vt::vfloat,
                   "k-Ud",    &set.k_Ud,                         "",      1, p4, vt::vfloat, nm::IE2V, 0, 100   ),
+#endif         
           o::Dual("R-ch1",   rProcess.getPointerR1(),          "kOhm",   1, p2, vt::vfloat,
                   "k-ch1",   &set.k_ch1,                       "",       1, p3, vt::vfloat, nm::IE2V,   0.1f, 100 ),
           o::Dual("R-ch2",   rProcess.getPointerR2(),          "kOhm",   1, p2, vt::vfloat,
@@ -72,24 +77,33 @@ inline std::vector<menu_alias::o> MENU_Factory(CPROCESS& rProcess, CEEPSettings&
                   "corCh2",  &set.k_cor_ch2,                    "",      1, p3, vt::vfloat, nm::IE2V,   0.01f, 1.0f ),
           o::Dual("R-ch3",   rProcess.getPointerR3(),          "kOhm",   1, p2, vt::vfloat,
                   "corCh3",  &set.k_cor_ch3,                    "",      1, p3, vt::vfloat, nm::IE2V,   0.01f, 1.0f ),
+#ifdef U_CHANNEL             
           o::Dual("Ud",      rProcess.getPointerUd_d(),        "d",      1, p0, vt::sshort,
                   "shift",   &set.shift_Ud,                    "d",      1, p0, vt::sshort, nm::IE2V, -100, 100   ),
           o::Dual("ch1",     rProcess.getPointerCh1_4_shift(), "d",      1, p0, vt::sshort,
                   "shift",   &set.shift_ch1,                   "d",      1, p0, vt::sshort, nm::IE2V, -100, 100   ),
           o::Dual("ch2",     rProcess.getPointerCh2_4_shift(), "d",      1, p0, vt::sshort,
                   "shift",   &set.shift_ch2,                   "d",      1, p0, vt::sshort, nm::IE2V, -100, 100   ),
-          o("comp dUd",{},   &set.comp_dUd,                    "b",      1, p0, vt::vbool,  nm::Ed1V, 0, 1   ),}),
+          o::Dual("ch3",     rProcess.getPointerCh3_4_shift(), "d",      1, p0, vt::sshort,
+                  "shift",   &set.shift_ch3,                   "d",      1, p0, vt::sshort, nm::IE2V, -100, 100   ),
+          o("comp dUd",{},   &set.comp_dUd,                    "b",      1, p0, vt::vbool,  nm::Ed1V, 0, 1   ),
+#endif       
+      }),
+#ifdef OUT_4_20 
       o("TEST 4...20",{
           o("Test",    {}, rProcess.getPointerTest_4_20(),   "b",    1, p0, vt::vbool,  nm::Ed1V, 0, 1  ),
-          o("R test",  {}, rProcess.getPointerRTest_4_20(),  "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0,   10000  ),}), 
+          o("R test",  {}, rProcess.getPointerRTest_4_20(),  "kOhm", 1, p0, vt::ushort, nm::Ed1V, 0,   10000  ),}),
+#endif
       o("RS-485",{
           o("Slave address",    {}, &set.Address,   "", 1, p0, vt::ushort, nm::Ed1V, 1, 247  ),
-          o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}), 
+          o("Baud 9600-115200", {}, &set.Baud_rate, "", 1, p0, vt::ushort, nm::Ed1V, 1,   5  ),}),  
+#ifdef UDP_SERVER
       o("IP:",{
           o("ip-3",    {}, &set.ip3,   "", 1, p0, vt::ushort, nm::Ed1V, 0, 255  ),
           o("ip-2",    {}, &set.ip2,   "", 1, p0, vt::ushort, nm::Ed1V, 0, 255  ),
           o("ip-1",    {}, &set.ip1,   "", 1, p0, vt::ushort, nm::Ed1V, 0, 255  ),
           o("ip-0",    {}, &set.ip0,   "", 1, p0, vt::ushort, nm::Ed1V, 0, 255  ),}), 
+#endif
       o(Mn.CLOCK_SETUP[l],{
           o("Year:",        {}, &rRTC.DateTimeForSet.year,  "", 1, p0, vt::ushort, nm::Ed1V, 26, 99),
           o("Month:",       {}, &rRTC.DateTimeForSet.month, "", 1, p0, vt::ushort, nm::Ed1V,  1, 12),

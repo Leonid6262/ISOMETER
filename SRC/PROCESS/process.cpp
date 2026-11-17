@@ -20,7 +20,6 @@ void CPROCESS::step() {
   
   dTrsPhase = SysT::TC() - prev_TC0_Phase; 
   
-  
   switch (phases) {
   case EPhases::PhaseP:
     if(UStatus.sWork) LampReadyOn();
@@ -176,12 +175,17 @@ void CPROCESS::calc_avr(EPhases ph) {
     UdN_avr = static_cast<float>(ud) / N_AVR;
     P5V_avr = static_cast<float>(p5v) / N_AVR_5V;
     N5V_avr = static_cast<float>(n5v) / N_AVR_5V; 
+    
+    first_meas_full = true; 
+    
     break; 
   case EPhases::PhaseP:
   case EPhases::PhaseN:
     break;
   }
-   
+  
+  if(!first_meas_full) return;
+  
   P5_avr_V = K_P5 * P5V_avr;
   N5_avr_V = (K_N5 * N5V_avr) - (3 * P5_avr_V);
   
@@ -191,8 +195,8 @@ void CPROCESS::calc_avr(EPhases ph) {
   if(N5_avr_V > N5_MIN) bsFaultN5(State::ON);
   else bsFaultN5(State::OFF);
   
-  if(!CP40V_PN) bsFaultV40(State::ON);
-  else bsFaultV40(State::OFF);
+  //if(!CP40V_PN) bsFaultV40(State::ON);
+  //else bsFaultV40(State::OFF);
   
   if(UStatus.sFaultP5 || UStatus.sFaultN5 || UStatus.sFaultS40) {
     bsWork(State::OFF);
@@ -204,7 +208,7 @@ void CPROCESS::calc_avr(EPhases ph) {
   }  
  
   if(UStatus.sWork) {
-        
+    
     float dIL1 = (ILeak1N_avr > ILeak1P_avr) ? (ILeak1N_avr - ILeak1P_avr) : 0.01f;
     float dIL2 = (ILeak2N_avr > ILeak2P_avr) ? (ILeak2N_avr - ILeak2P_avr) : 0.01f;
     float dIL3 = (ILeak3N_avr > ILeak3P_avr) ? (ILeak3N_avr - ILeak3P_avr) : 0.01f;
@@ -253,10 +257,15 @@ void CPROCESS::calc_avr(EPhases ph) {
     
     float r;
     
-    if(!top_ch3)        {r = R3; N_ch  = '3';}
-    else if(!top_ch2)   {r = R2; N_ch  = '2';}
+    //if(!top_ch3)        {r = R3; N_ch  = '3';}
+    //else if(!top_ch2)   {r = R2; N_ch  = '2';}
+    //else if(!top_ch1)   {r = R1; N_ch  = '1';}
+    //else                {r = 0;  N_ch  = '-';}
+    
+    if(!top_ch2)        {r = R2; N_ch  = '2';}
     else if(!top_ch1)   {r = R1; N_ch  = '1';}
     else                {r = 0;  N_ch  = '-';}
+    
     if(r < 1.0f) { r = 0; }
     
     char r_buf[10];

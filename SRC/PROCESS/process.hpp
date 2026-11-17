@@ -108,6 +108,7 @@ private:
 
   unsigned int dTrsPhase;
   bool start_log = false;
+  bool first_meas_full = false;
   
   static inline void Negative_phase()     { P::G1->CLR = (1UL << bg::B_TP); Pause_us(2); P::G1->SET = (1UL << bg::B_TN); }
   static inline void Positive_phase()     { P::G1->CLR = (1UL << bg::B_TN); Pause_us(2); P::G1->SET = (1UL << bg::B_TP); }
